@@ -15,7 +15,8 @@ h1 {
 
 .img-container {
     align-items: center;
-    background: url("images/lerone-pieters.jpg") center center cover no-repeat;
+    background: url("images/lerone-pieters.jpg") center no-repeat;
+    background-size: cover;
     display: flex;
     flex-direction: column;
     height: 100vh;
