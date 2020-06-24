@@ -1,8 +1,9 @@
-../.idea/
+.idea/
 
 # Default ignored files
 /shelf/
 /workspace.xml
+*.iml
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,java,appengine,maven,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,java,appengine,maven,linux
