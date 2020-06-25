@@ -1,0 +1,17 @@
+.heading {
+    text-align: center;
+}
+
+.card-gallery {
+    margin: auto;
+    width: 750px;
+}
+
+.mdc-card {
+    margin: auto;
+    width: 500px;
+}
+
+.text {
+    padding: 0px 15px;
+}
