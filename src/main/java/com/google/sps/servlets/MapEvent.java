@@ -13,3 +13,4 @@ package com.google.sps.data;
         this.address = address; 
     } 
  }
+ 
