@@ -7,14 +7,13 @@ function initMap() {
   const mapViewDefault = {lat: 37.3868, lng: -122.085}; 
 
   const map = new google.maps.Map(document.getElementById('map'), {
+    // Zoom set to 8 as default until the radius is set up
     zoom: 8,
     center: mapViewDefault,
   });
-  
-  const geocoder = new google.maps.Geocoder();
 
   document.getElementById('submit').addEventListener('click', () => {
-    geocodeAddress(geocoder, map);
+    geocodeAddress(new google.maps.Geocoder(), map);
   });
 
 }
