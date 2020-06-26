@@ -3,7 +3,8 @@ function initEvents() {
 }
 
 function displayCalendar() {
-  document.getElementById('events-calendar').innerHTML = '<iframe src="' + getCalendarURL() + '"></iframe>';
+  document.getElementById('events-calendar').innerHTML = '<iframe class="calendar-iframe" src="' 
+      + getCalendarURL() + '"></iframe>';
 }
 
 function getCalendarURL() {
