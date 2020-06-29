@@ -1,7 +1,7 @@
 {namespace templates.chat}
 
 {template .chatPage}
-{@param Messages: list<string>}
+{@param messages: list<string>}
 
     <html>
         <head>
@@ -11,7 +11,7 @@
 
         <body>
             <div class="messages-container">
-                {for $message in $Messages}
+                {for $message in $messages}
                     <p class="message">{$message}</p>
                 {/for}
             </div>
