@@ -1,0 +1,35 @@
+package com.google.sps.servlets;
+
+import com.google.template.soy.SoyFileSet;
+import com.google.template.soy.tofu.SoyTofu;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/map")
+public class MapServlet extends HttpServlet {
+
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        Map<String, String> data = new HashMap<>();
+
+        // Hard coded user groups for testing, 
+        // Will get groups from user/datastore after functionality is verified
+        data.put("groupName", "Group One");
+
+        SoyFileSet sfs = SoyFileSet
+            .builder()
+            .add(new File("../../src/main/java/templates/mapPages.soy"))
+            .build();
+        SoyTofu tofu = sfs.compileToTofu();
+
+        String out = tofu.newRenderer("templates.pages.mapPage").setData(data).render();
+        response.getWriter().println(out);
+    }
+}

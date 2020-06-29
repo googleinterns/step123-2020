@@ -1,8 +1,10 @@
+
+
 /**
  * Initialize the map to show Mountain View and events in that area
  */
 function initMap() {
-
+  
   // Coordinates for the default map center of Mountain View, CA
   const mapViewDefault = {lat: 37.3868, lng: -122.085}; 
 
@@ -16,7 +18,10 @@ function initMap() {
     geocodeAddress(new google.maps.Geocoder(), map);
   });
 
+
+
 }
+
 
 
 /**
