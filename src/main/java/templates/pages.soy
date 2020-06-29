@@ -13,7 +13,6 @@
             <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
             <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
             <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
-            <script src="groupsPage.js"></script>
         </head>
 
         <body>
@@ -25,11 +24,11 @@
                 <div class="mdc-card">
                     <div class="mdc-card__media mdc-card__media--16-9" style="background-image: url({$groupImage});"></div>
                     <div class="title-container">
-                        <h2 class="text mdc-typography mdc-typography--headline6">{$groupName}</h2>
+                        <h2 class="group-name mdc-typography mdc-typography--headline6">{$groupName}</h2>
                     </div>
 
                     <div class="desc-container mdc-typography mdc-typography--body2">
-                        <p class="text">{$groupDescription}</p>
+                        <p class="group-desc">{$groupDescription}</p>
                     </div>
 
                     <div class="mdc-card__actions">

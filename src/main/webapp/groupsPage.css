@@ -12,6 +12,6 @@
     width: 500px;
 }
 
-.text {
-    padding: 0px 15px;
+.group-name, .group-desc {
+    padding: 0 15px;
 }
