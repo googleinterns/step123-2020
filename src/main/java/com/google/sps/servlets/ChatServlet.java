@@ -8,11 +8,11 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-import com.google.gson.Gson;
+import com.google.template.soy.SoyFileSet;
+import com.google.template.soy.tofu.SoyTofu;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -26,17 +26,27 @@ public class ChatServlet extends HttpServlet{
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-    Query query = new Query("Message").addSort("timestamp", SortDirection.DESCENDING);
+    Query query = new Query("Message").addSort("timestamp", SortDirection.ASCENDING);
     PreparedQuery pq = datastore.prepare(query);
 
     ImmutableList.Builder<String> builder = new ImmutableList.Builder<>();
     for (Entity message : pq.asIterable()) {
-        builder.add(message.getProperty("message-text"));
+        builder.add((String) message.getProperty("message-text"));
     }
     ImmutableList<String> messages = builder.build();
 
+    // Data will be passed in as a list of messages in a map (needed for template)
     Map<String, ImmutableList<String>> data = new HashMap<>();
     data.put("Messages", messages);
+
+    SoyFileSet sfs = SoyFileSet
+            .builder()
+            .add(new File("../../src/main/java/templates/chat.soy"))
+            .build();
+    SoyTofu tofu = sfs.compileToTofu();
+
+    String out = tofu.newRenderer("templates.chat.chatPage").setData(data).render();
+    response.getWriter().println(out);
   }
 
 
@@ -51,6 +61,6 @@ public class ChatServlet extends HttpServlet{
     messageEntity.setProperty("timestamp", timestamp);
     datastore.put(messageEntity);
 
-    response.sendRedirect("/chat.html");
+    response.sendRedirect("/chat");
   }
 }

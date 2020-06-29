@@ -1,0 +1,27 @@
+{namespace templates.chat}
+
+{template .chatPage}
+{@param Messages: list<string>}
+
+    <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>The Solidarity Initiative - Chat</title>
+        </head>
+
+        <body>
+            <div class="messages-container">
+                {for $message in $Messages}
+                    <p class="message">{$message}</p>
+                {/for}
+            </div>
+
+            <form action="/chat" method="POST">
+                <input type="text" name="message-text">
+                <input type="submit">
+            </form>
+        </body>
+
+    </html>
+
+{/template}
