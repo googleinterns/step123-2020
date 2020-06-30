@@ -1,0 +1,7 @@
+{namespace templates.eventsoy}
+
+{template .obtainUrl}
+  {@param calendarID : string}
+  {@param timezone : string}
+  https://calendar.google.com/calendar/embed?src={$calendarID}&ctz={$timezone}
+{/template}
