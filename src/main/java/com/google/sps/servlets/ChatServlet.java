@@ -39,6 +39,7 @@ public class ChatServlet extends HttpServlet{
 
     SoyFileSet sfs = SoyFileSet
             .builder()
+            // File path starts in target/portfolio-1
             .add(new File("../../src/main/java/templates/chat.soy"))
             .build();
     SoyTofu tofu = sfs.compileToTofu();
