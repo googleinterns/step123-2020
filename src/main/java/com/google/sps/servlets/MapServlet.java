@@ -15,6 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/map")
 public class MapServlet extends HttpServlet {
 
+    /**
+     * Adds user's groups as checkboxes to the map drawer
+     * Allows users to select which groups they want displayed on the map
+     */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
