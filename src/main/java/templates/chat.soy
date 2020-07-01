@@ -7,10 +7,11 @@
         <head>
             <meta charset="UTF-8">
             <title>The Solidarity Initiative - Chat</title>
+            <script src="chat.js"></script>
         </head>
 
-        <body>
-            <div class="messages-container">
+        <body onload="init()">
+            <div id="messages-container">
                 {for $message in $messages}
                     <p class="message">{$message}</p>
                 {/for}

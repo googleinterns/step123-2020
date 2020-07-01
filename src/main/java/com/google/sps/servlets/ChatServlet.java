@@ -26,6 +26,10 @@ public class ChatServlet extends HttpServlet{
     private static final String TIMESTAMP_PROPERTY = "timestamp";
     private static final String MESSAGE_KIND = "Message";
 
+  /**
+   * When called, doGet will query all previously posted messages to the chat,
+   * and render the messages into a HTML template.
+   */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -52,7 +56,10 @@ public class ChatServlet extends HttpServlet{
     response.getWriter().println(out);
   }
 
-
+/**
+ * Is called by a button on the chat form. doPost takes the message and its
+ * attributes (such as timestamp and user) and stores them into Datastore.
+ */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     final String messageText = (String) request.getParameter(MESSAGE_TEXT_PROPERTY);
