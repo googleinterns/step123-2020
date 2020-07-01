@@ -7,25 +7,25 @@ function initEvents() {
 }
 
 function displayCalendar() {
-  //Use Google Calendar's calendar display
+  // Use Google Calendar's calendar display
   const calendarFrame = goog.dom.createDom(goog.dom.TagName.IFRAME, {
-      'className': 'calendar-iframe', //check if className
-      'src': getCalendarURL(),
+      'class': 'calendar-iframe',
+      'src': getCalendarUrl(),
   });
 
-  goog.dom.appendChild(goog.dom.getElementById('events-calendar'), calendarFrame);
+  goog.dom.appendChild(goog.dom.getElement('events-calendar'), calendarFrame);
 }
 
-function getCalendarURL() {
-  let calendarID = 0;
-  // Use to obtain the group id from the current page's URL
+function getCalendarUrl() {
+  let calendarId = '';
+  // Use params to obtain the group id from the current page's URL
   const params = new URLSearchParams(location.search);
-  fetch('/calendar?groupid=' + params.get('groupid')).then(response => response.text()).then((requestedID) => {
-    calendarID = requestedID;
+  fetch('/events?groupid=' + params.get('groupid')).then(response => response.text()).then((requestedId) => {
+    calendarId = requestedId;
   });
 
-  return templates.eventsoy.obtainURL({
-      'calendarID': calendarID, 
+  return templates.eventsoy.obtainUrl({
+      'calendarId': calendarId, 
       'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone
-  }).toString;
+  }).toString();
 }

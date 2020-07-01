@@ -25,14 +25,14 @@ goog.require('soydata.VERY_UNSAFE');
 templates.eventsoy.obtainUrl = function(opt_data, opt_ijData, opt_ijData_deprecated) {
   opt_ijData = /** @type {!goog.soy.IjData} */ (opt_ijData_deprecated || opt_ijData);
   /** @type {string} */
-  var calendarID = soy.asserts.assertType(typeof opt_data.calendarID === 'string', 'calendarID', opt_data.calendarID, 'string');
+  var calendarId = soy.asserts.assertType(typeof opt_data.calendarId === 'string', 'calendarId', opt_data.calendarId, 'string');
   /** @type {string} */
   var timezone = soy.asserts.assertType(typeof opt_data.timezone === 'string', 'timezone', opt_data.timezone, 'string');
-  return soydata.VERY_UNSAFE.ordainSanitizedHtml('https://calendar.google.com/calendar/embed?src=' + soy.$$escapeHtml(calendarID) + '&ctz=' + soy.$$escapeHtml(timezone));
+  return soydata.VERY_UNSAFE.ordainSanitizedHtml('https://calendar.google.com/calendar/embed?src=' + soy.$$escapeHtml(calendarId) + '&ctz=' + soy.$$escapeHtml(timezone));
 };
 /**
  * @typedef {{
- *  calendarID: string,
+ *  calendarId: string,
  *  timezone: string,
  * }}
  */
