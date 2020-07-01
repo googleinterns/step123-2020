@@ -31,7 +31,7 @@ public class MapServlet extends HttpServlet {
         // Hard coded user groups for testing, 
         // Will get groups from user/datastore after functionality is verified
         String out = tofu
-            .newRenderer("templates.pages.mapPage")
+            .newRenderer("templates.mapPages.mapPage")
             .setData(ImmutableMap.of("groupNames", ImmutableList.of("Group One", "Group Two", "Group Three")))
             .render();
         response.getWriter().println(out);
