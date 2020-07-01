@@ -1,9 +1,16 @@
 #map {
-  height: 100%;
+    height: 100%;
+    width: 100%;
 }
 
-html, body {
-  height: 90%;
-  margin: 0;
-  padding: 0;
+body {
+  display: flex;
+  height: 100vh;
+}
+
+
+.main-content {
+  overflow: auto;
+  height: 100%;
+  width: 100%;
 }
