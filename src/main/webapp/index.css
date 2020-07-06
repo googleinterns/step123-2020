@@ -35,3 +35,15 @@ h1 {
     font-size: 24pt;
     width: 750px;
 }
+
+#btn-link {
+    text-decoration: none;
+}
+
+.mdc-button.mdc-button--raised {
+    height: 50px;
+}
+
+.mdc-button__label {
+    font-size: 14pt;
+}
