@@ -21,15 +21,14 @@ public class GroupsServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ImmutableList.Builder<ImmutableMap<String, String>> builder = new ImmutableList.Builder<>();
 
         // Hard coded data for now but will use data from datastore
         // as groups are added to datastore
+        // Photo by Hybrid on Unsplash (https://unsplash.com/@artbyhybrid?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
         ImmutableMap<String, String> groupMap = ImmutableMap.of("groupName", "Black Lives Matter",
             "groupImage", "https://images.unsplash.com/photo-1591622414912-34f2a8f8172e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80",
             "groupDescription", "Group description would go here...");
-        builder.add(groupMap);
-        ImmutableList<ImmutableMap<String, String>> groups = builder.build();
+        ImmutableList<ImmutableMap<String, String>> groups = ImmutableList.of(groupMap);
         
         // Each group has its own map which points to its info and all maps are passed into the template as a list
         // This will make it easier when groups are queried from Datastore

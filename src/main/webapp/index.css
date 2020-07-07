@@ -15,6 +15,7 @@ h1 {
 
 .img-container {
     align-items: center;
+    /* Photo by Lerone Pieters on Unsplash (https://unsplash.com/@thevantagepoint718?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) */
     background: url("images/lerone-pieters.jpg") center no-repeat;
     background-size: cover;
     display: flex;

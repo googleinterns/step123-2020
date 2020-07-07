@@ -19,37 +19,35 @@
             </div>
                 
             <div class="card-gallery">
-
+                
                 {for $groupMap in $groups}
-               <div class="mdc-card">
-                   <div class="mdc-card__media mdc-card__media--16-9" style="background-image: url({$groupMap['groupImage']});"></div>
-                   <div class="title-container">
-                       <h2 class="group-name mdc-typography mdc-typography--headline6">{$groupMap['groupName']}</h2>
-                   </div>
+                    <div class="mdc-card">
+                        <div class="mdc-card__media mdc-card__media--16-9" style="background-image: url({$groupMap['groupImage']});"></div>
+                        <div class="title-container">
+                            <h2 class="group-name mdc-typography mdc-typography--headline6">{$groupMap['groupName']}</h2>
+                        </div>
 
-                   <div class="desc-container mdc-typography mdc-typography--body2">
-                       <p class="group-desc">{$groupMap['groupDescription']}</p>
-                   </div>
+                        <div class="desc-container mdc-typography mdc-typography--body2">
+                            <p class="group-desc">{$groupMap['groupDescription']}</p>
+                        </div>
 
-                   <div class="mdc-card__actions">
-                       <div class="mdc-card__action-buttons">
-                           <button class="mdc-button mdc-card__action mdc-card__action--button">  <span class="mdc-button__ripple"></span>Details</button>
-                           <button class="mdc-button mdc-card__action mdc-card__action--button">  <span class="mdc-button__ripple"></span>Join</button>
-                       </div>
+                        <div class="mdc-card__actions">
+                            <div class="mdc-card__action-buttons">
+                                <button class="mdc-button mdc-card__action mdc-card__action--button">  <span class="mdc-button__ripple"></span>Details</button>
+                                <button class="mdc-button mdc-card__action mdc-card__action--button">  <span class="mdc-button__ripple"></span>Join</button>
+                            </div>
 
-                       <div class="mdc-card__action-icons">
-                           <button class="mdc-icon-button mdc-card__action mdc-card__action--icon--unbounded" aria-pressed="false" aria-label="Add to favorites" title="Add to favorites">
-                               <i class="material-icons mdc-icon-button__icon mdc-icon-button__icon--on">favorite</i>
-                               <i class="material-icons mdc-icon-button__icon">favorite_border</i>
-                           </button>
-                       </div>
-                   </div>
-               </div>
-               {/for}
+                            <div class="mdc-card__action-icons">
+                                <button class="mdc-icon-button mdc-card__action mdc-card__action--icon--unbounded" aria-pressed="false" aria-label="Add to favorites" title="Add to favorites">
+                                    <i class="material-icons mdc-icon-button__icon mdc-icon-button__icon--on">favorite</i>
+                                    <i class="material-icons mdc-icon-button__icon">favorite_border</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {/for}
 
            </div>
-
         </body>
-
     </html>
 {/template}
