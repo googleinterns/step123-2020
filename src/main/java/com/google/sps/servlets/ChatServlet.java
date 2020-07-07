@@ -45,11 +45,11 @@ public class ChatServlet extends HttpServlet{
     // Data will be passed in as a list of messages in a map (needed for template)
     ImmutableMap<String, ImmutableList<String>> data = ImmutableMap.of("messages", messagesList);
 
+    // File path starts in target/portfolio-1
     SoyFileSet sfs = SoyFileSet
-            .builder()
-            // File path starts in target/portfolio-1
-            .add(new File("../../src/main/java/templates/chat.soy"))
-            .build();
+        .builder()
+        .add(new File("../../src/main/java/templates/chat.soy"))
+        .build();
     SoyTofu tofu = sfs.compileToTofu();
 
     final String out = tofu.newRenderer("templates.chat.chatPage").setData(data).render();
