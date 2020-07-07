@@ -11,14 +11,23 @@ import com.google.common.collect.ImmutableList.Builder;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Streams;
+import com.google.gson.Gson;
 import com.google.template.soy.SoyFileSet;
 import com.google.template.soy.tofu.SoyTofu;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Scanner;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 @WebServlet("/chat")
 public class ChatServlet extends HttpServlet{
@@ -64,12 +73,45 @@ public class ChatServlet extends HttpServlet{
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     final String messageText = (String) request.getParameter(MESSAGE_TEXT_PROPERTY);
     final long timestamp = System.currentTimeMillis();
+    
+    // Reads API Key and Referer from file 
+    File apiKeyFile = new File("../../keys.txt");
+    Scanner scanner = new Scanner(apiKeyFile);
+    final String API_KEY = scanner.nextLine();
+    final String REFERER = scanner.nextLine();
+    scanner.close();
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Entity messageEntity = new Entity(MESSAGE_KIND);
-    messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, messageText);
-    messageEntity.setProperty(TIMESTAMP_PROPERTY, timestamp);
-    datastore.put(messageEntity);
+    final String perspectiveURL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + API_KEY;
+ 
+    CloseableHttpClient httpClient = HttpClients.createDefault();
+    HttpPost httpPost = new HttpPost(perspectiveURL);
+ 
+    PerspectiveRequest messageObject = new PerspectiveRequest(messageText);
+    final String inputJson = new Gson().toJson(messageObject);
+ 
+    httpPost.setEntity(new StringEntity(inputJson));
+    httpPost.addHeader("Referer", REFERER);
+    CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
+ 
+    // Perspective API responds with JSON string
+    final String result = EntityUtils.toString(httpResponse.getEntity());
+    // Parsing JSON string to Java Maps
+    Map resultMap = new Gson().fromJson(result, Map.class);
+    Map attributeScores = (Map) resultMap.get("attributeScores");
+    Map toxicity = (Map) attributeScores.get("TOXICITY");
+    Map summaryScore = (Map) toxicity.get("summaryScore");
+    final Double commentScore = (Double) summaryScore.get("value");
+
+    // If the comment is not toxic, then post it to Datastore
+    if (commentScore <= 0.85) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Entity messageEntity = new Entity(MESSAGE_KIND);
+        messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, messageText);
+        messageEntity.setProperty(TIMESTAMP_PROPERTY, timestamp);
+        datastore.put(messageEntity);
+    } else {
+        //TODO: display a message for the user
+    }
 
     response.sendRedirect("/chat");
   }
