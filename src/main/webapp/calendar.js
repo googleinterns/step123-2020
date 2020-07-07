@@ -26,6 +26,6 @@ function getCalendarUrl() {
 
   return templates.eventsoy.obtainUrl({
       'calendarId': calendarId, 
-      'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone
+      'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
   }).toString();
 }
