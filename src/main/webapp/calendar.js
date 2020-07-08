@@ -18,12 +18,15 @@ function displayCalendar() {
 
 function getCalendarUrl() {
   let calendarId = '';
-  // Use params to obtain the group id from the current page's URL
-  const params = new URLSearchParams(location.search);
-  fetch('/events?groupid=' + params.get('groupid')).then(response => response.text()).then((requestedId) => {
-    calendarId = requestedId;
-  });
-
+  // Use URLSearchParams to obtain the group id from the current page's URL
+  const groupId = (new URLSearchParams(location.search)).get('groupid');
+  
+  if (groupId !== null && groupId !== '') {
+    fetch('/events?groupid=' + groupId).then(response => response.text()).then((requestedId) => {
+      calendarId = requestedId;
+    });
+  }
+  
   return templates.eventsoy.obtainUrl({
       'calendarId': calendarId, 
       'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
