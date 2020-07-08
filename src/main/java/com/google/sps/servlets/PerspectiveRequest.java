@@ -13,6 +13,8 @@ public class PerspectiveRequest {
  
     public PerspectiveRequest(String text) {
         this.comment = ImmutableMap.of("text", text);
+        // Each attribute maps to a configuration object. No configurations 
+        // are needed, therefore an empty map.
         this.requestedAttributes = ImmutableMap.of("TOXICITY", ImmutableMap.of());
     } 
 }

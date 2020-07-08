@@ -47,9 +47,9 @@ public class UpdateChatServlet extends HttpServlet {
         response.getWriter().println(convertToJSON(messagesList));
     }
 
-    private String convertToJSON(ImmutableList<String> arr) {
+    private String convertToJSON(ImmutableList<String> jsonList) {
         Gson gson = new Gson();
         
-        return gson.toJson(arr);
+        return gson.toJson(jsonList);
     }
 }
