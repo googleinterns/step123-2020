@@ -8,7 +8,9 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
+import com.google.api.services.calendar.model.EventDateTime;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -20,7 +22,6 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Servlet for getting or creating events
+ * Servlet for obtaining the Calendar ID of a group and adding or obtaining events
  */
 @WebServlet("/events")
 public class EventsServlet extends HttpServlet {
@@ -51,36 +52,66 @@ public class EventsServlet extends HttpServlet {
 
     if (!Strings.isNullOrEmpty(calendarId)) {
       try {
-        Calendar service = getCalendarService(calendarId); 
+        Calendar service = getCalendarService(); 
 
         response.setContentType("application/json;");
         response.getWriter().println(gson.toJson(getEventsList(service, calendarId)));
       } catch (Exception authenticationError) {
         authenticationError.printStackTrace();
-        response.getWriter().println("Invalid credentials or calendar ID")
+        response.getWriter().println("Invalid credentials or calendar ID");
       }
     } else if (!Strings.isNullOrEmpty(groupId)) {
       try {
-        Entity group = getGroupEntity(groupId);
+        calendarId = getCalendarId(groupId);
 
         response.setContentType("text/plain");
-        response.getWriter().println((String) group.getProperty("calendarId"));
+        response.getWriter().println(calendarId);
       } catch (Exception entityError) {
         entityError.printStackTrace();
-        response.getWriter().println("Invalid group ID")
+        response.getWriter().println("Invalid group ID");
       }
     }
   }
 
   /**
    * Create an event and add it to the calendar of the specified group
+   * POST body should contain: title, location (opt), description (opt), start time, and end time.
    */
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    //TODO
-    throw new UnsupportedOperationException();
+    String groupId = getParameter(request, "groupid", "");
+    String eventTitle = getParameter(request, "title", "");
+    String eventStart = getParameter(request, "start", "");
+    String eventEnd = getParameter(request, "end", "");
+
+    if(!Strings.isNullOrEmpty(groupId) && !Strings.isNullOrEmpty(eventTitle) 
+        && !Strings.isNullOrEmpty(eventStart) && !Strings.isNullOrEmpty(eventEnd)) {
+      try {
+        Event event = addEvent(getCalendarService(), getCalendarId(groupId), 
+            eventTitle, getParameter(request, "location", ""),
+            getParameter(request, "description", ""), eventStart, eventEnd);
+
+        response.setContentType("text/plain");
+        response.getWriter().println(event.getHtmlLink());
+      } catch (Exception entityError) {
+        entityError.printStackTrace();
+        response.getWriter().println("Invalid input");
+      }
+    }
   }
 
-  private Calendar getCalendarService(String calendarId) throws IOException {
+  /**
+   * @return the request parameter, or the default value if the parameter
+   *         was not specified by the client
+   */
+  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
+    String value = request.getParameter(name);
+    if (value == null) {
+      return defaultValue;
+    }
+    return value;
+  }
+
+  private Calendar getCalendarService() throws IOException {
     final HttpTransport HTTP_TRANSPORT = UrlFetchTransport.getDefaultInstance();
 
     return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, new AppIdentityCredential(SCOPES))
@@ -99,6 +130,12 @@ public class EventsServlet extends HttpServlet {
         .execute();
   }
 
+  private String getCalendarId(String groupId) throws EntityNotFoundException {
+    Entity groupEntity = getGroupEntity(groupId);
+
+    return (String) groupEntity.getProperty("calendarId");
+  }
+
   private Entity getGroupEntity(String groupId) throws EntityNotFoundException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
       
@@ -107,15 +144,24 @@ public class EventsServlet extends HttpServlet {
     return datastore.get(groupKey);
   }
 
-  /**
-   * @return the request parameter, or the default value if the parameter
-   *         was not specified by the client
-   */
-  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
-    String value = request.getParameter(name);
-    if (value == null) {
-      return defaultValue;
-    }
-    return value;
+  private Event addEvent(Calendar service, String calendarId, String eventTitle, String eventLocation,
+      String eventDescription, String eventStart, String eventEnd) throws IOException {
+    EventDateTime startTime = createEventDateTime(eventStart);
+    EventDateTime endTime = createEventDateTime(eventEnd);
+
+    Event event = new Event().setSummary(eventTitle).setLocation(eventLocation)
+        .setDescription(eventDescription).setStart(startTime).setEnd(endTime);
+
+    service.events().insert(calendarId, event).execute();
+
+    return event;
+  }
+
+  private EventDateTime createEventDateTime(String time) {
+    DateTime dateTime = new DateTime(time);
+
+    EventDateTime eventTime = new EventDateTime().setDateTime(dateTime).setTimeZone("America/Los_Angeles");
+
+    return eventTime;
   }
 }
