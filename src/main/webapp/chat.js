@@ -4,6 +4,7 @@ function init() {
     const messagesContainer = document.getElementById("messages-container");
     const currNumMessages = document.getElementsByClassName("message").length;
     const urlString = "/updateChat?currMessages=" + currNumMessages;
+
     fetch(urlString).then(response => response.json()).then(json => {
         for (let i = 0; i < json.length; i++) {
             const p = document.createElement("P");
