@@ -34,13 +34,14 @@ public class ChatServlet extends HttpServlet{
     private static final String MESSAGE_TEXT_PROPERTY = "message-text";
     private static final String TIMESTAMP_PROPERTY = "timestamp";
     private static final String MESSAGE_KIND = "Message";
+    private static final String ROOT_FILE_PATH = "../../";
 
-  /**
-   * When called, doGet will query all previously posted messages to the chat,
-   * and render the messages into a HTML template.
-   */
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    /**
+     * When called, doGet will query all previously posted messages to the chat,
+     * and render the messages into a HTML template.
+     */
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     // Calls query on all entities of type Message
@@ -52,25 +53,25 @@ public class ChatServlet extends HttpServlet{
     // File path starts in target/portfolio-1
     SoyFileSet sfs = SoyFileSet
         .builder()
-        .add(new File("../../src/main/java/templates/chat.soy"))
+        .add(new File(ROOT_FILE_PATH + "src/main/java/templates/chat.soy"))
         .build();
     SoyTofu tofu = sfs.compileToTofu();
 
     final String out = tofu.newRenderer("templates.chat.chatPage").setData(data).render();
     response.getWriter().println(out);
-  }
+    }
 
-/**
- * Is called by a button on the chat form. doPost takes the message and its
- * attributes (such as timestamp and user) and stores them into Datastore.
- */
-  @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    /**
+     * Is called by a button on the chat form. doPost takes the message and its
+     * attributes (such as timestamp and user) and stores them into Datastore.
+     */
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     final String messageText = (String) request.getParameter(MESSAGE_TEXT_PROPERTY);
     final long timestamp = System.currentTimeMillis();
-    
+
     // Reads API Key and Referer from file 
-    File apiKeyFile = new File("../../keys.txt");
+    File apiKeyFile = new File(ROOT_FILE_PATH + "keys.txt");
     Scanner scanner = new Scanner(apiKeyFile);
     final String API_KEY = scanner.nextLine();
     final String REFERER = scanner.nextLine();
@@ -78,7 +79,7 @@ public class ChatServlet extends HttpServlet{
 
     final String perspectiveURL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + API_KEY;
 
-    Double commentScore = getCommentScore(perspectiveURL, REFERER, messageText);
+    final Double commentScore = getCommentScore(perspectiveURL, REFERER, messageText);
 
     // If the comment is not toxic, then post it to Datastore
     if (commentScore <= 0.85) {
@@ -94,36 +95,36 @@ public class ChatServlet extends HttpServlet{
     }
 
     response.sendRedirect("/chat");
-  }
+    }
 
-  /**
-   * Iterates through the message query to put all the message text into a list.
-   * A map is then created the pass the list of messages into the template.
-   */
-  public ImmutableMap<String, ImmutableList<String>> getTemplateData(PreparedQuery preparedMessageQuery) {
+    /**
+     * Iterates through the message query to put all the message text into a list.
+     * A map is then created the pass the list of messages into the template.
+     */
+    private ImmutableMap<String, ImmutableList<String>> getTemplateData(PreparedQuery preparedMessageQuery) {
     // Creates list of the messages text
     ImmutableList<String> messagesList = Streams.stream(preparedMessageQuery.asIterable()).map(message -> 
     (String) message.getProperty(MESSAGE_TEXT_PROPERTY)).collect(toImmutableList());
 
     // Data will be passed in as a list of messages in a map (needed for template)
     return ImmutableMap.of("messages", messagesList);
-  }
+    }
 
-  /**
-   * Makes a POST request to the Perspective API with the message text, and recieves
-   * a toxicity score.
-   */
-  public Double getCommentScore(String apiURL, String referer, String messageText) throws IOException {
+    /**
+     * Makes a POST request to the Perspective API with the message text, and recieves
+     * a toxicity score.
+     */
+    public Double getCommentScore(String apiURL, String referer, String messageText) throws IOException {
     CloseableHttpClient httpClient = HttpClients.createDefault();
     HttpPost httpPost = new HttpPost(apiURL);
- 
+
     PerspectiveRequest messageObject = new PerspectiveRequest(messageText);
     final String inputJson = new Gson().toJson(messageObject);
- 
+
     httpPost.setEntity(new StringEntity(inputJson));
     httpPost.addHeader("Referer", referer);
     CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
- 
+
     // Perspective API responds with JSON string
     final String result = EntityUtils.toString(httpResponse.getEntity());
     // Parsing JSON string to Java Maps
@@ -131,7 +132,7 @@ public class ChatServlet extends HttpServlet{
     Map attributeScores = (Map) resultMap.get("attributeScores");
     Map toxicity = (Map) attributeScores.get("TOXICITY");
     Map summaryScore = (Map) toxicity.get("summaryScore");
-    
+
     return (Double) summaryScore.get("value");     
-  }
+    }
 }
