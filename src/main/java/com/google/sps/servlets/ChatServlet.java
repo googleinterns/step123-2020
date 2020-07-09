@@ -42,23 +42,23 @@ public class ChatServlet extends HttpServlet{
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-    // Calls query on all entities of type Message
-    Query messageQuery = new Query(MESSAGE_KIND).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
-    PreparedQuery preparedMessageQuery = datastore.prepare(messageQuery);
+        // Calls query on all entities of type Message
+        Query messageQuery = new Query(MESSAGE_KIND).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
+        PreparedQuery preparedMessageQuery = datastore.prepare(messageQuery);
 
-    ImmutableMap<String, ImmutableList<String>> data = getTemplateData(preparedMessageQuery);
+        ImmutableMap<String, ImmutableList<String>> data = getTemplateData(preparedMessageQuery);
 
-    // File path starts in target/portfolio-1
-    SoyFileSet sfs = SoyFileSet
-        .builder()
-        .add(new File(ROOT_FILE_PATH + "src/main/java/templates/chat.soy"))
-        .build();
-    SoyTofu tofu = sfs.compileToTofu();
+        // File path starts in target/portfolio-1
+        SoyFileSet sfs = SoyFileSet
+            .builder()
+            .add(new File(ROOT_FILE_PATH + "src/main/java/templates/chat.soy"))
+            .build();
+        SoyTofu tofu = sfs.compileToTofu();
 
-    final String out = tofu.newRenderer("templates.chat.chatPage").setData(data).render();
-    response.getWriter().println(out);
+        final String out = tofu.newRenderer("templates.chat.chatPage").setData(data).render();
+        response.getWriter().println(out);
     }
 
     /**
@@ -67,34 +67,34 @@ public class ChatServlet extends HttpServlet{
      */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    final String messageText = (String) request.getParameter(MESSAGE_TEXT_PROPERTY);
-    final long timestamp = System.currentTimeMillis();
+        final String messageText = (String) request.getParameter(MESSAGE_TEXT_PROPERTY);
+        final long timestamp = System.currentTimeMillis();
 
-    // Reads API Key and Referer from file 
-    File apiKeyFile = new File(ROOT_FILE_PATH + "keys.txt");
-    Scanner scanner = new Scanner(apiKeyFile);
-    final String API_KEY = scanner.nextLine();
-    final String REFERER = scanner.nextLine();
-    scanner.close();
+        // Reads API Key and Referer from file 
+        File apiKeyFile = new File(ROOT_FILE_PATH + "keys.txt");
+        Scanner scanner = new Scanner(apiKeyFile);
+        final String API_KEY = scanner.nextLine();
+        final String REFERER = scanner.nextLine();
+        scanner.close();
 
-    final String perspectiveURL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + API_KEY;
+        final String perspectiveURL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + API_KEY;
 
-    final Double commentScore = getCommentScore(perspectiveURL, REFERER, messageText);
+        final Double commentScore = getCommentScore(perspectiveURL, REFERER, messageText);
 
-    // If the comment is not toxic, then post it to Datastore
-    if (commentScore <= 0.85) {
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        Entity messageEntity = new Entity(MESSAGE_KIND);
-        messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, messageText);
-        messageEntity.setProperty(TIMESTAMP_PROPERTY, timestamp);
-        datastore.put(messageEntity);
-    } else {
-        // TODO: display a message for the user
-        // Either render a text message directly to 
-        // the page or a Javascript style alert
-    }
+        // If the comment is not toxic, then post it to Datastore
+        if (commentScore <= 0.85) {
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            Entity messageEntity = new Entity(MESSAGE_KIND);
+            messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, messageText);
+            messageEntity.setProperty(TIMESTAMP_PROPERTY, timestamp);
+            datastore.put(messageEntity);
+        } else {
+            // TODO: display a message for the user
+            // Either render a text message directly to 
+            // the page or a Javascript style alert
+        }
 
-    response.sendRedirect("/chat");
+        response.sendRedirect("/chat");
     }
 
     /**
@@ -102,12 +102,12 @@ public class ChatServlet extends HttpServlet{
      * A map is then created the pass the list of messages into the template.
      */
     private ImmutableMap<String, ImmutableList<String>> getTemplateData(PreparedQuery preparedMessageQuery) {
-    // Creates list of the messages text
-    ImmutableList<String> messagesList = Streams.stream(preparedMessageQuery.asIterable()).map(message -> 
-    (String) message.getProperty(MESSAGE_TEXT_PROPERTY)).collect(toImmutableList());
+        // Creates list of the messages text
+        ImmutableList<String> messagesList = Streams.stream(preparedMessageQuery.asIterable()).map(message -> 
+        (String) message.getProperty(MESSAGE_TEXT_PROPERTY)).collect(toImmutableList());
 
-    // Data will be passed in as a list of messages in a map (needed for template)
-    return ImmutableMap.of("messages", messagesList);
+        // Data will be passed in as a list of messages in a map (needed for template)
+        return ImmutableMap.of("messages", messagesList);
     }
 
     /**
@@ -115,24 +115,24 @@ public class ChatServlet extends HttpServlet{
      * a toxicity score.
      */
     public Double getCommentScore(String apiURL, String referer, String messageText) throws IOException {
-    CloseableHttpClient httpClient = HttpClients.createDefault();
-    HttpPost httpPost = new HttpPost(apiURL);
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(apiURL);
 
-    PerspectiveRequest messageObject = new PerspectiveRequest(messageText);
-    final String inputJson = new Gson().toJson(messageObject);
+        PerspectiveRequest messageObject = new PerspectiveRequest(messageText);
+        final String inputJson = new Gson().toJson(messageObject);
 
-    httpPost.setEntity(new StringEntity(inputJson));
-    httpPost.addHeader("Referer", referer);
-    CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
+        httpPost.setEntity(new StringEntity(inputJson));
+        httpPost.addHeader("Referer", referer);
+        CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
 
-    // Perspective API responds with JSON string
-    final String result = EntityUtils.toString(httpResponse.getEntity());
-    // Parsing JSON string to Java Maps
-    Map resultMap = new Gson().fromJson(result, Map.class);
-    Map attributeScores = (Map) resultMap.get("attributeScores");
-    Map toxicity = (Map) attributeScores.get("TOXICITY");
-    Map summaryScore = (Map) toxicity.get("summaryScore");
+        // Perspective API responds with JSON string
+        final String result = EntityUtils.toString(httpResponse.getEntity());
+        // Parsing JSON string to Java Maps
+        Map resultMap = new Gson().fromJson(result, Map.class);
+        Map attributeScores = (Map) resultMap.get("attributeScores");
+        Map toxicity = (Map) attributeScores.get("TOXICITY");
+        Map summaryScore = (Map) toxicity.get("summaryScore");
 
-    return (Double) summaryScore.get("value");     
+        return (Double) summaryScore.get("value");     
     }
 }
