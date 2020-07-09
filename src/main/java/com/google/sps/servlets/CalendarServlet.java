@@ -1,5 +1,9 @@
 package com.google.sps.servlets;
 
+import com.google.api.services.calendar.model.Calendar;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.common.base.Strings;
 import com.google.template.soy.SoyFileSet;
 import com.google.template.soy.tofu.SoyTofu;
 import java.io.File;
@@ -13,8 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet for getting or creating the Calendar page for each group
  */
 @WebServlet("/calendar")
-public class CalendarServlet extends HttpServlet {
-
+public class CalendarServlet extends AbstractEventsServlet {
   /**
    * Display the Calendar page for each group.
    */
@@ -31,10 +34,36 @@ public class CalendarServlet extends HttpServlet {
   }
 
   /**
-   * Create the Calendar page for the group being created
+   * Create a Calendar for the group being created
    */
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    //TODO: Implement once groups are implemented
-    throw new UnsupportedOperationException();
+    String groupId = getParameter(request, "groupid", "");
+
+    if(!Strings.isNullOrEmpty(groupId)){
+      try {
+        String calendarId = createCalendar(groupId);
+
+        response.setContentType("text/plain");
+        response.getWriter().println(calendarId);
+      } catch (Exception entityError) {
+        entityError.printStackTrace();
+        response.getWriter().println("Invalid input");
+      }
+    }
+  }
+
+  /**
+   * Return the Calendar ID of the created calendar.
+   */
+  private String createCalendar(String groupId) throws IOException, EntityNotFoundException {
+
+    Calendar calendar = new Calendar()
+        .setSummary(getGroupProperty(groupId, "name")).setTimeZone(TIMEZONE);
+
+    com.google.api.services.calendar.Calendar service = getCalendarService();
+
+    Calendar createdCalendar = service.calendars().insert(calendar).execute();
+
+    return createdCalendar.getId();
   }
 }
