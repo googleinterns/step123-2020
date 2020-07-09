@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>The Solidarity Initiative</title>
     <link rel="stylesheet" href="index.css">
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCm3MiL3acn2Y9ZoHXfCOWVvnJCzg2m3Us"></script>
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <script src="script.js"></script>
   </head>
 
@@ -24,9 +26,12 @@
         who cares. Join events, start a protest, and securely communicate all within one website.
       </h3>
 
-      <button>
-        Join the movement.
-      </button>
+      <a id="btn-link" href="/groups">
+        <button class="mdc-button mdc-button--raised">
+            <span class="mdc-button__label">Join the movement.</span>
+        </button>
+      </a>
+      
     </div>
 
   </body>
