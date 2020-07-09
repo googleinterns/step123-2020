@@ -36,6 +36,7 @@ public class CalendarServlet extends AbstractEventsServlet {
   /**
    * Create a Calendar for the group being created
    */
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String groupId = getParameter(request, "groupid", "");
 
