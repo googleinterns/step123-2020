@@ -1,7 +1,7 @@
 {namespace templates.mapPages}
 
 {template .mapPage}
-    {@param groupNames : list<string>}
+    {@param groups : list<map<string, string>>}
 
     <html>
         <head>
@@ -51,12 +51,12 @@
 
                         <div class="selection-controls-container">
            
-                            {for $groupName in $groupNames}
+                            {for $groupMap in $groups}
                                 <div>
                                     <div class="mdc-form-field ">
       
                                         <div class="mdc-checkbox">
-                                            <input type="checkbox" class="mdc-checkbox__native-control" id="check-item1" onclick="addGroupChecked(this, {$groupName})">
+                                            <input type="checkbox" class="mdc-checkbox__native-control" id="check-item1" onclick="addGroupChecked(this, {$groupMap['groupID']})">
                                             <div class="mdc-checkbox__background">
                                                 <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
                                                     <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
@@ -65,7 +65,7 @@
                                             </div> 
                                             <div class="mdc-checkbox__ripple"></div>
                                         </div> 
-                                        <label class="group-name" for="check-item1">{$groupName}</label>
+                                        <label class="group-name" for="check-item1">{$groupMap['groupName']}</label>
                                     </div>
                                 </div>
                             {/for}

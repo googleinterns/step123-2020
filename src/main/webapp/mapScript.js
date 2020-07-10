@@ -21,6 +21,7 @@ function initMap() {
     });
 
     const geocoder = new google.maps.Geocoder();
+    // TODO: repace the hardcoded event ID with 
     getMarkerInfo(123, geocoder, map);
     document.getElementById('submit').addEventListener('click', () => {
         geocodeAddress(geocoder, map);
@@ -47,22 +48,22 @@ function geocodeAddress(geocoder, resultsMap) {
  * Then sends that group to either be removed from the map if unchecked
  * Or added to the map if checked
  */
-function addGroupChecked(checkbox, groupName) {
+function addGroupChecked(checkbox, groupId) {
     // Get the group name from the checkbox that was checked 
     if (checkbox.checked) {
-        window.alert('Checked group:' + groupName);
-        addGroupMarkers(groupName);
+        window.alert('Checked group:' + groupId);
+        addGroupMarkers(groupId);
     } else {
-        window.alert('Unchecked group:' + groupName);
-        removeGroupMarkers(groupName);
+        window.alert('Unchecked group:' + groupId);
+        removeGroupMarkers(groupId);
     }
 }
 
 /**
  * Adds a group and its events to the map based on the group passed
  */
-function addGroupMarkers(groupName) {
-    // Get the groupId from the group Name 
+function addGroupMarkers(groupId) {
+    // Get event's with GroupID 
     // For each event in the group 
     // Call getMarkerInfo on eventId
 }
@@ -70,9 +71,9 @@ function addGroupMarkers(groupName) {
 /**
  * Removes the markers of the given group from the map
  */
-function removeGroupMarkers(groupName) {
-    // Get the groupId from the group Name 
-    // For each event in the group 
+function removeGroupMarkers(groupId) { 
+    // For each event in the group,
+    // hide each of the markers on map
 }
 
 /**
