@@ -36,9 +36,14 @@ public final class ChatServletTest {
     @Test
     public void testsCommentScore() throws IOException {
         Double expected = 0.9208521;
+        // It may vary from call to call by a little, so as long
+        // as it's +/- 0.0000005, it passes
+        Double min = expected - 0.0000005;
+        Double max = expected + 0.0000005;
+        
         Double actual = servlet.getCommentScore(apiURL, REFERER, MESSAGE_TEXT_TOXIC);
 
-        Assert.assertEquals(expected, actual);
+        Assert.assertTrue(min <= actual && actual <= max);
     }
 
 }

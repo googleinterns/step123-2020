@@ -1,7 +1,7 @@
 {namespace templates.chat}
 
 {template .chatPage}
-{@param messages: list<string>}
+    {@param messages: list<string>}
 
     <html>
         <head>
@@ -26,4 +26,13 @@
 
     </html>
 
+{/template}
+
+{template .error}
+    {@param errorMessage: string}
+
+    <p>{$errorMessage}</p>
+    <a href="/chat">
+        <button>Return to chat</button>
+    </a>
 {/template}

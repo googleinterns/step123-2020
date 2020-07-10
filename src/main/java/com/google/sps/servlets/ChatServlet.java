@@ -50,14 +50,8 @@ public class ChatServlet extends HttpServlet{
 
         ImmutableMap<String, ImmutableList<String>> data = getTemplateData(preparedMessageQuery);
 
-        // File path starts in target/portfolio-1
-        SoyFileSet sfs = SoyFileSet
-            .builder()
-            .add(new File(ROOT_FILE_PATH + "src/main/java/templates/chat.soy"))
-            .build();
-        SoyTofu tofu = sfs.compileToTofu();
+        final String out = getOutputString("chatPage", data);
 
-        final String out = tofu.newRenderer("templates.chat.chatPage").setData(data).render();
         response.getWriter().println(out);
     }
 
@@ -88,13 +82,31 @@ public class ChatServlet extends HttpServlet{
             messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, messageText);
             messageEntity.setProperty(TIMESTAMP_PROPERTY, timestamp);
             datastore.put(messageEntity);
-        } else {
-            // TODO: display a message for the user
-            // Either render a text message directly to 
-            // the page or a Javascript style alert
-        }
 
-        response.sendRedirect("/chat");
+            response.sendRedirect("/chat");
+        } else {
+            ImmutableMap<String, String> errorData = ImmutableMap.of("errorMessage", "Your message contains content that may " + 
+                "be deemed offensive by others. Please revise your message and try again.");
+
+            final String out = getOutputString("error", errorData);
+
+            response.getWriter().println(out);
+        }
+    }
+
+    /**
+     * Returns the output string for the response. In other words,
+     * it sets up the soy template with the passed in data.
+     */
+    private String getOutputString(String templateName, ImmutableMap data) {
+        // File path starts in target/portfolio-1
+        SoyFileSet sfs = SoyFileSet
+            .builder()
+            .add(new File(ROOT_FILE_PATH + "src/main/java/templates/chat.soy"))
+            .build();
+        SoyTofu tofu = sfs.compileToTofu();
+
+        return tofu.newRenderer("templates.chat." + templateName).setData(data).render();
     }
 
     /**
