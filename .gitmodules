@@ -1,0 +1,6 @@
+[submodule "src/main/webapp/closure/closure-library"]
+	path = src/main/webapp/closure/closure-library
+	url = https://github.com/google/closure-library.git
+[submodule "src/main/webapp/closure/closure-templates"]
+	path = src/main/webapp/closure/closure-templates
+	url = https://github.com/google/closure-templates.git
