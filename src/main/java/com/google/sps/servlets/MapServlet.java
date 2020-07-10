@@ -26,7 +26,9 @@ public class MapServlet extends HttpServlet {
         // Will get groups from user/datastore after functionality is verified
         ImmutableMap<String, String> groupMap = ImmutableMap.of("groupName", "Black Lives Matter",
             "groupID", "123");
-        ImmutableList<ImmutableMap<String, String>> groups = ImmutableList.of(groupMap);
+        ImmutableMap<String, String> groupMap2 = ImmutableMap.of("groupName", "Sierra Club",
+            "groupID", "456");
+        ImmutableList<ImmutableMap<String, String>> groups = ImmutableList.of(groupMap, groupMap2);
         ImmutableMap<String, ImmutableList<ImmutableMap<String, String>>> data = ImmutableMap.of("groups", groups);
 
         SoyFileSet sfs = SoyFileSet
@@ -37,7 +39,6 @@ public class MapServlet extends HttpServlet {
         
         String out = tofu
             .newRenderer("templates.mapPages.mapPage")
-            //.setData(ImmutableMap.of("groupNames", ImmutableList.of("Group One", "Group Two", "Group Three")))
             .setData(data)
             .render();
         response.getWriter().println(out);
