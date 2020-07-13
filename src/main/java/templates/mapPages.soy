@@ -13,6 +13,9 @@
             <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
             <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCm3MiL3acn2Y9ZoHXfCOWVvnJCzg2m3Us"></script>
             <script src="closure/closure-library/closure/goog/base.js"></script>
+            <script src="closure/closure-templates/javascript/checks.js"></script>
+            <script src="closure/closure-templates/javascript/soyutils_usegoog.js"></script>
+            <script src="templates/infoWindow.js"></script>
             <script src="mapScript.js"></script>
             <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         </head>
@@ -52,22 +55,10 @@
                         <div class="selection-controls-container">
            
                             {for $groupMap in $groups}
-                                <div>
-                                    <div class="mdc-form-field ">
-      
-                                        <div class="mdc-checkbox">
-                                            <input type="checkbox" class="mdc-checkbox__native-control" id="check-item1" onclick="addGroupChecked(this, {$groupMap['groupID']})">
-                                            <div class="mdc-checkbox__background">
-                                                <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-                                                    <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
-                                                </svg>
-                                                <div class="mdc-checkbox__mixedmark"></div>
-                                            </div> 
-                                            <div class="mdc-checkbox__ripple"></div>
-                                        </div> 
-                                        <label class="group-name" for="check-item1">{$groupMap['groupName']}</label>
-                                    </div>
-                                </div>
+                                {call .groupCheckbox}
+                                    {param groupName: $groupMap['groupName'] /}
+                                    {param groupID: $groupMap['groupID'] /}
+                                {/call}
                             {/for}
                         </div>
       
@@ -83,3 +74,25 @@
     </html>
     
 {/template} 
+
+{template .groupCheckbox}
+    {@param groupName: string}
+    {@param groupID: string}
+
+        <div>
+            <div class="mdc-form-field ">
+      
+                <div class="mdc-checkbox">
+                    <input type="checkbox" class="mdc-checkbox__native-control" id="check-item1" onclick="toggleGroupMarkers(this, {$groupID})">
+                        <div class="mdc-checkbox__background">
+                            <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+                            </svg>
+                            <div class="mdc-checkbox__mixedmark"></div>
+                        </div> 
+                        <div class="mdc-checkbox__ripple"></div>
+                </div> 
+                <label class="group-name" for="check-item1">{$groupName}</label>
+            </div>
+        </div>
+{/template}

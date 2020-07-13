@@ -1,5 +1,6 @@
 goog.require('goog.dom');
 goog.require('goog.dom.TagName');
+goog.require('templates.infoWindow');
 
 // Array that will hold the groups and there markers in a 2D Array
 // The array will allow the markers to be easilly all disabled as 
@@ -14,7 +15,7 @@ function initMap() {
     // Coordinates for the default map center of Mountain View, CA
     const mapViewDefault = {lat: 37.3868, lng: -122.085}; 
 
-    const map = new google.maps.Map(goog.dom.getElement("map"), {
+    const map = new google.maps.Map(goog.dom.getElement('map'), {
     // Zoom set to 8 as default until the radius is set up with events
         zoom: 8,
         center: mapViewDefault,
@@ -48,7 +49,7 @@ function geocodeAddress(geocoder, resultsMap) {
  * Then sends that group to either be removed from the map if unchecked
  * Or added to the map if checked
  */
-function addGroupChecked(checkbox, groupId) {
+function toggleGroupMarkers(checkbox, groupId) {
     // Get the group name from the checkbox that was checked 
     if (checkbox.checked) {
         window.alert('Checked group:' + groupId);
@@ -99,18 +100,16 @@ function getMarkerInfo(eventId, geocoder, map) {
  * the infoWindow 
  */
 function addMarker(address, descriptionText, nameText, map) {
-    const description = goog.dom.createDom(goog.dom.TagName.P);
-    goog.dom.setTextContent(description, descriptionText); 
+    const infoContent = templates.infoWindow.getMarkerInfo({
+        'name': nameText, 
+        'description': descriptionText,
+    });
 
-    const name = goog.dom.createDom(goog.dom.TagName.H2);
-    goog.dom.setTextContent(name, nameText) 
-
-    const infoContent =  goog.dom.createDom(goog.dom.TagName.DIV, null, name, description);
     const infoWindow = new google.maps.InfoWindow({
-        content: infoContent,
+        content: goog.dom.constHtmlToNode(goog.string.Const.from(infoContent)),
     });
  
-    let marker = new google.maps.Marker({
+    const marker = new google.maps.Marker({
         position: address, 
         map: map, 
         title: nameText,
