@@ -4,8 +4,13 @@ goog.require('templates.eventsoy');
 
 function initEvents() {
   displayCalendar();
+  addressAutoComplete();
 }
 
+function addressAutoComplete() {
+  const address = document.getElementById('address');
+  let searchBox = new google.maps.places.SearchBox(address);
+}
 function displayCalendar() {
   // Use Google Calendar's calendar display
   const calendarFrame = goog.dom.createDom(goog.dom.TagName.IFRAME, {

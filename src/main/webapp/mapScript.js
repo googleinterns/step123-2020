@@ -16,25 +16,68 @@ function initMap() {
     const mapViewDefault = {lat: 37.3868, lng: -122.085}; 
 
     const map = new google.maps.Map(goog.dom.getElement('map'), {
-    // Zoom set to 8 as default until the radius is set up with events
+    // Zoom set to 8 as default every search will auto zoom to location
         zoom: 8,
         center: mapViewDefault,
     });
 
     const geocoder = new google.maps.Geocoder();
-    // TODO: repace the hardcoded event ID with 
+    // TODO: repace the hardcoded event ID with actually value
     getMarkerInfo(123, geocoder, map);
+
+    autoCompleteAndZoom(map); 
+
     document.getElementById('submit').addEventListener('click', () => {
         geocodeAddress(geocoder, map);
     });
+
 }
 
+/**
+ * Adds the auto Complete for the address search bar 
+ * Allows user to hit enter instead of button
+ * Automatically zooms according to the location inputed
+ */
+function autoCompleteAndZoom(map) {
+    const address = document.getElementById('address');
+    let searchBox = new google.maps.places.SearchBox(address);
+
+    map.addListener("bounds_changed", function() {
+        searchBox.setBounds(map.getBounds());
+    });
+
+    searchBox.addListener("places_changed", function() {
+        const places = searchBox.getPlaces();
+
+        // Checks if there are not autocomplete options
+        if (places.length == 0) {
+            return;
+        }
+
+        let bounds = new google.maps.LatLngBounds();
+        places.forEach(function(place) {
+            if (!place.geometry) {
+                console.log("Returned place contains no geometry");
+                return;
+            }
+
+            // Get the bounds for the location
+            if (place.geometry.viewport) {
+                bounds.union(place.geometry.viewport);
+            } else {
+                bounds.extend(place.geometry.location);
+            }
+        });
+        map.fitBounds(bounds);
+    }); 
+}
 
 /**
  * Finds the location on the map for the given address
  */
 function geocodeAddress(geocoder, resultsMap) {
     const address = document.getElementById('address').value;
+
     geocoder.geocode({'address': address}, (results, status) => {
         if (status === 'OK') {
             resultsMap.setCenter(results[0].geometry.location);
