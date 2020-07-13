@@ -28,8 +28,7 @@ public class MapServlet extends HttpServlet {
             "groupID", "123");
         ImmutableMap<String, String> groupMap2 = ImmutableMap.of("groupName", "Sierra Club",
             "groupID", "456");
-        ImmutableList<ImmutableMap<String, String>> groups = ImmutableList.of(groupMap, groupMap2);
-        ImmutableMap<String, ImmutableList<ImmutableMap<String, String>>> data = ImmutableMap.of("groups", groups);
+        ImmutableMap<String, ImmutableList<ImmutableMap<String, String>>> data = ImmutableMap.of("groups", ImmutableList.of(groupMap, groupMap2));
 
         SoyFileSet sfs = SoyFileSet
             .builder()
