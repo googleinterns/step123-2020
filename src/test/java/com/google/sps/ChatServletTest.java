@@ -13,12 +13,15 @@ import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
 public final class ChatServletTest {
-    private String MESSAGE_TEXT_TOXIC = "what kind of idiot name is foo?";
+    private static final String MESSAGE_TEXT_TOXIC = "what kind of idiot name is foo?";
     private File apiKeyFile;
     private Scanner scanner;
     private String API_KEY;
     private String REFERER;
     private String apiURL;
+
+    private static final Double SCORE_OFFSET = 0.0000005;
+
     private ChatServlet servlet;
 
     @Before
@@ -38,12 +41,13 @@ public final class ChatServletTest {
         Double expected = 0.9208521;
         // It may vary from call to call by a little, so as long
         // as it's +/- 0.0000005, it passes
-        Double min = expected - 0.0000005;
-        Double max = expected + 0.0000005;
+        Double min = expected - SCORE_OFFSET;
+        Double max = expected + SCORE_OFFSET;
         
         Double actual = servlet.getCommentScore(apiURL, REFERER, MESSAGE_TEXT_TOXIC);
 
-        Assert.assertTrue(min <= actual && actual <= max);
+        Assert.assertTrue(min <= actual);
+        Assert.assertTrue(actual <= max);
     }
 
 }

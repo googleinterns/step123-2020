@@ -35,6 +35,21 @@ public class ChatServlet extends HttpServlet{
     private static final String TIMESTAMP_PROPERTY = "timestamp";
     private static final String MESSAGE_KIND = "Message";
     private static final String ROOT_FILE_PATH = "../../";
+    private static final Double COMMENT_SCORE_THRESHOLD = 0.85;
+
+    // Only TOXICITY and SEVERE_TOXICITY are production attributes,
+    // all others are experimental
+    enum Attribute {
+        TOXICITY,
+        SEVERE_TOXICITY,
+        TOXICITY_FAST,
+        IDENTITY_ATTACK,
+        INSULT,
+        PROFANITY,
+        THREAT,
+        SEXUALLY_EXPLICIT,
+        FLIRTATION
+    }
 
     /**
      * When called, doGet will query all previously posted messages to the chat,
@@ -76,7 +91,7 @@ public class ChatServlet extends HttpServlet{
         final Double commentScore = getCommentScore(perspectiveURL, REFERER, messageText);
 
         // If the comment is not toxic, then post it to Datastore
-        if (commentScore <= 0.85) {
+        if (commentScore <= COMMENT_SCORE_THRESHOLD) {
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
             Entity messageEntity = new Entity(MESSAGE_KIND);
             messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, messageText);
@@ -130,7 +145,7 @@ public class ChatServlet extends HttpServlet{
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(apiURL);
 
-        PerspectiveRequest messageObject = new PerspectiveRequest(messageText);
+        PerspectiveRequest messageObject = new PerspectiveRequest(messageText, Attribute.TOXICITY.name());
         final String inputJson = new Gson().toJson(messageObject);
 
         httpPost.setEntity(new StringEntity(inputJson));
@@ -142,7 +157,7 @@ public class ChatServlet extends HttpServlet{
         // Parsing JSON string to Java Maps
         Map resultMap = new Gson().fromJson(result, Map.class);
         Map attributeScores = (Map) resultMap.get("attributeScores");
-        Map toxicity = (Map) attributeScores.get("TOXICITY");
+        Map toxicity = (Map) attributeScores.get(Attribute.TOXICITY.name());
         Map summaryScore = (Map) toxicity.get("summaryScore");
 
         return (Double) summaryScore.get("value");     
