@@ -1,0 +1,16 @@
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+}
+
+
+.main-content {
+  overflow: auto;
+  height: 100%;
+  width: 100%;
+}
