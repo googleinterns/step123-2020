@@ -16,6 +16,9 @@ import com.google.template.soy.SoyFileSet;
 import com.google.template.soy.tofu.SoyTofu;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 import java.util.Scanner;
 import javax.servlet.annotation.WebServlet;
@@ -114,10 +117,11 @@ public class ChatServlet extends HttpServlet{
      * it sets up the soy template with the passed in data.
      */
     private String getOutputString(String templateName, ImmutableMap data) {
-        // File path starts in target/portfolio-1
+        ClassLoader classLoader = getClass().getClassLoader();
+        
         SoyFileSet sfs = SoyFileSet
             .builder()
-            .add(new File(ROOT_FILE_PATH + "src/main/java/templates/chat.soy"))
+            .add(new File(classLoader.getResource("chat.soy").getFile()))
             .build();
         SoyTofu tofu = sfs.compileToTofu();
 

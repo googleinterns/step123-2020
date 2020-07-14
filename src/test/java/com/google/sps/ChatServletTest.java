@@ -1,31 +1,81 @@
 package com.google.sps;
 
+import static org.mockito.Mockito.when;
+
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.sps.servlets.ChatServlet;
+import com.google.template.soy.SoyFileSet;
+import com.google.template.soy.tofu.SoyTofu;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Scanner;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.Mockito;
 
 @RunWith(JUnit4.class)
-public final class ChatServletTest {
+public final class ChatServletTest extends Mockito {
     private static final String MESSAGE_TEXT_TOXIC = "what kind of idiot name is foo?";
+    private static final String MESSAGE_TEXT_PROPERTY = "message-text";
+    private static final String TIMESTAMP_PROPERTY = "timestamp";
+    private static final String MESSAGE_KIND = "Message";
+    private static final String MESSAGES_MAP_KEY = "messages";
+    private static final String CHAT_TEMPLATE = "templates.chat.chatPage";
+    private static final Double SCORE_OFFSET = 0.0000005;
+    private static final LocalServiceTestHelper helper =
+      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+
     private File apiKeyFile;
     private Scanner scanner;
     private String API_KEY;
     private String REFERER;
     private String apiURL;
-
-    private static final Double SCORE_OFFSET = 0.0000005;
+    private StringWriter stringWriter;
+    private PrintWriter printWriter;
+    private SoyFileSet sfs;
+    private SoyTofu tofu;
+    private DatastoreService datastore;
+    private ImmutableMap<String, ImmutableList<String>> data;
 
     private ChatServlet servlet;
 
     @Before
-    public void setUp() throws FileNotFoundException {
+    public void setUp() {
+        servlet = new ChatServlet();
+        helper.setUp();
+        datastore = DatastoreServiceFactory.getDatastoreService();
+
+        stringWriter = new StringWriter();
+        printWriter = new PrintWriter(stringWriter);
+
+        sfs = SoyFileSet
+            .builder()
+            .add(new File("src/main/java/templates/chat.soy"))
+            .build();
+        tofu = sfs.compileToTofu();
+    }
+
+    @After
+    public void tearDown() {
+        helper.tearDown();
+    }
+
+    @Test
+    public void testsCommentScore() throws IOException {
         // Reads API Key and Referer from file 
         apiKeyFile = new File("keys.txt");
         scanner = new Scanner(apiKeyFile);
@@ -33,11 +83,7 @@ public final class ChatServletTest {
         REFERER = scanner.nextLine();
 
         apiURL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + API_KEY;
-        servlet = new ChatServlet();
-    }
 
-    @Test
-    public void testsCommentScore() throws IOException {
         Double expected = 0.9208521;
         // It may vary from call to call by a little, so as long
         // as it's +/- 0.0000005, it passes
@@ -50,4 +96,46 @@ public final class ChatServletTest {
         Assert.assertTrue(actual <= max);
     }
 
+    @Test
+    public void servletGetNoComments () throws IOException {
+        // GET method is called and should respond with the HTML
+        // string of the chat template with no comments
+
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        when(response.getWriter()).thenReturn(printWriter);
+
+        servlet.doGet(request, response);
+        
+        data = ImmutableMap.of(MESSAGES_MAP_KEY, ImmutableList.of());
+        String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(data).render();
+        String actual = stringWriter.getBuffer().toString().trim();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void servletGetWithComment() throws IOException {
+        // GET method should return the chat template but with one
+        // comment that says "hello"
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        // Creating a comment that says "hello" in our mock database
+        Entity messageEntity = new Entity(MESSAGE_KIND);
+        messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, "hello");
+        messageEntity.setProperty(TIMESTAMP_PROPERTY, 1);
+        datastore.put(messageEntity);
+
+        when(response.getWriter()).thenReturn(printWriter);
+
+        servlet.doGet(request, response);
+
+        data = ImmutableMap.of(MESSAGES_MAP_KEY, ImmutableList.of("hello"));
+        String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(data).render();
+        String actual = stringWriter.getBuffer().toString().trim();
+
+        Assert.assertEquals(expected, actual);
+    }
 }
