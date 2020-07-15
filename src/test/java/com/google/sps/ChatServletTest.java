@@ -28,7 +28,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 @RunWith(JUnit4.class)
 public final class ChatServletTest extends Mockito {
@@ -56,11 +58,20 @@ public final class ChatServletTest extends Mockito {
 
     private ChatServlet servlet;
 
+    @Mock
+    HttpServletRequest request;
+
+    @Mock
+    HttpServletResponse response;
+
     @Before
     public void setUp() {
         servlet = new ChatServlet();
+        
         helper.setUp();
         datastore = DatastoreServiceFactory.getDatastoreService();
+
+        MockitoAnnotations.initMocks(this);
 
         stringWriter = new StringWriter();
         printWriter = new PrintWriter(stringWriter);
@@ -104,9 +115,6 @@ public final class ChatServletTest extends Mockito {
         // GET method is called and should respond with the HTML
         // string of the chat template with no comments
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-
         when(response.getWriter()).thenReturn(printWriter);
 
         servlet.doGet(request, response);
@@ -122,9 +130,6 @@ public final class ChatServletTest extends Mockito {
     public void servletGetWithComment() throws IOException {
         // GET method should return the chat template but with one
         // comment that says "hello"
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
 
         // Creating a comment that says "hello" in our mock database
         Entity messageEntity = new Entity(MESSAGE_KIND);
@@ -147,9 +152,6 @@ public final class ChatServletTest extends Mockito {
     public void servletGetWithTwoComments() throws IOException {
         // GET method should return the chat template with two 
         // posted messages
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
 
         Entity firstEntity = new Entity(MESSAGE_KIND);
         firstEntity.setProperty(MESSAGE_TEXT_PROPERTY, "First message");
@@ -177,9 +179,6 @@ public final class ChatServletTest extends Mockito {
     public void servletPostGoodComment() throws IOException {
         // POST method should post the message to datastore and
         // redirect to /chat
-        
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
 
         when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn("hi");
         when(response.getWriter()).thenReturn(printWriter);
@@ -194,5 +193,49 @@ public final class ChatServletTest extends Mockito {
 
         verify(response, times(1)).sendRedirect("/chat");
         Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void servletPostToxicComment() throws IOException {
+        // POST method should not post to datastore and
+        // should render an error message
+
+        when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn(MESSAGE_TEXT_TOXIC);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        servlet.doPost(request, response);
+
+        String expectedMessages = null;
+        Query messageQuery = new Query(MESSAGE_KIND);
+        // Should be null
+        Entity actualMessages = datastore.prepare(messageQuery).asSingleEntity();
+
+        ImmutableMap<String, String> errorData = ImmutableMap.of("errorMessage", "Your message contains content that may " + 
+            "be deemed offensive by others. Please revise your message and try again.");
+
+        String expectedOutput = tofu.newRenderer("templates.chat.error").setData(errorData).render();
+        String actualOutput = stringWriter.getBuffer().toString().trim();
+        
+        Assert.assertEquals(expectedMessages, actualMessages);
+        Assert.assertEquals(expectedOutput, actualOutput);
+    }
+
+    @Test
+    public void servletPostEmptyComment() throws IOException {
+        // POST method should not post to datastore but should
+        // redirect to /chat
+
+        when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn("");
+        when(response.getWriter()).thenReturn(printWriter);
+
+        servlet.doPost(request, response);
+
+        String expectedMessages = null;
+        Query messageQuery = new Query(MESSAGE_KIND);
+        // Should be null
+        Entity actualMessages = datastore.prepare(messageQuery).asSingleEntity();
+        
+        verify(response, times(1)).sendRedirect("/chat");
+        Assert.assertEquals(expectedMessages, actualMessages);
     }
 }

@@ -84,6 +84,11 @@ public class ChatServlet extends HttpServlet{
         final String messageText = (String) request.getParameter(MESSAGE_TEXT_PROPERTY);
         final long timestamp = System.currentTimeMillis();
 
+        if (messageText.length() == 0) {
+            response.sendRedirect("/chat");
+            return;
+        }
+
         // Reads API Key and Referer from file 
         File apiKeyFile = new File(classLoader.getResource("keys.txt").getFile());
         Scanner scanner = new Scanner(apiKeyFile);
