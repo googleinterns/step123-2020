@@ -1,10 +1,13 @@
 package com.google.sps;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.common.collect.ImmutableList;
@@ -49,7 +52,7 @@ public final class ChatServletTest extends Mockito {
     private SoyFileSet sfs;
     private SoyTofu tofu;
     private DatastoreService datastore;
-    private ImmutableMap<String, ImmutableList<String>> data;
+    private ImmutableMap<String, ImmutableList<String>> templateData;
 
     private ChatServlet servlet;
 
@@ -77,7 +80,7 @@ public final class ChatServletTest extends Mockito {
     @Test
     public void testsCommentScore() throws IOException {
         // Reads API Key and Referer from file 
-        apiKeyFile = new File("keys.txt");
+        apiKeyFile = new File("src/main/resources/keys.txt");
         scanner = new Scanner(apiKeyFile);
         API_KEY = scanner.nextLine();
         REFERER = scanner.nextLine();
@@ -97,7 +100,7 @@ public final class ChatServletTest extends Mockito {
     }
 
     @Test
-    public void servletGetNoComments () throws IOException {
+    public void servletGetNoComments() throws IOException {
         // GET method is called and should respond with the HTML
         // string of the chat template with no comments
 
@@ -108,8 +111,8 @@ public final class ChatServletTest extends Mockito {
 
         servlet.doGet(request, response);
         
-        data = ImmutableMap.of(MESSAGES_MAP_KEY, ImmutableList.of());
-        String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(data).render();
+        templateData = ImmutableMap.of(MESSAGES_MAP_KEY, ImmutableList.of());
+        String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(templateData).render();
         String actual = stringWriter.getBuffer().toString().trim();
 
         Assert.assertEquals(expected, actual);
@@ -119,6 +122,7 @@ public final class ChatServletTest extends Mockito {
     public void servletGetWithComment() throws IOException {
         // GET method should return the chat template but with one
         // comment that says "hello"
+
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
 
@@ -132,10 +136,63 @@ public final class ChatServletTest extends Mockito {
 
         servlet.doGet(request, response);
 
-        data = ImmutableMap.of(MESSAGES_MAP_KEY, ImmutableList.of("hello"));
-        String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(data).render();
+        templateData = ImmutableMap.of(MESSAGES_MAP_KEY, ImmutableList.of("hello"));
+        String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(templateData).render();
         String actual = stringWriter.getBuffer().toString().trim();
 
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void servletGetWithTwoComments() throws IOException {
+        // GET method should return the chat template with two 
+        // posted messages
+
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        Entity firstEntity = new Entity(MESSAGE_KIND);
+        firstEntity.setProperty(MESSAGE_TEXT_PROPERTY, "First message");
+        firstEntity.setProperty(TIMESTAMP_PROPERTY, 1);
+        datastore.put(firstEntity);
+
+        Entity secondEntity = new Entity(MESSAGE_KIND);
+        secondEntity.setProperty(MESSAGE_TEXT_PROPERTY, "Second message");
+        secondEntity.setProperty(TIMESTAMP_PROPERTY, 2);
+        datastore.put(secondEntity);
+
+        when(response.getWriter()).thenReturn(printWriter);
+
+        servlet.doGet(request, response);
+
+        templateData = ImmutableMap.of(MESSAGES_MAP_KEY, 
+            ImmutableList.of("First message", "Second message"));
+        String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(templateData).render();
+        String actual = stringWriter.getBuffer().toString().trim();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void servletPostGoodComment() throws IOException {
+        // POST method should post the message to datastore and
+        // redirect to /chat
+        
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn("hi");
+        when(response.getWriter()).thenReturn(printWriter);
+
+        servlet.doPost(request, response);
+
+        // Only one message ("hi") should be in the datastore
+        String expected = "hi";
+        Query messageQuery = new Query(MESSAGE_KIND);
+        Entity onlyMessageEntity = datastore.prepare(messageQuery).asSingleEntity();
+        String actual = (String) onlyMessageEntity.getProperty(MESSAGE_TEXT_PROPERTY);
+
+        verify(response, times(1)).sendRedirect("/chat");
         Assert.assertEquals(expected, actual);
     }
 }

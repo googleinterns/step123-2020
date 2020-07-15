@@ -39,6 +39,8 @@ public class ChatServlet extends HttpServlet{
     private static final String MESSAGE_KIND = "Message";
     private static final String ROOT_FILE_PATH = "../../";
     private static final Double COMMENT_SCORE_THRESHOLD = 0.85;
+    private static final ClassLoader classLoader = ChatServlet.class.getClassLoader();
+
 
     // Only TOXICITY and SEVERE_TOXICITY are production attributes,
     // all others are experimental
@@ -83,7 +85,7 @@ public class ChatServlet extends HttpServlet{
         final long timestamp = System.currentTimeMillis();
 
         // Reads API Key and Referer from file 
-        File apiKeyFile = new File(ROOT_FILE_PATH + "keys.txt");
+        File apiKeyFile = new File(classLoader.getResource("keys.txt").getFile());
         Scanner scanner = new Scanner(apiKeyFile);
         final String API_KEY = scanner.nextLine();
         final String REFERER = scanner.nextLine();
@@ -117,7 +119,6 @@ public class ChatServlet extends HttpServlet{
      * it sets up the soy template with the passed in data.
      */
     private String getOutputString(String templateName, ImmutableMap data) {
-        ClassLoader classLoader = getClass().getClassLoader();
         
         SoyFileSet sfs = SoyFileSet
             .builder()
