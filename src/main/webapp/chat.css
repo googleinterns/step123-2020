@@ -1,0 +1,43 @@
+body {
+    display: flex;
+    flex-direction: row;
+    margin: 0px;
+}
+
+aside.mdc-drawer {
+    height: 100vh;
+}
+
+.mdc-list-item.mdc-list-item--activated {
+    cursor: default;
+}
+
+.groups-headline {
+    color: #696969;
+    margin: 10px 0px 0px 0px;
+    padding: 0 16px;
+}
+
+.group-label {
+    font-size: 12pt;
+}
+
+.main-content {
+    margin: auto;
+    height: 100vh;
+    width: 100%;
+}
+
+.message-form {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    margin: 0px 10px;
+}
+
+label.mdc-text-field.mdc-text-field--filled {
+    align-items: center;
+    display: flex;
+    height: 40px;
+    width: 100%;
+}
