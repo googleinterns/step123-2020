@@ -33,13 +33,17 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 @WebServlet("/chat")
-public class ChatServlet extends HttpServlet{
+public class ChatServlet extends HttpServlet {
+    private static final String GROUP_ID_PARAM = "groupID";
+    private static final String MESSAGE_KIND = "Message-";
     private static final String MESSAGE_TEXT_PROPERTY = "message-text";
     private static final String TIMESTAMP_PROPERTY = "timestamp";
-    private static final String MESSAGE_KIND = "Message";
+    private static final String GROUP_KIND = "Group";
+    private static final String GROUP_NAME_PROPERTY = "name";
     private static final String ROOT_FILE_PATH = "../../";
     private static final Double COMMENT_SCORE_THRESHOLD = 0.85;
-    private static final String MESSAGES_KEY = "messages"
+    private static final String MESSAGES_KEY = "messages";
+    private static final String GROUPS_KEY = "groups";
     private static final String ATTRIBUTE_SCORES = "attributeScores";
     private static final String SUMMARY_SCORE = "summaryScore";
     private static final String VALUE = "value";
@@ -56,13 +60,24 @@ public class ChatServlet extends HttpServlet{
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String groupID = (String) request.getParameter(GROUP_ID_PARAM);
+
+        // This will be a placeholder until we can coordinate how to pass
+        // groupID from page to page
+        if (groupID == null) {
+            groupID = "123";
+        }
+
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         // Calls query on all entities of type Message
-        Query messageQuery = new Query(MESSAGE_KIND).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
+        Query messageQuery = new Query(MESSAGE_KIND + groupID).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
         PreparedQuery preparedMessageQuery = datastore.prepare(messageQuery);
 
-        ImmutableMap<String, ImmutableList<String>> data = getTemplateData(preparedMessageQuery);
+        Query groupQuery = new Query(Group);
+        PreparedQuery preparedGroupQuery = datastore.prepare(groupQuery);
+
+        ImmutableMap<String, ImmutableList<String>> data = getTemplateData(preparedMessageQuery, preparedGroupQuery);
 
         final String out = getOutputString("chatPage", data);
 
@@ -76,7 +91,14 @@ public class ChatServlet extends HttpServlet{
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String messageText = (String) request.getParameter(MESSAGE_TEXT_PROPERTY);
+        String groupID = (String) request.getParameter(GROUP_ID_PARAM);
         final long timestamp = System.currentTimeMillis();
+
+        // This will be a placeholder until we can coordinate how to pass
+        // groupID from page to page
+        if (groupID == null) {
+            groupID = "123";
+        }
 
         if (messageText.length() == 0) {
             response.sendRedirect("/chat");
@@ -98,7 +120,7 @@ public class ChatServlet extends HttpServlet{
         // If the comment is not toxic, then post it to Datastore
         if (commentScore <= COMMENT_SCORE_THRESHOLD) {
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-            Entity messageEntity = new Entity(MESSAGE_KIND);
+            Entity messageEntity = new Entity(MESSAGE_KIND + groupID);
             messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, messageText);
             messageEntity.setProperty(TIMESTAMP_PROPERTY, timestamp);
             datastore.put(messageEntity);
@@ -131,16 +153,20 @@ public class ChatServlet extends HttpServlet{
     }
 
     /**
-     * Iterates through the message query to put all the message text into a list.
-     * A map is then created the pass the list of messages into the template.
+     * Iterates through the queries to put all the required text into a list.
+     * A map is then created the pass the lists into the template.
      */
-    private ImmutableMap<String, ImmutableList<String>> getTemplateData(PreparedQuery preparedMessageQuery) {
-        // Creates list of the messages text
-        ImmutableList<String> messagesList = Streams.stream(preparedMessageQuery.asIterable()).map(message -> 
-        (String) message.getProperty(MESSAGE_TEXT_PROPERTY)).collect(toImmutableList());
+    private ImmutableMap<String, ImmutableList<String>> getTemplateData(PreparedQuery preparedMessageQuery,                 PreparedQuery preparedGroupQuery) {
 
-        // Data will be passed in as a list of messages in a map (needed for template)
-        return ImmutableMap.of(MESSAGES_KEY, messagesList);
+        // Creates lists of the data
+        ImmutableList<String> messagesList = Streams.stream(preparedMessageQuery.asIterable()).map(message -> 
+            (String) message.getProperty(MESSAGE_TEXT_PROPERTY)).collect(toImmutableList());
+
+        ImmutableList<String> groupsList = Streams.stream(preparedGroupQuery.asIterable()).map(group ->
+            (String) group.getProperty(GROUP_NAME_PROPERTY)).collect(toImmutableList());
+
+        // Data will be passed in as a list of messages/groups in a map (needed for template)
+        return ImmutableMap.of(MESSAGES_KEY, messagesList, GROUPS_KEY, groupsList);
     }
 
     /**

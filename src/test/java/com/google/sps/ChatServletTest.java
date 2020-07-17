@@ -34,10 +34,12 @@ import org.mockito.MockitoAnnotations;
 
 @RunWith(JUnit4.class)
 public final class ChatServletTest extends Mockito {
+    private static final String GROUP_ID_PARAM = "groupID";
+    private static final String GROUP_ID = "123";
     private static final String MESSAGE_TEXT_TOXIC = "what kind of idiot name is foo?";
     private static final String MESSAGE_TEXT_PROPERTY = "message-text";
     private static final String TIMESTAMP_PROPERTY = "timestamp";
-    private static final String MESSAGE_KIND = "Message";
+    private static final String MESSAGE_KIND = "Message-";
     private static final String MESSAGES_MAP_KEY = "messages";
     private static final String CHAT_TEMPLATE = "templates.chat.chatPage";
     private static final Double SCORE_OFFSET = 0.0000005;
@@ -115,6 +117,7 @@ public final class ChatServletTest extends Mockito {
         // GET method is called and should respond with the HTML
         // string of the chat template with no comments
 
+        when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
         when(response.getWriter()).thenReturn(printWriter);
 
         servlet.doGet(request, response);
@@ -132,11 +135,12 @@ public final class ChatServletTest extends Mockito {
         // comment that says "hello"
 
         // Creating a comment that says "hello" in our mock database
-        Entity messageEntity = new Entity(MESSAGE_KIND);
+        Entity messageEntity = new Entity(MESSAGE_KIND + GROUP_ID);
         messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, "hello");
         messageEntity.setProperty(TIMESTAMP_PROPERTY, 1);
         datastore.put(messageEntity);
 
+        when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
         when(response.getWriter()).thenReturn(printWriter);
 
         servlet.doGet(request, response);
@@ -153,16 +157,17 @@ public final class ChatServletTest extends Mockito {
         // GET method should return the chat template with two 
         // posted messages
 
-        Entity firstEntity = new Entity(MESSAGE_KIND);
+        Entity firstEntity = new Entity(MESSAGE_KIND + GROUP_ID);
         firstEntity.setProperty(MESSAGE_TEXT_PROPERTY, "First message");
         firstEntity.setProperty(TIMESTAMP_PROPERTY, 1);
         datastore.put(firstEntity);
 
-        Entity secondEntity = new Entity(MESSAGE_KIND);
+        Entity secondEntity = new Entity(MESSAGE_KIND + GROUP_ID);
         secondEntity.setProperty(MESSAGE_TEXT_PROPERTY, "Second message");
         secondEntity.setProperty(TIMESTAMP_PROPERTY, 2);
         datastore.put(secondEntity);
 
+        when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
         when(response.getWriter()).thenReturn(printWriter);
 
         servlet.doGet(request, response);
@@ -181,13 +186,14 @@ public final class ChatServletTest extends Mockito {
         // redirect to /chat
 
         when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn("hi");
+        when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
         when(response.getWriter()).thenReturn(printWriter);
 
         servlet.doPost(request, response);
 
         // Only one message ("hi") should be in the datastore
         String expected = "hi";
-        Query messageQuery = new Query(MESSAGE_KIND);
+        Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
         Entity onlyMessageEntity = datastore.prepare(messageQuery).asSingleEntity();
         String actual = (String) onlyMessageEntity.getProperty(MESSAGE_TEXT_PROPERTY);
 
@@ -201,12 +207,13 @@ public final class ChatServletTest extends Mockito {
         // should render an error message
 
         when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn(MESSAGE_TEXT_TOXIC);
+         when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
         when(response.getWriter()).thenReturn(printWriter);
 
         servlet.doPost(request, response);
 
         String expectedMessages = null;
-        Query messageQuery = new Query(MESSAGE_KIND);
+        Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
         // Should be null
         Entity actualMessages = datastore.prepare(messageQuery).asSingleEntity();
 
@@ -227,12 +234,13 @@ public final class ChatServletTest extends Mockito {
         // redirect to /chat
 
         when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn("");
+        when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
         when(response.getWriter()).thenReturn(printWriter);
 
         servlet.doPost(request, response);
 
         String expectedMessages = null;
-        Query messageQuery = new Query(MESSAGE_KIND);
+        Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
         // Should be null
         Entity actualMessages = datastore.prepare(messageQuery).asSingleEntity();
         
