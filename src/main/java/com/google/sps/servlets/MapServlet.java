@@ -22,17 +22,23 @@ public class MapServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+        // Hard coded user groups for testing, 
+        // Will get groups from user/datastore after functionality is verified
+        ImmutableMap<String, String> groupMap = ImmutableMap.of("groupName", "Black Lives Matter",
+            "groupID", "123");
+        ImmutableMap<String, String> groupMap2 = ImmutableMap.of("groupName", "Sierra Club",
+            "groupID", "456");
+        ImmutableMap<String, ImmutableList<ImmutableMap<String, String>>> data = ImmutableMap.of("groups", ImmutableList.of(groupMap, groupMap2));
+
         SoyFileSet sfs = SoyFileSet
             .builder()
             .add(new File("../../src/main/java/templates/mapPages.soy"))
             .build();
         SoyTofu tofu = sfs.compileToTofu();
-
-        // Hard coded user groups for testing, 
-        // Will get groups from user/datastore after functionality is verified
+        
         String out = tofu
             .newRenderer("templates.mapPages.mapPage")
-            .setData(ImmutableMap.of("groupNames", ImmutableList.of("Group One", "Group Two", "Group Three")))
+            .setData(data)
             .render();
         response.getWriter().println(out);
     }
