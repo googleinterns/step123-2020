@@ -37,10 +37,15 @@ public final class ChatServletTest extends Mockito {
     private static final String GROUP_ID_PARAM = "groupID";
     private static final String GROUP_ID = "123";
     private static final String MESSAGE_TEXT_TOXIC = "what kind of idiot name is foo?";
+    private static final String MESSAGE_KIND = "Message-";
     private static final String MESSAGE_TEXT_PROPERTY = "message-text";
     private static final String TIMESTAMP_PROPERTY = "timestamp";
-    private static final String MESSAGE_KIND = "Message-";
+    private static final String GROUP_KIND = "Group";
+    private static final String GROUP_NAME_PROPERTY = "name";
     private static final String MESSAGES_MAP_KEY = "messages";
+    private static final String GROUPS_KEY = "groups";
+    private static final ImmutableList<String> SAMPLE_GROUP_LIST = 
+        ImmutableList.of("Black Lives Matter");
     private static final String CHAT_TEMPLATE = "templates.chat.chatPage";
     private static final Double SCORE_OFFSET = 0.0000005;
     private static final LocalServiceTestHelper helper =
@@ -122,7 +127,8 @@ public final class ChatServletTest extends Mockito {
 
         servlet.doGet(request, response);
         
-        templateData = ImmutableMap.of(MESSAGES_MAP_KEY, ImmutableList.of());
+        templateData = ImmutableMap.of(MESSAGES_MAP_KEY, ImmutableList.of(), GROUPS_KEY, 
+            SAMPLE_GROUP_LIST);
         String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(templateData).render();
         String actual = stringWriter.getBuffer().toString().trim();
 
@@ -145,7 +151,8 @@ public final class ChatServletTest extends Mockito {
 
         servlet.doGet(request, response);
 
-        templateData = ImmutableMap.of(MESSAGES_MAP_KEY, ImmutableList.of("hello"));
+        templateData = ImmutableMap.of(MESSAGES_MAP_KEY, ImmutableList.of("hello"),
+            GROUPS_KEY, SAMPLE_GROUP_LIST);
         String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(templateData).render();
         String actual = stringWriter.getBuffer().toString().trim();
 
@@ -173,7 +180,8 @@ public final class ChatServletTest extends Mockito {
         servlet.doGet(request, response);
 
         templateData = ImmutableMap.of(MESSAGES_MAP_KEY, 
-            ImmutableList.of("First message", "Second message"));
+            ImmutableList.of("First message", "Second message"),
+            GROUPS_KEY, SAMPLE_GROUP_LIST);
         String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(templateData).render();
         String actual = stringWriter.getBuffer().toString().trim();
 

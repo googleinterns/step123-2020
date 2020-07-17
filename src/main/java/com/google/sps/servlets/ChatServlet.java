@@ -70,11 +70,16 @@ public class ChatServlet extends HttpServlet {
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
+        // This is just a sample group until group creation is coordinated
+        Entity sampleGroup = new Entity(GROUP_KIND, "BLM");
+        sampleGroup.setProperty(GROUP_NAME_PROPERTY, "Black Lives Matter");
+        datastore.put(sampleGroup);
+
         // Calls query on all entities of type Message
         Query messageQuery = new Query(MESSAGE_KIND + groupID).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
         PreparedQuery preparedMessageQuery = datastore.prepare(messageQuery);
 
-        Query groupQuery = new Query(Group);
+        Query groupQuery = new Query(GROUP_KIND);
         PreparedQuery preparedGroupQuery = datastore.prepare(groupQuery);
 
         ImmutableMap<String, ImmutableList<String>> data = getTemplateData(preparedMessageQuery, preparedGroupQuery);

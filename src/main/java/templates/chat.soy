@@ -13,6 +13,29 @@
         </head>
 
         <body onload="init()">
+            <aside class="mdc-drawer">
+                <div class="mdc-drawer__content">
+                    <nav class="mdc-list">
+                        <div class="mdc-list-item mdc-list-item--activated" aria-current="page">
+                            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">message</i>
+                            <span class="mdc-list-item__text"><h2>Chat</h2></span>
+                        </div>
+
+                        <hr class="mdc-list-divider">
+                        <h2 class="mdc-typography--headline5 groups-headline">Groups</h2>
+
+                        <div class="selection-controls-container">
+                            {for $group in $groups}
+                            <a class="mdc-list-item" href="/chat" tabindex="0">
+                                <span class="mdc-list-item__text group-label">{$group}</span>
+                            </a>
+                            {/for}
+                        </div>
+
+                    </nav>
+                </div>
+            </aside>
+
             <div id="messages-container">
                 {for $message in $messages}
                     <p class="message">{$message}</p>
