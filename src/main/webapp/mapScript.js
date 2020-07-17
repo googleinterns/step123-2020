@@ -139,7 +139,13 @@ function getMarkerInfo(groupId, geocoder) {
             geocoder.geocode({'address': eventMarker.location}, (results) => {
                 // Geocoded the address to longitude and lattitude for
                 // Marker placement
-                addMarkerToMap(results[0].geometry.location, eventMarker.description, eventMarker.name, groupId);
+                addMarkerToMap(results[0].geometry.location, 
+                            eventMarker.description, 
+                            eventMarker.name, 
+                            eventMarker.groupName, 
+                            eventMarker.location, 
+                            eventMarker.dateOutput,
+                            groupId);
             });
 
         });
@@ -153,10 +159,13 @@ function getMarkerInfo(groupId, geocoder) {
  * Using the eventID get the name and description for
  * the infoWindow 
  */
-function addMarkerToMap(address, descriptionText, nameText, groupId) {
+function addMarkerToMap(address, descriptionText, nameText, groupName, date, location, groupId) {
     const infoContent = templates.infoWindow.getMarkerInfo({
         'name': nameText, 
         'description': descriptionText,
+        'date': date,
+        'location': location,
+        'groupName': groupName,
     });
 
     const infoWindow = new google.maps.InfoWindow({
