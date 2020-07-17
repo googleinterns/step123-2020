@@ -30,6 +30,7 @@ function initMap() {
     // TODO: repace the hardcoded event ID with actually value
     getMarkerInfo('123', geocoder);
 
+
     autoCompleteAndZoom(); 
 
     document.getElementById('submit').addEventListener('click', () => {
@@ -130,15 +131,21 @@ function removeGroupMarkers(groupId) {
 function getMarkerInfo(groupId, geocoder) {
     // Fetch the json with the eventMarker objects 
     // For each object call addMarker()
-    const address = 'San Diego, CA'; 
-    const description = 'This is the hardcoded test description';
-    const name = 'Test event';
-    
-    geocoder.geocode({'address': address}, (results) => {
-        // Geocoded the address to longitude and lattitude for
-        // Marker placement
-        addMarkerToMap(results[0].geometry.location, description, name, groupId);
+    //const address = 'San Diego, CA'; 
+    //const description = 'This is the hardcoded test description';
+    //const name = 'Test event';
+    fetch('/sortedMarkers?groupid=' + groupId).then(response => response.json()).then((eventMarkers) => {
+        eventMarkers.forEach((eventMarker) => {
+            geocoder.geocode({'address': eventMarker.location}, (results) => {
+                // Geocoded the address to longitude and lattitude for
+                // Marker placement
+                addMarkerToMap(results[0].geometry.location, eventMarker.description, eventMarker.name, groupId);
+            });
+
+        });
     });
+    
+    
 }
 
 /**
@@ -171,10 +178,12 @@ function addMarkerToMap(address, descriptionText, nameText, groupId) {
  * Create add the key/value pair if not already there
  */
 function addToGroupMarkers(groupId, marker) {
+    console.log(groupMarkers);
+    console.log(groupId);
     if (!(groupMarkers.has(groupId))) {
         groupMarkers.set(groupId, new Array(marker));
     } else {
-        groupMarkers.get(groupId).add(marker); 
+        groupMarkers.get(groupId).push(marker); 
     }
 }
 
@@ -186,4 +195,4 @@ function setMapMarkers(map, groupId) {
     }
 }
 
-module.exports = addToGroupMarkers;
+//module.exports = addToGroupMarkers;
