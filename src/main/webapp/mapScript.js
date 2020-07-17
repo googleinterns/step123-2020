@@ -46,7 +46,7 @@ function initMap() {
  */
 function autoCompleteAndZoom() {
     const address = document.getElementById('address');
-    let searchBox = new google.maps.places.SearchBox(address);
+    const searchBox = new google.maps.places.SearchBox(address);
 
     map.addListener("bounds_changed", function() {
         searchBox.setBounds(map.getBounds());
@@ -194,5 +194,3 @@ function setMapMarkers(map, groupId) {
         markers[i].setMap(map);
     }
 }
-
-//module.exports = addToGroupMarkers;

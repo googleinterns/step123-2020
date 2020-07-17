@@ -11,21 +11,15 @@ import java.util.Comparator;
 
 
 public final class SortedMarkers {
-    private final Collection<EventMarker> sortedMarkers = new ArrayList<>();
-    private final ArrayList<EventMarker> al = new ArrayList<EventMarker>();
+    private final ArrayList<EventMarker> sortedMarkers = new ArrayList<EventMarker>();
 
     public SortedMarkers(Collection<EventMarker> calEvents) {
-        //Gson g = new Gson(); 
-        //TypeToken<ArrayList<Event>> token = new TypeToken<ArrayList<Event>>() {};
-        //ArrayList<Animal> calEvents = gson.fromJson(jsonString, token.getType());
-        //System.out.println(calEvents(0)); 
-        sortedMarkers.addAll(calEvents);
-        al.addAll(calEvents); 
-        sortByTime(al); 
+        sortedMarkers.addAll(calEvents); 
+        sortByTime(sortedMarkers); 
     }
 
     public Collection<EventMarker> getSortedMarkers() {
-        return Collections.unmodifiableCollection(al);
+        return Collections.unmodifiableCollection(sortedMarkers);
     }
 
     private void sortByTime(ArrayList<EventMarker> al) {
