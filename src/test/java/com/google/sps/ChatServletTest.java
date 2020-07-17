@@ -14,13 +14,13 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public final class ChatServletTest {
     private static final String MESSAGE_TEXT_TOXIC = "what kind of idiot name is foo?";
+    private static final Double SCORE_OFFSET = 0.0000005;
+    
     private File apiKeyFile;
     private Scanner scanner;
     private String API_KEY;
     private String REFERER;
     private String apiURL;
-
-    private static final Double SCORE_OFFSET = 0.0000005;
 
     private ChatServlet servlet;
 
