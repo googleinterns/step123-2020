@@ -210,8 +210,9 @@ public final class ChatServletTest extends Mockito {
         // Should be null
         Entity actualMessages = datastore.prepare(messageQuery).asSingleEntity();
 
-        ImmutableMap<String, String> errorData = ImmutableMap.of("errorMessage", "Your message contains content that may " + 
-            "be deemed offensive by others. Please revise your message and try again.");
+        ImmutableMap<String, String> errorData = ImmutableMap.of("errorMessage", 
+        "Your message contains content that may be deemed offensive by others. " +
+        "Please revise your message and try again.");
 
         String expectedOutput = tofu.newRenderer("templates.chat.error").setData(errorData).render();
         String actualOutput = stringWriter.getBuffer().toString().trim();

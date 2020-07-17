@@ -39,21 +39,15 @@ public class ChatServlet extends HttpServlet{
     private static final String MESSAGE_KIND = "Message";
     private static final String ROOT_FILE_PATH = "../../";
     private static final Double COMMENT_SCORE_THRESHOLD = 0.85;
+    private static final String MESSAGES_KEY = "messages"
+    private static final String ATTRIBUTE_SCORES = "attributeScores";
+    private static final String SUMMARY_SCORE = "summaryScore";
+    private static final String VALUE = "value";
     private static final ClassLoader classLoader = ChatServlet.class.getClassLoader();
 
-
-    // Only TOXICITY and SEVERE_TOXICITY are production attributes,
-    // all others are experimental
     enum Attribute {
         TOXICITY,
-        SEVERE_TOXICITY,
-        TOXICITY_FAST,
-        IDENTITY_ATTACK,
-        INSULT,
-        PROFANITY,
-        THREAT,
-        SEXUALLY_EXPLICIT,
-        FLIRTATION
+        SEVERE_TOXICITY
     }
 
     /**
@@ -96,7 +90,8 @@ public class ChatServlet extends HttpServlet{
         final String REFERER = scanner.nextLine();
         scanner.close();
 
-        final String perspectiveURL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + API_KEY;
+        final String perspectiveURL = 
+            "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + API_KEY;
 
         final Double commentScore = getCommentScore(perspectiveURL, REFERER, messageText);
 
@@ -110,8 +105,9 @@ public class ChatServlet extends HttpServlet{
 
             response.sendRedirect("/chat");
         } else {
-            ImmutableMap<String, String> errorData = ImmutableMap.of("errorMessage", "Your message contains content that may " + 
-                "be deemed offensive by others. Please revise your message and try again.");
+            ImmutableMap<String, String> errorData = ImmutableMap.of("errorMessage", 
+                "Your message contains content that may be deemed offensive by others. " +
+                "Please revise your message and try again.");
 
             final String out = getOutputString("error", errorData);
 
@@ -144,7 +140,7 @@ public class ChatServlet extends HttpServlet{
         (String) message.getProperty(MESSAGE_TEXT_PROPERTY)).collect(toImmutableList());
 
         // Data will be passed in as a list of messages in a map (needed for template)
-        return ImmutableMap.of("messages", messagesList);
+        return ImmutableMap.of(MESSAGES_KEY, messagesList);
     }
 
     /**
@@ -166,10 +162,10 @@ public class ChatServlet extends HttpServlet{
         final String result = EntityUtils.toString(httpResponse.getEntity());
         // Parsing JSON string to Java Maps
         Map resultMap = new Gson().fromJson(result, Map.class);
-        Map attributeScores = (Map) resultMap.get("attributeScores");
+        Map attributeScores = (Map) resultMap.get(ATTRIBUTE_SCORES);
         Map toxicity = (Map) attributeScores.get(Attribute.TOXICITY.name());
-        Map summaryScore = (Map) toxicity.get("summaryScore");
+        Map summaryScore = (Map) toxicity.get(SUMMARY_SCORE);
 
-        return (Double) summaryScore.get("value");     
+        return (Double) summaryScore.get(VALUE);
     }
 }
