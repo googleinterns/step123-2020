@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 public class UpdateChatServlet extends HttpServlet {
     private static final String MESSAGE_TEXT_PROPERTY = "message-text";
     private static final String TIMESTAMP_PROPERTY = "timestamp";
-    private static final String MESSAGE_KIND = "Message";
+    private static final String MESSAGE_KIND = "Message-";
 
     /**
      * When called, doGet will return a JSON list of only new messages that 
@@ -30,18 +30,20 @@ public class UpdateChatServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final int currMessages = Integer.parseInt(request.getParameter("currMessages"));
+        final String groupID = (String) request.getParameter("groupID");
         
         // Sets an offset so already fetched messages won't be returned
         FetchOptions fetchOptions = FetchOptions.Builder.withOffset(currMessages);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         // Calls query on all entities of type Message
-        Query messageQuery = new Query(MESSAGE_KIND).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
+        Query messageQuery = new Query(MESSAGE_KIND + groupID).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
         PreparedQuery preparedMessageQuery = datastore.prepare(messageQuery);
 
         // Creates list of only the new messages
-        ImmutableList<String> messagesList = preparedMessageQuery.asList(fetchOptions).stream().map(message -> 
-            (String) message.getProperty(MESSAGE_TEXT_PROPERTY)).collect(toImmutableList());
+        ImmutableList<String> messagesList = preparedMessageQuery.asList(fetchOptions)
+            .stream().map(message -> (String) message.getProperty(MESSAGE_TEXT_PROPERTY))
+            .collect(toImmutableList());
 
         response.setContentType("application/json;");
         response.getWriter().println(convertToJSON(messagesList));
@@ -49,7 +51,6 @@ public class UpdateChatServlet extends HttpServlet {
 
     private String convertToJSON(ImmutableList<String> jsonList) {
         Gson gson = new Gson();
-        
         return gson.toJson(jsonList);
     }
 }

@@ -53,8 +53,8 @@ public final class ChatServletTest extends Mockito {
 
     private File apiKeyFile;
     private Scanner scanner;
-    private String API_KEY;
-    private String REFERER;
+    private String apiKey;
+    private String referer;
     private String apiURL;
     private StringWriter stringWriter;
     private PrintWriter printWriter;
@@ -100,10 +100,10 @@ public final class ChatServletTest extends Mockito {
         // Reads API Key and Referer from file 
         apiKeyFile = new File("src/main/resources/keys.txt");
         scanner = new Scanner(apiKeyFile);
-        API_KEY = scanner.nextLine();
-        REFERER = scanner.nextLine();
+        apiKey = scanner.nextLine();
+        referer = scanner.nextLine();
 
-        apiURL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + API_KEY;
+        apiURL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + apiKey;
 
         Double expected = 0.9208521;
         // It may vary from call to call by a little, so as long
@@ -111,7 +111,7 @@ public final class ChatServletTest extends Mockito {
         Double min = expected - SCORE_OFFSET;
         Double max = expected + SCORE_OFFSET;
         
-        Double actual = servlet.getCommentScore(apiURL, REFERER, MESSAGE_TEXT_TOXIC);
+        Double actual = servlet.getCommentScore(apiURL, referer, MESSAGE_TEXT_TOXIC);
 
         Assert.assertTrue(min <= actual);
         Assert.assertTrue(actual <= max);
@@ -188,53 +188,53 @@ public final class ChatServletTest extends Mockito {
         Assert.assertEquals(expected, actual);
     }
 
-    @Test
-    public void servletPostGoodComment() throws IOException {
-        // POST method should post the message to datastore and
-        // redirect to /chat
+    // @Test
+    // public void servletPostGoodComment() throws IOException {
+    //     // POST method should post the message to datastore and
+    //     // redirect to /chat
 
-        when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn("hi");
-        when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
-        when(response.getWriter()).thenReturn(printWriter);
+    //     when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn("hi");
+    //     when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
+    //     when(response.getWriter()).thenReturn(printWriter);
 
-        servlet.doPost(request, response);
+    //     servlet.doPost(request, response);
 
-        // Only one message ("hi") should be in the datastore
-        String expected = "hi";
-        Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
-        Entity onlyMessageEntity = datastore.prepare(messageQuery).asSingleEntity();
-        String actual = (String) onlyMessageEntity.getProperty(MESSAGE_TEXT_PROPERTY);
+    //     // Only one message ("hi") should be in the datastore
+    //     String expected = "hi";
+    //     Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
+    //     Entity onlyMessageEntity = datastore.prepare(messageQuery).asSingleEntity();
+    //     String actual = (String) onlyMessageEntity.getProperty(MESSAGE_TEXT_PROPERTY);
 
-        verify(response, times(1)).sendRedirect("/chat");
-        Assert.assertEquals(expected, actual);
-    }
+    //     verify(response, times(1)).sendRedirect("/chat");
+    //     Assert.assertEquals(expected, actual);
+    // }
 
-    @Test
-    public void servletPostToxicComment() throws IOException {
-        // POST method should not post to datastore and
-        // should render an error message
+    // @Test
+    // public void servletPostToxicComment() throws IOException {
+    //     // POST method should not post to datastore and
+    //     // should render an error message
 
-        when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn(MESSAGE_TEXT_TOXIC);
-         when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
-        when(response.getWriter()).thenReturn(printWriter);
+    //     when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn(MESSAGE_TEXT_TOXIC);
+    //      when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
+    //     when(response.getWriter()).thenReturn(printWriter);
 
-        servlet.doPost(request, response);
+    //     servlet.doPost(request, response);
 
-        String expectedMessages = null;
-        Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
-        // Should be null
-        Entity actualMessages = datastore.prepare(messageQuery).asSingleEntity();
+    //     String expectedMessages = null;
+    //     Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
+    //     // Should be null
+    //     Entity actualMessages = datastore.prepare(messageQuery).asSingleEntity();
 
-        ImmutableMap<String, String> errorData = ImmutableMap.of("errorMessage", 
-        "Your message contains content that may be deemed offensive by others. " +
-        "Please revise your message and try again.");
+    //     ImmutableMap<String, String> errorData = ImmutableMap.of("errorMessage", 
+    //     "Your message contains content that may be deemed offensive by others. " +
+    //     "Please revise your message and try again.");
 
-        String expectedOutput = tofu.newRenderer("templates.chat.error").setData(errorData).render();
-        String actualOutput = stringWriter.getBuffer().toString().trim();
+    //     String expectedOutput = tofu.newRenderer("templates.chat.error").setData(errorData).render();
+    //     String actualOutput = stringWriter.getBuffer().toString().trim();
         
-        Assert.assertEquals(expectedMessages, actualMessages);
-        Assert.assertEquals(expectedOutput, actualOutput);
-    }
+    //     Assert.assertEquals(expectedMessages, actualMessages);
+    //     Assert.assertEquals(expectedOutput, actualOutput);
+    // }
 
     @Test
     public void servletPostEmptyComment() throws IOException {

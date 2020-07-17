@@ -1,20 +1,24 @@
 function init() {
     // Calls the updateChat servlet every second for new messages
     setInterval(() => {
-    const messagesContainer = document.getElementById("messages-container");
-    const currNumMessages = document.getElementsByClassName("message").length;
-    const urlString = "/updateChat?currMessages=" + currNumMessages;
+        const messagesContainer = document.getElementById("messages-container");
+        const currNumMessages = document.getElementsByClassName("message").length;
+        // Hardcoded groupID
+        const groupID = "123";
+        const urlString = "/updateChat?currMessages=" + currNumMessages + 
+            "groupID=" + groupID;
 
-    fetch(urlString).then(response => response.json()).then(json => {
-        for (let i = 0; i < json.length; i++) {
-            const p = document.createElement("P");
-            p.innerText = json[i];
-            p.classList.add("message");
-            messagesContainer.appendChild(p);
-        }
-    });
+        fetch(urlString).then(response => response.json()).then(json => {
+            for (let i = 0; i < json.length; i++) {
+                const p = document.createElement("P");
+                p.innerText = json[i];
+                p.classList.add("message");
+                messagesContainer.appendChild(p);
+            }
+        });
 
-    }, 1000);
+        }, 1000
+    );
 }
 
 // I'll use this code later once I figure out why it's being so 

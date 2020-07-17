@@ -110,17 +110,17 @@ public class ChatServlet extends HttpServlet {
             return;
         }
 
-        // Reads API Key and Referer from file 
+        // Reads API Key and HTTP referer from file 
         File apiKeyFile = new File(classLoader.getResource("keys.txt").getFile());
         Scanner scanner = new Scanner(apiKeyFile);
-        final String API_KEY = scanner.nextLine();
-        final String REFERER = scanner.nextLine();
+        final String apiKey = scanner.nextLine();
+        final String referer = scanner.nextLine();
         scanner.close();
 
         final String perspectiveURL = 
-            "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + API_KEY;
+            "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + apiKey;
 
-        final Double commentScore = getCommentScore(perspectiveURL, REFERER, messageText);
+        final Double commentScore = getCommentScore(perspectiveURL, referer, messageText);
 
         // If the comment is not toxic, then post it to Datastore
         if (commentScore <= COMMENT_SCORE_THRESHOLD) {
@@ -164,11 +164,13 @@ public class ChatServlet extends HttpServlet {
     private ImmutableMap<String, ImmutableList<String>> getTemplateData(PreparedQuery preparedMessageQuery,                 PreparedQuery preparedGroupQuery) {
 
         // Creates lists of the data
-        ImmutableList<String> messagesList = Streams.stream(preparedMessageQuery.asIterable()).map(message -> 
-            (String) message.getProperty(MESSAGE_TEXT_PROPERTY)).collect(toImmutableList());
+        ImmutableList<String> messagesList = Streams.stream(preparedMessageQuery.asIterable())
+            .map(message -> (String) message.getProperty(MESSAGE_TEXT_PROPERTY))
+            .collect(toImmutableList());
 
-        ImmutableList<String> groupsList = Streams.stream(preparedGroupQuery.asIterable()).map(group ->
-            (String) group.getProperty(GROUP_NAME_PROPERTY)).collect(toImmutableList());
+        ImmutableList<String> groupsList = Streams.stream(preparedGroupQuery.asIterable())
+            .map(group -> (String) group.getProperty(GROUP_NAME_PROPERTY))
+            .collect(toImmutableList());
 
         // Data will be passed in as a list of messages/groups in a map (needed for template)
         return ImmutableMap.of(MESSAGES_KEY, messagesList, GROUPS_KEY, groupsList);
