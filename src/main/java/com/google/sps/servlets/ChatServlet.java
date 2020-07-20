@@ -97,7 +97,7 @@ public class ChatServlet extends HttpServlet {
             groupID = "123";
         }
 
-        if (messageText.length() == 0) {
+        if (messageText.isEmpty()) {
             response.sendRedirect("/chat");
             return;
         }

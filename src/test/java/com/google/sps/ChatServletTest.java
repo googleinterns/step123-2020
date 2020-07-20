@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 public final class ChatServletTest extends Mockito {
     private static final String CHAT_PAGE_NAMESPACE = "templates.chat.chatPage";
     private static final String GROUP_ID = "123";
+    private static final String MESSAGE_TEXT_NON_TOXIC = "hello";
     private static final String MESSAGE_TEXT_TOXIC = "what kind of idiot name is foo?";
     
     private static final ImmutableList<String> SAMPLE_GROUP_LIST = 
@@ -121,7 +122,7 @@ public final class ChatServletTest extends Mockito {
 
         // Creating a comment that says "hello" in our mock database
         Entity messageEntity = new Entity(MESSAGE_KIND + GROUP_ID);
-        messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, "hello");
+        messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, MESSAGE_TEXT_NON_TOXIC);
         messageEntity.setProperty(TIMESTAMP_PROPERTY, 1);
         datastore.put(messageEntity);
 
@@ -130,7 +131,7 @@ public final class ChatServletTest extends Mockito {
 
         servlet.doGet(request, response);
 
-        templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of("hello"),
+        templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of(MESSAGE_TEXT_NON_TOXIC),
             GROUPS_KEY, SAMPLE_GROUP_LIST);
         String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, templateData);
         String actualHtml = stringWriter.getBuffer().toString().trim();
@@ -142,14 +143,16 @@ public final class ChatServletTest extends Mockito {
     public void servletGetWithTwoComments() throws IOException {
         // GET method should return the chat template with two 
         // posted messages
+        final String firstMessage = "First message";
+        final String secondMessage = "Second Message";
 
         Entity firstEntity = new Entity(MESSAGE_KIND + GROUP_ID);
-        firstEntity.setProperty(MESSAGE_TEXT_PROPERTY, "First message");
+        firstEntity.setProperty(MESSAGE_TEXT_PROPERTY, firstMessage);
         firstEntity.setProperty(TIMESTAMP_PROPERTY, 1);
         datastore.put(firstEntity);
 
         Entity secondEntity = new Entity(MESSAGE_KIND + GROUP_ID);
-        secondEntity.setProperty(MESSAGE_TEXT_PROPERTY, "Second message");
+        secondEntity.setProperty(MESSAGE_TEXT_PROPERTY, secondMessage);
         secondEntity.setProperty(TIMESTAMP_PROPERTY, 2);
         datastore.put(secondEntity);
 
@@ -158,7 +161,7 @@ public final class ChatServletTest extends Mockito {
 
         servlet.doGet(request, response);
 
-        templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of("First message", "Second message"),
+        templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of(firstMessage, secondMessage),
             GROUPS_KEY, SAMPLE_GROUP_LIST);
         String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, templateData);
         String actualHtml = stringWriter.getBuffer().toString().trim();
@@ -171,20 +174,20 @@ public final class ChatServletTest extends Mockito {
         // POST method should post the message to datastore and
         // redirect to /chat
 
-        when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn("hi");
+        when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn(MESSAGE_TEXT_NON_TOXIC);
         when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(GROUP_ID);
         when(response.getWriter()).thenReturn(printWriter);
 
         servlet.doPost(request, response);
 
-        // Only one message ("hi") should be in the datastore
-        String expectedMessages = "hi";
+        // Only one message ("hello") should be in the datastore
+        String expectedMessage = MESSAGE_TEXT_NON_TOXIC;
         Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
         Entity onlyMessageEntity = datastore.prepare(messageQuery).asSingleEntity();
-        String actualMessages = (String) onlyMessageEntity.getProperty(MESSAGE_TEXT_PROPERTY);
+        String actualMessage = (String) onlyMessageEntity.getProperty(MESSAGE_TEXT_PROPERTY);
 
         verify(response, times(1)).sendRedirect("/chat");
-        Assert.assertEquals(expectedMessages, actualMessages);
+        Assert.assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
