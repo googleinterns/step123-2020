@@ -1,5 +1,9 @@
 package com.google.sps.servlets;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.sps.utils.ChatServletConstants.*;
+import static com.google.sps.utils.SoyRendererUtils.getOutputString;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity; 
@@ -8,12 +12,10 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-import static com.google.common.collect.ImmutableList.toImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Streams;
 import com.google.gson.Gson;
-import com.google.template.soy.SoyFileSet;
-import com.google.template.soy.tofu.SoyTofu;
+import com.google.sps.data.PerspectiveRequest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -34,20 +36,7 @@ import org.apache.http.util.EntityUtils;
 
 @WebServlet("/chat")
 public class ChatServlet extends HttpServlet {
-    private static final String GROUP_ID_PARAM = "groupID";
-    private static final String MESSAGE_KIND = "Message-";
-    private static final String MESSAGE_TEXT_PROPERTY = "message-text";
-    private static final String TIMESTAMP_PROPERTY = "timestamp";
-    private static final String GROUP_KIND = "Group";
-    private static final String GROUP_NAME_PROPERTY = "name";
-    private static final String ROOT_FILE_PATH = "../../";
-    private static final Double COMMENT_SCORE_THRESHOLD = 0.85;
-    private static final String MESSAGES_KEY = "messages";
-    private static final String GROUPS_KEY = "groups";
-    private static final String ATTRIBUTE_SCORES = "attributeScores";
-    private static final String SUMMARY_SCORE = "summaryScore";
-    private static final String VALUE = "value";
-    private static final ClassLoader classLoader = ChatServlet.class.getClassLoader();
+    public static final String API_BASE_URL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=";
 
     enum Attribute {
         TOXICITY,
@@ -60,7 +49,7 @@ public class ChatServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String groupID = (String) request.getParameter(GROUP_ID_PARAM);
+        String groupID = (String) request.getParameter(GROUP_ID_PROPERTY);
 
         // This will be a placeholder until we can coordinate how to pass
         // groupID from page to page
@@ -71,8 +60,9 @@ public class ChatServlet extends HttpServlet {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         // This is just a sample group until group creation is coordinated
-        Entity sampleGroup = new Entity(GROUP_KIND, "BLM");
+        Entity sampleGroup = new Entity(GROUP_KIND, groupID);
         sampleGroup.setProperty(GROUP_NAME_PROPERTY, "Black Lives Matter");
+        sampleGroup.setProperty(GROUP_ID_PROPERTY, groupID);
         datastore.put(sampleGroup);
 
         // Calls query on all entities of type Message
@@ -82,11 +72,12 @@ public class ChatServlet extends HttpServlet {
         Query groupQuery = new Query(GROUP_KIND);
         PreparedQuery preparedGroupQuery = datastore.prepare(groupQuery);
 
-        ImmutableMap<String, ImmutableList<String>> data = getTemplateData(preparedMessageQuery, preparedGroupQuery);
+        ImmutableMap<String, ImmutableList<String>> messagesGroupsData = getTemplateData(preparedMessageQuery,
+            preparedGroupQuery);
 
-        final String out = getOutputString("chatPage", data);
+        final String chatPageHtml = getOutputString("chat.soy", "templates.chat.chatPage", messagesGroupsData);
 
-        response.getWriter().println(out);
+        response.getWriter().println(chatPageHtml);
     }
 
     /**
@@ -96,7 +87,7 @@ public class ChatServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String messageText = (String) request.getParameter(MESSAGE_TEXT_PROPERTY);
-        String groupID = (String) request.getParameter(GROUP_ID_PARAM);
+        String groupID = (String) request.getParameter(GROUP_ID_PROPERTY);
         final long timestamp = System.currentTimeMillis();
 
         // This will be a placeholder until we can coordinate how to pass
@@ -110,20 +101,25 @@ public class ChatServlet extends HttpServlet {
             return;
         }
 
-        // Reads API Key and HTTP referer from file 
+        // Reads API Key and HTTP referer from file
+        ClassLoader classLoader = ChatServlet.class.getClassLoader();
         File apiKeyFile = new File(classLoader.getResource("keys.txt").getFile());
         Scanner scanner = new Scanner(apiKeyFile);
         final String apiKey = scanner.nextLine();
         final String referer = scanner.nextLine();
         scanner.close();
 
-        final String perspectiveURL = 
-            "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + apiKey;
+        final Double commentScore = getCommentScore(API_BASE_URL + apiKey, referer, messageText);
 
-        final Double commentScore = getCommentScore(perspectiveURL, referer, messageText);
+        // If the comment is  toxic, then do not post it to Datastore
+        if (commentScore >= COMMENT_SCORE_THRESHOLD) {
+            ImmutableMap<String, String> errorData = ImmutableMap.of(ERROR_MESSAGE_KEY, 
+                ERROR_MESSAGE_TEXT);
 
-        // If the comment is not toxic, then post it to Datastore
-        if (commentScore <= COMMENT_SCORE_THRESHOLD) {
+            final String errorPageHtml = getOutputString("chat.soy", "templates.chat.error", errorData);
+
+            response.getWriter().println(errorPageHtml);
+        } else {
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
             Entity messageEntity = new Entity(MESSAGE_KIND + groupID);
             messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, messageText);
@@ -131,37 +127,15 @@ public class ChatServlet extends HttpServlet {
             datastore.put(messageEntity);
 
             response.sendRedirect("/chat");
-        } else {
-            ImmutableMap<String, String> errorData = ImmutableMap.of("errorMessage", 
-                "Your message contains content that may be deemed offensive by others. " +
-                "Please revise your message and try again.");
-
-            final String out = getOutputString("error", errorData);
-
-            response.getWriter().println(out);
         }
-    }
-
-    /**
-     * Returns the output string for the response. In other words,
-     * it sets up the soy template with the passed in data.
-     */
-    private String getOutputString(String templateName, ImmutableMap data) {
-        
-        SoyFileSet sfs = SoyFileSet
-            .builder()
-            .add(new File(classLoader.getResource("chat.soy").getFile()))
-            .build();
-        SoyTofu tofu = sfs.compileToTofu();
-
-        return tofu.newRenderer("templates.chat." + templateName).setData(data).render();
     }
 
     /**
      * Iterates through the queries to put all the required text into a list.
      * A map is then created the pass the lists into the template.
      */
-    private ImmutableMap<String, ImmutableList<String>> getTemplateData(PreparedQuery preparedMessageQuery,                 PreparedQuery preparedGroupQuery) {
+    private ImmutableMap<String, ImmutableList<String>> getTemplateData(PreparedQuery preparedMessageQuery,
+        PreparedQuery preparedGroupQuery) {
 
         // Creates lists of the data
         ImmutableList<String> messagesList = Streams.stream(preparedMessageQuery.asIterable())
@@ -177,15 +151,15 @@ public class ChatServlet extends HttpServlet {
     }
 
     /**
-     * Makes a POST request to the Perspective API with the message text, and recieves
+     * Makes a POST request to the Perspective API with the message text, and receives
      * a toxicity score.
      */
     public Double getCommentScore(String apiURL, String referer, String messageText) throws IOException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(apiURL);
 
-        PerspectiveRequest messageObject = new PerspectiveRequest(messageText, Attribute.TOXICITY.name());
-        final String inputJson = new Gson().toJson(messageObject);
+        PerspectiveRequest perspectiveRequest = new PerspectiveRequest(messageText, Attribute.TOXICITY.name());
+        final String inputJson = new Gson().toJson(perspectiveRequest);
 
         httpPost.setEntity(new StringEntity(inputJson));
         httpPost.addHeader("Referer", referer);

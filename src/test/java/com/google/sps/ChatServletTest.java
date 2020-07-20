@@ -1,5 +1,7 @@
 package com.google.sps;
 
+import static com.google.sps.utils.ChatServletConstants.*;
+import static com.google.sps.utils.SoyRendererUtils.getOutputString;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
@@ -13,8 +15,6 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.sps.servlets.ChatServlet;
-import com.google.template.soy.SoyFileSet;
-import com.google.template.soy.tofu.SoyTofu;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -34,36 +34,20 @@ import org.mockito.MockitoAnnotations;
 
 @RunWith(JUnit4.class)
 public final class ChatServletTest extends Mockito {
-    private static final String GROUP_ID_PARAM = "groupID";
     private static final String GROUP_ID = "123";
     private static final String MESSAGE_TEXT_TOXIC = "what kind of idiot name is foo?";
-    private static final String MESSAGE_KIND = "Message-";
-    private static final String MESSAGE_TEXT_PROPERTY = "message-text";
-    private static final String TIMESTAMP_PROPERTY = "timestamp";
-    private static final String GROUP_KIND = "Group";
-    private static final String GROUP_NAME_PROPERTY = "name";
-    private static final String MESSAGES_MAP_KEY = "messages";
-    private static final String GROUPS_KEY = "groups";
+    
     private static final ImmutableList<String> SAMPLE_GROUP_LIST = 
         ImmutableList.of("Black Lives Matter");
-    private static final String CHAT_TEMPLATE = "templates.chat.chatPage";
-    private static final Double SCORE_OFFSET = 0.0000005;
+    
     private static final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
-    private File apiKeyFile;
-    private Scanner scanner;
-    private String apiKey;
-    private String referer;
-    private String apiURL;
-    private StringWriter stringWriter;
-    private PrintWriter printWriter;
-    private SoyFileSet sfs;
-    private SoyTofu tofu;
     private DatastoreService datastore;
-    private ImmutableMap<String, ImmutableList<String>> templateData;
-
+    private PrintWriter printWriter;
     private ChatServlet servlet;
+    private StringWriter stringWriter;
+    private ImmutableMap<String, ImmutableList<String>> templateData;
 
     @Mock
     HttpServletRequest request;
@@ -82,12 +66,6 @@ public final class ChatServletTest extends Mockito {
 
         stringWriter = new StringWriter();
         printWriter = new PrintWriter(stringWriter);
-
-        sfs = SoyFileSet
-            .builder()
-            .add(new File("src/main/java/templates/chat.soy"))
-            .build();
-        tofu = sfs.compileToTofu();
     }
 
     @After
@@ -97,24 +75,24 @@ public final class ChatServletTest extends Mockito {
 
     @Test
     public void testsCommentScore() throws IOException {
+        final Double scoreOffset = 0.0000005;
+
         // Reads API Key and Referer from file 
-        apiKeyFile = new File("src/main/resources/keys.txt");
-        scanner = new Scanner(apiKeyFile);
-        apiKey = scanner.nextLine();
-        referer = scanner.nextLine();
+        final File apiKeyFile = new File("src/main/resources/keys.txt");
+        final Scanner scanner = new Scanner(apiKeyFile);
+        final String apiKey = scanner.nextLine();
+        final String referer = scanner.nextLine();
 
-        apiURL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + apiKey;
-
-        Double expected = 0.9208521;
+        Double expectedScore = 0.9208521;
         // It may vary from call to call by a little, so as long
         // as it's +/- 0.0000005, it passes
-        Double min = expected - SCORE_OFFSET;
-        Double max = expected + SCORE_OFFSET;
+        Double min = expectedScore - scoreOffset;
+        Double max = expectedScore + scoreOffset;
         
-        Double actual = servlet.getCommentScore(apiURL, referer, MESSAGE_TEXT_TOXIC);
+        Double actualScore = servlet.getCommentScore(ChatServlet.API_BASE_URL + apiKey, referer, MESSAGE_TEXT_TOXIC);
 
-        Assert.assertTrue(min <= actual);
-        Assert.assertTrue(actual <= max);
+        Assert.assertTrue(min <= actualScore);
+        Assert.assertTrue(actualScore <= max);
     }
 
     @Test
@@ -122,17 +100,17 @@ public final class ChatServletTest extends Mockito {
         // GET method is called and should respond with the HTML
         // string of the chat template with no comments
 
-        when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
+        when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(GROUP_ID);
         when(response.getWriter()).thenReturn(printWriter);
 
         servlet.doGet(request, response);
         
-        templateData = ImmutableMap.of(MESSAGES_MAP_KEY, ImmutableList.of(), GROUPS_KEY, 
+        templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of(), GROUPS_KEY, 
             SAMPLE_GROUP_LIST);
-        String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(templateData).render();
-        String actual = stringWriter.getBuffer().toString().trim();
+        String expectedHtml = getOutputString("chat.soy", "templates.chat.chatPage", templateData);
+        String actualHtml = stringWriter.getBuffer().toString().trim();
 
-        Assert.assertEquals(expected, actual);
+        Assert.assertEquals(expectedHtml, actualHtml);
     }
 
     @Test
@@ -146,17 +124,17 @@ public final class ChatServletTest extends Mockito {
         messageEntity.setProperty(TIMESTAMP_PROPERTY, 1);
         datastore.put(messageEntity);
 
-        when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
+        when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(GROUP_ID);
         when(response.getWriter()).thenReturn(printWriter);
 
         servlet.doGet(request, response);
 
-        templateData = ImmutableMap.of(MESSAGES_MAP_KEY, ImmutableList.of("hello"),
+        templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of("hello"),
             GROUPS_KEY, SAMPLE_GROUP_LIST);
-        String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(templateData).render();
-        String actual = stringWriter.getBuffer().toString().trim();
+        String expectedHtml = getOutputString("chat.soy", "templates.chat.chatPage", templateData);
+        String actualHtml = stringWriter.getBuffer().toString().trim();
 
-        Assert.assertEquals(expected, actual);
+        Assert.assertEquals(expectedHtml, actualHtml);
     }
 
     @Test
@@ -174,67 +152,63 @@ public final class ChatServletTest extends Mockito {
         secondEntity.setProperty(TIMESTAMP_PROPERTY, 2);
         datastore.put(secondEntity);
 
-        when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
+        when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(GROUP_ID);
         when(response.getWriter()).thenReturn(printWriter);
 
         servlet.doGet(request, response);
 
-        templateData = ImmutableMap.of(MESSAGES_MAP_KEY, 
-            ImmutableList.of("First message", "Second message"),
+        templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of("First message", "Second message"),
             GROUPS_KEY, SAMPLE_GROUP_LIST);
-        String expected = tofu.newRenderer(CHAT_TEMPLATE).setData(templateData).render();
-        String actual = stringWriter.getBuffer().toString().trim();
+        String expectedHtml = getOutputString("chat.soy", "templates.chat.chatPage", templateData);
+        String actualHtml = stringWriter.getBuffer().toString().trim();
 
-        Assert.assertEquals(expected, actual);
+        Assert.assertEquals(expectedHtml, actualHtml);
     }
 
-    // @Test
-    // public void servletPostGoodComment() throws IOException {
-    //     // POST method should post the message to datastore and
-    //     // redirect to /chat
+    @Test
+    public void servletPostGoodComment() throws IOException {
+        // POST method should post the message to datastore and
+        // redirect to /chat
 
-    //     when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn("hi");
-    //     when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
-    //     when(response.getWriter()).thenReturn(printWriter);
+        when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn("hi");
+        when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(GROUP_ID);
+        when(response.getWriter()).thenReturn(printWriter);
 
-    //     servlet.doPost(request, response);
+        servlet.doPost(request, response);
 
-    //     // Only one message ("hi") should be in the datastore
-    //     String expected = "hi";
-    //     Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
-    //     Entity onlyMessageEntity = datastore.prepare(messageQuery).asSingleEntity();
-    //     String actual = (String) onlyMessageEntity.getProperty(MESSAGE_TEXT_PROPERTY);
+        // Only one message ("hi") should be in the datastore
+        String expectedMessages = "hi";
+        Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
+        Entity onlyMessageEntity = datastore.prepare(messageQuery).asSingleEntity();
+        String actualMessages = (String) onlyMessageEntity.getProperty(MESSAGE_TEXT_PROPERTY);
 
-    //     verify(response, times(1)).sendRedirect("/chat");
-    //     Assert.assertEquals(expected, actual);
-    // }
+        verify(response, times(1)).sendRedirect("/chat");
+        Assert.assertEquals(expectedMessages, actualMessages);
+    }
 
-    // @Test
-    // public void servletPostToxicComment() throws IOException {
-    //     // POST method should not post to datastore and
-    //     // should render an error message
+    @Test
+    public void servletPostToxicComment() throws IOException {
+        // POST method should not post to datastore and
+        // should render an error message
 
-    //     when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn(MESSAGE_TEXT_TOXIC);
-    //      when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
-    //     when(response.getWriter()).thenReturn(printWriter);
+        when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn(MESSAGE_TEXT_TOXIC);
+        when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(GROUP_ID);
+        when(response.getWriter()).thenReturn(printWriter);
 
-    //     servlet.doPost(request, response);
+        servlet.doPost(request, response);
 
-    //     String expectedMessages = null;
-    //     Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
-    //     // Should be null
-    //     Entity actualMessages = datastore.prepare(messageQuery).asSingleEntity();
+        Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
+        Entity actualMessages = datastore.prepare(messageQuery).asSingleEntity();
 
-    //     ImmutableMap<String, String> errorData = ImmutableMap.of("errorMessage", 
-    //     "Your message contains content that may be deemed offensive by others. " +
-    //     "Please revise your message and try again.");
+        ImmutableMap<String, String> errorData = ImmutableMap.of(ERROR_MESSAGE_KEY, 
+            ERROR_MESSAGE_TEXT);
 
-    //     String expectedOutput = tofu.newRenderer("templates.chat.error").setData(errorData).render();
-    //     String actualOutput = stringWriter.getBuffer().toString().trim();
+        String expectedHtml = getOutputString("chat.soy", "templates.chat.error", errorData);
+        String actualHtml = stringWriter.getBuffer().toString().trim();
         
-    //     Assert.assertEquals(expectedMessages, actualMessages);
-    //     Assert.assertEquals(expectedOutput, actualOutput);
-    // }
+        Assert.assertEquals(null, actualMessages);
+        Assert.assertEquals(expectedHtml, actualHtml);
+    }
 
     @Test
     public void servletPostEmptyComment() throws IOException {
@@ -242,17 +216,15 @@ public final class ChatServletTest extends Mockito {
         // redirect to /chat
 
         when(request.getParameter(MESSAGE_TEXT_PROPERTY)).thenReturn("");
-        when(request.getParameter(GROUP_ID_PARAM)).thenReturn(GROUP_ID);
+        when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(GROUP_ID);
         when(response.getWriter()).thenReturn(printWriter);
 
         servlet.doPost(request, response);
 
-        String expectedMessages = null;
         Query messageQuery = new Query(MESSAGE_KIND + GROUP_ID);
-        // Should be null
         Entity actualMessages = datastore.prepare(messageQuery).asSingleEntity();
         
         verify(response, times(1)).sendRedirect("/chat");
-        Assert.assertEquals(expectedMessages, actualMessages);
+        Assert.assertEquals(null, actualMessages);
     }
 }

@@ -1,4 +1,4 @@
-package com.google.sps.servlets;
+package com.google.sps.data;
  
 import com.google.common.collect.ImmutableMap;
  

@@ -1,5 +1,7 @@
 package com.google.sps.servlets;
 
+import static com.google.sps.utils.SoyRendererUtils.getOutputString;
+
 import com.google.template.soy.SoyFileSet;
 import com.google.template.soy.tofu.SoyTofu;
 import com.google.common.collect.ImmutableList;
@@ -32,15 +34,10 @@ public class GroupsServlet extends HttpServlet {
         
         // Each group has its own map which points to its info and all maps are passed into the template as a list
         // This will make it easier when groups are queried from Datastore
-        ImmutableMap<String, ImmutableList<ImmutableMap<String, String>>> data = ImmutableMap.of("groups", groups);
+        ImmutableMap<String, ImmutableList<ImmutableMap<String, String>>> groupsData = 
+            ImmutableMap.of("groups", groups);
 
-        SoyFileSet sfs = SoyFileSet
-            .builder()
-            .add(new File("../../src/main/java/templates/groups.soy"))
-            .build();
-        SoyTofu tofu = sfs.compileToTofu();
-
-        String out = tofu.newRenderer("templates.groups.groupsPage").setData(data).render();
-        response.getWriter().println(out);
+        String groupsPageHtml = getOutputString("groups.soy", "templates.groups.groupsPage", groupsData);
+        response.getWriter().println(groupsPageHtml);
     }
 }

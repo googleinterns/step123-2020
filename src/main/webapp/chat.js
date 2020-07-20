@@ -5,8 +5,8 @@ function init() {
         const currNumMessages = document.getElementsByClassName("message").length;
         // Hardcoded groupID
         const groupID = "123";
-        const urlString = "/updateChat?currMessages=" + currNumMessages + 
-            "groupID=" + groupID;
+        const urlString = "/updateChat?groupID=" + groupID + 
+            "&currMessages=" + currNumMessages;
 
         fetch(urlString).then(response => response.json()).then(json => {
             for (let i = 0; i < json.length; i++) {
