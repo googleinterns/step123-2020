@@ -1,7 +1,7 @@
 package com.google.sps.servlets;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
-import static com.google.sps.utils.ChatServletConstants.*;
+import static com.google.sps.utils.StringConstants.*;
 import static com.google.sps.utils.SoyRendererUtils.getOutputString;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -36,7 +36,7 @@ import org.apache.http.util.EntityUtils;
 
 @WebServlet("/chat")
 public class ChatServlet extends HttpServlet {
-    public static final String API_BASE_URL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=";
+    private static final String API_BASE_URL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=";
 
     enum Attribute {
         TOXICITY,
@@ -75,7 +75,8 @@ public class ChatServlet extends HttpServlet {
         ImmutableMap<String, ImmutableList<String>> messagesGroupsData = getTemplateData(preparedMessageQuery,
             preparedGroupQuery);
 
-        final String chatPageHtml = getOutputString("chat.soy", "templates.chat.chatPage", messagesGroupsData);
+        final String chatPageHtml = getOutputString(CHAT_SOY_FILE, CHAT_TEMPLATE_NAMESPACE + "chatPage",
+            messagesGroupsData);
 
         response.getWriter().println(chatPageHtml);
     }
@@ -116,7 +117,7 @@ public class ChatServlet extends HttpServlet {
             ImmutableMap<String, String> errorData = ImmutableMap.of(ERROR_MESSAGE_KEY, 
                 ERROR_MESSAGE_TEXT);
 
-            final String errorPageHtml = getOutputString("chat.soy", "templates.chat.error", errorData);
+            final String errorPageHtml = getOutputString(CHAT_SOY_FILE, CHAT_TEMPLATE_NAMESPACE + "error", errorData);
 
             response.getWriter().println(errorPageHtml);
         } else {
