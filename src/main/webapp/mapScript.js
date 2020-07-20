@@ -30,13 +30,11 @@ function initMap() {
     // TODO: repace the hardcoded event ID with actually value
     getMarkerInfo('123', geocoder);
 
-
     autoCompleteAndZoom(); 
 
     document.getElementById('submit').addEventListener('click', () => {
         geocodeAddress(geocoder);
     });
-
 }
 
 /**
@@ -131,9 +129,7 @@ function removeGroupMarkers(groupId) {
 function getMarkerInfo(groupId, geocoder) {
     // Fetch the json with the eventMarker objects 
     // For each object call addMarker()
-    //const address = 'San Diego, CA'; 
-    //const description = 'This is the hardcoded test description';
-    //const name = 'Test event';
+    
     fetch('/sortedMarkers?groupid=' + groupId).then(response => response.json()).then((eventMarkers) => {
         eventMarkers.forEach((eventMarker) => {
             geocoder.geocode({'address': eventMarker.location}, (results) => {
@@ -147,11 +143,8 @@ function getMarkerInfo(groupId, geocoder) {
                             eventMarker.dateOutput,
                             groupId);
             });
-
         });
     });
-    
-    
 }
 
 /**

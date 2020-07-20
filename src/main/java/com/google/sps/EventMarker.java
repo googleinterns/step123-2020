@@ -16,12 +16,10 @@ import java.util.Date;
     private String name;
     private String description;
     private String location; 
-    DateTime date; 
-    String dateOutput; 
+    private DateTime date; 
+    private String dateOutput; 
     private String groupName;
-    private int year; 
-    private int month; 
-    private int day; 
+    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy hh:mm a");
 
     public EventMarker(String name, String description, String location, DateTime date, String groupName) {
         this.name = name;
@@ -39,8 +37,7 @@ import java.util.Date;
     /**
      * Formats the Date ex. Monday, June 08, 2000 12:30PM
      */
-    private void formatDate() {
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy hh:mm a");
+    private void formatDate() {      
         dateOutput = OffsetDateTime.parse(date.toStringRfc3339()).format(format); 
     }
 

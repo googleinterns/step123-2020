@@ -22,8 +22,8 @@ public final class SortedMarkers {
         return Collections.unmodifiableCollection(sortedMarkers);
     }
 
-    private void sortByTime(ArrayList<EventMarker> al) {
-        Collections.sort(al, new Comparator<EventMarker>() {
+    private void sortByTime(ArrayList<EventMarker> eventMarkerList) {
+        Collections.sort(eventMarkerList, new Comparator<EventMarker>() {
             public int compare(EventMarker event1, EventMarker event2) {
                 return Long.compare((event1.getDateTime().getValue()),(event2.getDateTime().getValue()));
             }

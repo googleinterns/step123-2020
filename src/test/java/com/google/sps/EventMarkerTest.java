@@ -22,7 +22,6 @@ public final class EventMarkerTest {
 
     private final int DATE_OFFSET = 1900; 
 
-
     @Test
     public void dateFormat() { 
         Date date = new Date(2020-DATE_OFFSET,0,17,12,32);
@@ -31,6 +30,4 @@ public final class EventMarkerTest {
         String expected = "Friday, January 17, 2020";
         Assert.assertEquals(expected, event.getDateString().substring(0,expected.length())); 
     }
-
-  
 }

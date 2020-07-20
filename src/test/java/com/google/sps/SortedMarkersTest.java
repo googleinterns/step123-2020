@@ -75,5 +75,4 @@ public final class SortedMarkersTest {
         Assert.assertEquals(event.getName(), (Iterables.get(sortedMarkers.getSortedMarkers(), 2)).getName());
 
     }
-
 }
