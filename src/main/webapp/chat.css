@@ -1,7 +1,7 @@
 body {
     display: flex;
     flex-direction: row;
-    margin: 0px;
+    margin: 0;
 }
 
 aside.mdc-drawer {
@@ -14,7 +14,7 @@ aside.mdc-drawer {
 
 .groups-headline {
     color: #696969;
-    margin: 10px 0px 0px 0px;
+    margin: 10px 0 0 0;
     padding: 0 16px;
 }
 
@@ -23,8 +23,8 @@ aside.mdc-drawer {
 }
 
 .main-content {
-    margin: auto;
     height: 100vh;
+    margin: auto;
     width: 100%;
 }
 
@@ -32,7 +32,7 @@ aside.mdc-drawer {
     align-items: center;
     display: flex;
     flex-direction: row;
-    margin: 0px 10px;
+    margin: 0 10px;
 }
 
 label.mdc-text-field.mdc-text-field--filled {

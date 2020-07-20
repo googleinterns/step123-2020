@@ -37,11 +37,11 @@
             </aside>
 
             <main class="main-content">
-                <ul class="mdc-list messages-container">
+                <ul id="messages-container" class="mdc-list">
                     {for $message in $messages}
-                    <li class="mdc-list-item" tabindex="0">
-                        <span class="mdc-list-item__text message">{$message}</span>
-                    </li>
+                        <li class="mdc-list-item" tabindex="0">
+                            <span class="mdc-list-item__text message">{$message}</span>
+                        </li>
                     {/for}
                 </ul>
 
