@@ -7,9 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
-
-
-
 public final class SortedMarkers {
     private final ArrayList<EventMarker> sortedMarkers = new ArrayList<EventMarker>();
 

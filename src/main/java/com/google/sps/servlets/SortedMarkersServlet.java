@@ -36,7 +36,6 @@ public class SortedMarkersServlet extends HttpServlet {
         response.setContentType("application/json");
         response.getWriter().println(jsonResponse);
     }
-
   }
 
   /**
@@ -88,5 +87,4 @@ public class SortedMarkersServlet extends HttpServlet {
         SortedMarkers sorted = new SortedMarkers(events); 
         return sorted.getSortedMarkers();
   }
-
 }
