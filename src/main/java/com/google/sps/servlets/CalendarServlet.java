@@ -1,10 +1,11 @@
 package com.google.sps.servlets;
 
 import com.google.api.services.calendar.model.Calendar;
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.common.base.Strings;
+import com.google.sps.utils.ServletUtils;
 import com.google.template.soy.SoyFileSet;
+import com.google.template.soy.jbcsrc.api.SoySauce;
 import com.google.template.soy.tofu.SoyTofu;
 import java.io.File;
 import java.io.IOException;
@@ -13,11 +14,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.google.sps.utils.ServletUtils.getParameter;
+
 /**
  * Servlet for getting or creating the Calendar page for each group
  */
 @WebServlet("/calendar")
 public class CalendarServlet extends AbstractEventsServlet {
+  private final ClassLoader classLoader = CalendarServlet.class.getClassLoader();
+
   /**
    * Display the Calendar page for each group.
    */
@@ -25,11 +30,11 @@ public class CalendarServlet extends AbstractEventsServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     SoyFileSet sfs = SoyFileSet
         .builder()
-        .add(new File("../../src/main/java/templates/calendar.soy"))
+        .add(new File(classLoader.getResource("calendar.soy").getFile()))
         .build();
-    SoyTofu tofu = sfs.compileToTofu();
+    SoySauce sauce = sfs.compileTemplates();
 
-    String out = tofu.newRenderer("templates.calendar.calendarPage").render();
+    String out = sauce.renderTemplate("templates.calendar.calendarPage").render().get();
     response.getWriter().println(out);
   }
 
@@ -38,7 +43,7 @@ public class CalendarServlet extends AbstractEventsServlet {
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String groupId = getParameter(request, "groupid", "");
+    String groupId = getParameter(request, "groupid");
 
     if(!Strings.isNullOrEmpty(groupId)){
       try {

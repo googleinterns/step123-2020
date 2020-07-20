@@ -14,6 +14,8 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
+import com.google.sps.utils.ServletUtils;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.http.HttpServlet;
@@ -26,20 +28,10 @@ abstract class AbstractEventsServlet extends HttpServlet {
   protected static final String TIMEZONE = "America/Los_Angeles";
 
   protected static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-  // TODO: Get the proper scopes. CalendarScopes might be outdated and not have all the proper scopes.
-  protected static final List<String> SCOPES = Lists.newArrayList(CalendarScopes.all());
-
-  /**
-   * @return the request parameter, or the default value if the parameter
-   *         was not specified by the client
-   */
-  protected String getParameter(HttpServletRequest request, String name, String defaultValue) {
-    String value = request.getParameter(name);
-    if (value == null) {
-      return defaultValue;
-    }
-    return value;
-  }
+  protected static final List<String> SCOPES = ImmutableList.of("https://www.googleapis.com/auth/calendar",
+      "https://www.googleapis.com/auth/calendar.events", "https://www.googleapis.com/auth/calendar.events.readonly",
+      "https://www.googleapis.com/auth/calendar.readonly", "https://www.googleapis.com/auth/calendar.settings.readonly",
+      "https://www.googleapis.com/auth/calendar.events.public.readonly", "https://www.googleapis.com/auth/calendar.app.created");
 
   protected String getGroupProperty(String groupId, String property) throws EntityNotFoundException {
     Entity groupEntity = getGroupEntity(groupId);
@@ -50,7 +42,7 @@ abstract class AbstractEventsServlet extends HttpServlet {
   protected Entity getGroupEntity(String groupId) throws EntityNotFoundException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
       
-    Key groupKey = KeyFactory.createKey("Group", groupId);
+    Key groupKey = KeyFactory.createKey(ServletUtils.GROUP_CONSTANT, groupId);
 
     return datastore.get(groupKey);
   }
@@ -59,7 +51,7 @@ abstract class AbstractEventsServlet extends HttpServlet {
     final HttpTransport HTTP_TRANSPORT = UrlFetchTransport.getDefaultInstance();
 
     return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, new AppIdentityCredential(SCOPES))
-        .setApplicationName("The Solidarity Initiative")
+        .setApplicationName(ServletUtils.APPLICATION_NAME)
         .build();
   }
 }
