@@ -8,9 +8,6 @@ import com.google.template.soy.tofu.SoyTofu;
 public final class SoyRendererUtils {
     private static final ClassLoader CLASS_LOADER = SoyRendererUtils.class.getClassLoader();
 
-    private SoyRendererUtils() {
-    }
-
     /**
      * Returns the output string for the response. In other words,
      * it sets up the soy template with the passed in data.
