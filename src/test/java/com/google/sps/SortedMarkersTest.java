@@ -18,16 +18,22 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public final class SortedMarkersTest {
     private final int DATE_OFFSET = 1900; 
+    private final String DESCRIPTION = "description";
+    private final String LOCATION = "location";
+    private final String NAME_ONE = "name1";
+    private final String NAME_TWO = "name2";
+    private final String NAME_THREE = "name3";
+    private final String NAME_FOUR = "name4";
 
     @Test
     public void noEventsAreLost() {
         ArrayList<EventMarker> events = new ArrayList<EventMarker>(); 
         Date date = new Date(2020-DATE_OFFSET,7,17,12,32);
        
-        EventMarker event = new EventMarker("name", "description", "location", new DateTime(date), "groupName");
-        EventMarker event2 = new EventMarker("name2", "description", "location", new DateTime(date), "groupName2");
-        EventMarker event3 = new EventMarker("name3", "description", "location", new DateTime(date), "groupName3");
-        EventMarker event4 = new EventMarker("name4", "description", "location", new DateTime(date), "groupName4");
+        EventMarker event = new EventMarker(NAME_ONE, DESCRIPTION, LOCATION, new DateTime(date), "groupName");
+        EventMarker event2 = new EventMarker(NAME_TWO, DESCRIPTION, LOCATION, new DateTime(date), "groupName2");
+        EventMarker event3 = new EventMarker(NAME_THREE, DESCRIPTION, LOCATION, new DateTime(date), "groupName3");
+        EventMarker event4 = new EventMarker(NAME_FOUR, DESCRIPTION, LOCATION, new DateTime(date), "groupName4");
 
         events.add(event);
         events.add(event2);
@@ -44,14 +50,14 @@ public final class SortedMarkersTest {
         ArrayList<EventMarker> events = new ArrayList<EventMarker>(); 
         Date date = new Date(2020-DATE_OFFSET,7,17,12,32);
         Date date2 = new Date(2020-DATE_OFFSET,7,16,12,32);
-        EventMarker event = new EventMarker("thisIsOne", "description", "location", new DateTime(date), "groupName");
-        EventMarker event2 = new EventMarker("thisIsTwo", "description", "location", new DateTime(date2), "groupName2");
+        EventMarker event = new EventMarker(NAME_ONE, DESCRIPTION, LOCATION, new DateTime(date), "groupName");
+        EventMarker event2 = new EventMarker(NAME_TWO, DESCRIPTION, LOCATION, new DateTime(date2), "groupName2");
 
         events.add(event);
         events.add(event2);
         
         SortedMarkers sortedMarkers = new SortedMarkers(events); 
-        Assert.assertEquals(event2.getName(), (Iterables.get(sortedMarkers.getSortedMarkers(), 0)).getName());
+        Assert.assertEquals(NAME_TWO, (Iterables.get(sortedMarkers.getSortedMarkers(), 0)).getName());
     }
 
     @Test
@@ -60,9 +66,9 @@ public final class SortedMarkersTest {
         Date date = new Date(2020-DATE_OFFSET,7,17,18,32);
         Date date2 = new Date(2020-DATE_OFFSET,7,17,1,32);
         Date date3 = new Date(2020-DATE_OFFSET,6,16,12,30);
-        EventMarker event = new EventMarker("thisIsOne", "description", "location", new DateTime(date), "groupName");
-        EventMarker event2 = new EventMarker("thisIsTwo", "description", "location", new DateTime(date2), "groupName2");
-        EventMarker event3 = new EventMarker("thisIsThree", "description", "location", new DateTime(date3), "groupName3");
+        EventMarker event = new EventMarker(NAME_ONE, DESCRIPTION, LOCATION, new DateTime(date), "groupName");
+        EventMarker event2 = new EventMarker(NAME_TWO, DESCRIPTION, LOCATION, new DateTime(date2), "groupName2");
+        EventMarker event3 = new EventMarker(NAME_THREE, DESCRIPTION, LOCATION, new DateTime(date3), "groupName3");
 
         events.add(event);
         events.add(event2);
@@ -70,9 +76,9 @@ public final class SortedMarkersTest {
         
         SortedMarkers sortedMarkers = new SortedMarkers(events); 
 
-        Assert.assertEquals(event3.getName(), (Iterables.get(sortedMarkers.getSortedMarkers(), 0)).getName());
-        Assert.assertEquals(event2.getName(), (Iterables.get(sortedMarkers.getSortedMarkers(), 1)).getName());
-        Assert.assertEquals(event.getName(), (Iterables.get(sortedMarkers.getSortedMarkers(), 2)).getName());
+        Assert.assertEquals(NAME_THREE, (Iterables.get(sortedMarkers.getSortedMarkers(), 0)).getName());
+        Assert.assertEquals(NAME_TWO, (Iterables.get(sortedMarkers.getSortedMarkers(), 1)).getName());
+        Assert.assertEquals(NAME_ONE, (Iterables.get(sortedMarkers.getSortedMarkers(), 2)).getName());
 
     }
 }

@@ -27,7 +27,7 @@ public class SortedMarkersServlet extends HttpServlet {
     
     if(!Strings.isNullOrEmpty(groupId)){ 
         SortedMarkers sorted = new SortedMarkers(getEvents(groupId));
-         Collection<EventMarker> output = sorted.getSortedMarkers(); 
+        Collection<EventMarker> output = sorted.getSortedMarkers(); 
         
         // Convert the sortedMarkers to JSON
         String jsonResponse = gson.toJson(output);
@@ -59,7 +59,6 @@ public class SortedMarkersServlet extends HttpServlet {
       // All hardcoded tests for the moment 
       // Will call the calendar event function to get the events for the 
       // given groupId once merged
-
       ArrayList<EventMarker> events = new ArrayList<EventMarker>(); 
         Date date = new Date(2020-1900,8,17,18,30);
         Date date2 = new Date(2020-1900,7,21,1,30);

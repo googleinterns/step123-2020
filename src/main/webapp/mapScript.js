@@ -182,7 +182,7 @@ function addMarkerToMap(address, descriptionText, nameText, groupName, date, loc
 function addToGroupMarkers(groupId, marker) {
     console.log(groupMarkers);
     console.log(groupId);
-    if (!(groupMarkers.has(groupId))) {
+    if (!groupMarkers.has(groupId)) {
         groupMarkers.set(groupId, new Array(marker));
     } else {
         groupMarkers.get(groupId).push(marker); 
