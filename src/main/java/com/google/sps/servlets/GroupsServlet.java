@@ -1,5 +1,7 @@
 package com.google.sps.servlets;
 
+import static com.google.sps.utils.StringConstants.*;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -22,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/groups")
 public class GroupsServlet extends HttpServlet {
-
   /**
    * Renders a HTML template with cards representing the various
    * groups that have already been created.
@@ -73,16 +74,17 @@ public class GroupsServlet extends HttpServlet {
    * Returns the Group ID as a string.
    */
   private String createGroup(String name, String image, String description){
-    long groupId = 123L;
-    Entity groupEntity = new Entity(ServletUtils.GROUP_CONSTANT, String.valueOf(groupId));
-
-    groupEntity.setProperty("name", name);
-    groupEntity.setProperty("image", image);
-    groupEntity.setProperty("description", description);
-    //TODO: Remove once not hardcoded, since the CalendarServlet deals with setting the calendar ID.
-    groupEntity.setProperty("calendarId", "fk6u4m5isbl8i6cj1io1pkpli4@group.calendar.google.com");
     //TODO: Unhardcode
-    groupEntity.setProperty("groupId", groupId);
+    long groupId = 123L;
+    Entity groupEntity = new Entity(GROUP_KIND, String.valueOf(groupId));
+
+    groupEntity.setProperty(GROUP_NAME_PROPERTY, name);
+    groupEntity.setProperty(GROUP_IMAGE_PROPERTY, image);
+    groupEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, description);
+    //TODO: Remove once not hardcoded, since the CalendarServlet deals with setting the calendar ID.
+    groupEntity.setProperty(GROUP_CALENDARID_PROPERTY, "fk6u4m5isbl8i6cj1io1pkpli4@group.calendar.google.com");
+    //TODO: Unhardcode
+    groupEntity.setProperty(GROUP_ID_PROPERTY, groupId);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(groupEntity);

@@ -1,12 +1,14 @@
 package com.google.sps.servlets;
 
 import static com.google.sps.utils.ServletUtils.getParameter;
+import static com.google.sps.utils.StringConstants.*;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 import com.google.api.services.calendar.model.EventDateTime;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.sps.utils.ServletUtils;
 import java.io.IOException;
@@ -19,8 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/events")
 public class EventsServlet extends AbstractEventsServlet {
-  private static final int MAX_EVENTS = 50;
-  private static final String CALENDAR_ID_PARAM = "calendarId";
+  private final int MAX_EVENTS = 50;
 
   /**
    * Obtain a list of events from the specified group if given the Calendar ID.
@@ -29,8 +30,8 @@ public class EventsServlet extends AbstractEventsServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String calendarId = getParameter(request, CALENDAR_ID_PARAM);
-    String groupId = getParameter(request, "groupid");
+    String calendarId = getParameter(request, GROUP_CALENDARID_PROPERTY);
+    String groupId = getParameter(request, GROUP_ID_PROPERTY);
 
     if (!Strings.isNullOrEmpty(calendarId)) {
       try {
@@ -44,7 +45,7 @@ public class EventsServlet extends AbstractEventsServlet {
       }
     } else if (!Strings.isNullOrEmpty(groupId)) {
       try {
-        calendarId = getGroupProperty(groupId, CALENDAR_ID_PARAM);
+        calendarId = ServletUtils.getGroupProperty(groupId, GROUP_CALENDARID_PROPERTY);
 
         response.setContentType("text/plain");
         response.getWriter().println(calendarId);
@@ -52,16 +53,18 @@ public class EventsServlet extends AbstractEventsServlet {
         entityError.printStackTrace();
         response.getWriter().println("Invalid group ID");
       }
+    } else {
+      ServletUtils.printBadRequestError(response, EVENTS_GET_BAD_REQUEST_MESSAGE);
     }
   }
 
   /**
-   * Create an event and add it to the calendar of the specified group
+   * Create an event and add it to the calendar of the specified group. Query string should contain groupId
    * POST body should contain: title, location (opt), description (opt), start time, and end time.
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String groupId = getParameter(request, "groupid");
+    String groupId = getParameter(request, GROUP_ID_PROPERTY);
     String eventTitle = getParameter(request, "title");
     String eventStart = getParameter(request, "start");
     String eventEnd = getParameter(request, "end");
@@ -69,7 +72,7 @@ public class EventsServlet extends AbstractEventsServlet {
     if(!Strings.isNullOrEmpty(groupId) && !Strings.isNullOrEmpty(eventTitle) 
         && !Strings.isNullOrEmpty(eventStart) && !Strings.isNullOrEmpty(eventEnd)) {
       try {
-        Event event = addEvent(getCalendarService(), getGroupProperty(groupId, CALENDAR_ID_PARAM), 
+        Event event = addEvent(getCalendarService(), ServletUtils.getGroupProperty(groupId, GROUP_CALENDARID_PROPERTY), 
             eventTitle, getParameter(request, "location"),
             getParameter(request, "description"), eventStart, eventEnd);
 
@@ -79,7 +82,16 @@ public class EventsServlet extends AbstractEventsServlet {
         entityError.printStackTrace();
         response.getWriter().println("Invalid input");
       }
+    } else {
+      ServletUtils.printBadRequestError(response, EVENTS_POST_BAD_REQUEST_MESSAGE);
     }
+  }
+
+  /**
+   * Called from another servlet to get the events rather than through a GET request
+   */
+  Events getEventsList(String calendarId) throws IOException {
+    return getEventsList(getCalendarService(), calendarId);
   }
 
   private Events getEventsList(Calendar service, String calendarId) throws IOException {
@@ -93,27 +105,27 @@ public class EventsServlet extends AbstractEventsServlet {
         .execute();
   }
 
-  /**
-   * Called from another servlet to get the events rather than through a GET request
-   */
-  public Events getEventsList(String calendarId) throws IOException {
-    return getEventsList(getCalendarService(), calendarId);
-  }
-
   private Event addEvent(Calendar service, String calendarId, String eventTitle, String eventLocation,
       String eventDescription, String eventStart, String eventEnd) throws IOException {
-    EventDateTime startTime = createEventDateTime(eventStart);
-    EventDateTime endTime = createEventDateTime(eventEnd);
-
-    Event event = new Event().setSummary(eventTitle).setLocation(eventLocation)
-        .setDescription(eventDescription).setStart(startTime).setEnd(endTime);
+    Event event = createEvent(eventTitle, eventLocation, eventDescription, eventStart, eventEnd);
 
     service.events().insert(calendarId, event).execute();
 
     return event;
   }
 
-  private EventDateTime createEventDateTime(String time) {
+  @VisibleForTesting
+  public Event createEvent(String eventTitle, String eventLocation, String eventDescription,
+     String eventStart, String eventEnd) {
+    EventDateTime startTime = createEventDateTime(eventStart);
+    EventDateTime endTime = createEventDateTime(eventEnd);
+
+    return new Event().setSummary(eventTitle).setLocation(eventLocation).setDescription(eventDescription)
+        .setStart(startTime).setEnd(endTime);
+  }
+
+  @VisibleForTesting
+  public EventDateTime createEventDateTime(String time) {
     DateTime dateTime = new DateTime(time);
 
     return new EventDateTime().setDateTime(dateTime).setTimeZone(TIMEZONE);
