@@ -1,5 +1,16 @@
+body {
+  display: flex;
+  height: 100vh;
+}
+
 .calendar-iframe {
   border: 0;
-  height: 600px;
-  width: 800px;
+  height: 100%;
+  width: 100%;
+}
+ 
+.main-content {
+  overflow: auto;
+  height: 100%;
+  width: 100%;
 }
