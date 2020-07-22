@@ -8,7 +8,7 @@ aside.mdc-drawer {
     height: 100vh;
 }
 
-.mdc-list-item.mdc-list-item--activated {
+div.mdc-list-item.mdc-list-item--activated {
     cursor: default;
 }
 
@@ -22,10 +22,15 @@ aside.mdc-drawer {
     font-size: 12pt;
 }
 
-.main-content {
+.main-view {
+    display: flex;
+    flex-direction: column-reverse;
     height: 100vh;
-    margin: auto;
     width: 100%;
+}
+
+.main-container {
+    margin-bottom: 10px;
 }
 
 .message-form {
@@ -33,6 +38,10 @@ aside.mdc-drawer {
     display: flex;
     flex-direction: row;
     margin: 0 10px;
+}
+
+span.mdc-list-item__text.message {
+    opacity: 1;
 }
 
 label.mdc-text-field.mdc-text-field--filled {

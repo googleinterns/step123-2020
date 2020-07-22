@@ -10,9 +10,8 @@ function init() {
 
     fetch(urlString).then(response => response.json()).then(json => {
         for (let i = 0; i < json.length; i++) {
-            const messageTemplate = templates.message.messageBubble({
-                "message": json[i]
-            });
+            const messageTemplate = 
+                templates.message.messageBubble({"message": json[i]});
             const messageHtmlNode = goog.dom.constHtmlToNode(goog.string.Const.from(messageTemplate));
             messagesContainer.appendChild(messageHtmlNode);
         }
