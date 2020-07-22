@@ -45,6 +45,7 @@ public class MapServlet extends HttpServlet {
         
         String out = tofu
             .newRenderer("templates.mapPages.mapPage")
+            // TODO change to constants from Valeria's StringConstants.java for the strings once her PR is merged
             .setData(ImmutableMap.of("groups", ImmutableList.of(groupMap, groupMap2), "key", apiKey))
             .render();
         response.getWriter().println(out);
