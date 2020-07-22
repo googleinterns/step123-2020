@@ -1,8 +1,8 @@
 package com.google.sps.servlets;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
-import static com.google.sps.utils.StringConstants.*;
 import static com.google.sps.utils.SoyRendererUtils.getOutputString;
+import static com.google.sps.utils.StringConstants.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -75,8 +75,7 @@ public class ChatServlet extends HttpServlet {
         ImmutableMap<String, ImmutableList<String>> messagesGroupsData = getTemplateData(preparedMessageQuery,
             preparedGroupQuery);
 
-        final String chatPageHtml = getOutputString(CHAT_SOY_FILE, CHAT_TEMPLATE_NAMESPACE + "chatPage",
-            messagesGroupsData);
+        final String chatPageHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, messagesGroupsData);
 
         response.getWriter().println(chatPageHtml);
     }
@@ -104,7 +103,7 @@ public class ChatServlet extends HttpServlet {
 
         // Reads API Key and HTTP referer from file
         ClassLoader classLoader = ChatServlet.class.getClassLoader();
-        File apiKeyFile = new File(classLoader.getResource("keys.txt").getFile());
+        File apiKeyFile = new File(classLoader.getResource(KEYS_TXT_FILE).getFile());
         Scanner scanner = new Scanner(apiKeyFile);
         final String apiKey = scanner.nextLine();
         final String referer = scanner.nextLine();
@@ -117,7 +116,7 @@ public class ChatServlet extends HttpServlet {
             ImmutableMap<String, String> errorData = ImmutableMap.of(ERROR_MESSAGE_KEY, 
                 ERROR_MESSAGE_TEXT);
 
-            final String errorPageHtml = getOutputString(CHAT_SOY_FILE, CHAT_TEMPLATE_NAMESPACE + "error", errorData);
+            final String errorPageHtml = getOutputString(CHAT_SOY_FILE, CHAT_ERROR_NAMESPACE, errorData);
 
             response.getWriter().println(errorPageHtml);
         } else {
@@ -163,7 +162,7 @@ public class ChatServlet extends HttpServlet {
         final String inputJson = new Gson().toJson(perspectiveRequest);
 
         httpPost.setEntity(new StringEntity(inputJson));
-        httpPost.addHeader("Referer", referer);
+        httpPost.addHeader(REFERER_HEADER, referer);
         CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
 
         // Perspective API responds with JSON string

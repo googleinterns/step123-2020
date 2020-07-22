@@ -1,7 +1,7 @@
 package com.google.sps.servlets;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
-import static com.google.sps.utils.ChatServletConstants.*;
+import static com.google.sps.utils.StringConstants.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -28,7 +28,7 @@ public class UpdateChatServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        final String groupID = (String) request.getParameter("groupID");
+        final String groupID = (String) request.getParameter(GROUP_ID_PROPERTY);
         final int currMessages = Integer.parseInt(request.getParameter("currMessages"));
         
         // Sets an offset so already fetched messages won't be returned
@@ -44,7 +44,7 @@ public class UpdateChatServlet extends HttpServlet {
             .stream().map(message -> (String) message.getProperty(MESSAGE_TEXT_PROPERTY))
             .collect(toImmutableList());
 
-        response.setContentType("application/json;");
+        response.setContentType(CONTENT_TYPE_JSON);
         response.getWriter().println(convertToJSON(messagesList));
     }
 

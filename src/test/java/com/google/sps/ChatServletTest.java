@@ -1,7 +1,7 @@
 package com.google.sps;
 
-import static com.google.sps.utils.StringConstants.*;
 import static com.google.sps.utils.SoyRendererUtils.getOutputString;
+import static com.google.sps.utils.StringConstants.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
@@ -34,7 +34,6 @@ import org.mockito.MockitoAnnotations;
 
 @RunWith(JUnit4.class)
 public final class ChatServletTest extends Mockito {
-    private static final String CHAT_PAGE_NAMESPACE = "templates.chat.chatPage";
     private static final String GROUP_ID = "123";
     private static final String MESSAGE_TEXT_NON_TOXIC = "hello";
     private static final String MESSAGE_TEXT_TOXIC = "what kind of idiot name is foo?";
@@ -207,7 +206,7 @@ public final class ChatServletTest extends Mockito {
         ImmutableMap<String, String> errorData = ImmutableMap.of(ERROR_MESSAGE_KEY, 
             ERROR_MESSAGE_TEXT);
 
-        String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_TEMPLATE_NAMESPACE + "error", errorData);
+        String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_ERROR_NAMESPACE, errorData);
         String actualHtml = stringWriter.getBuffer().toString().trim();
         
         Assert.assertEquals(null, actualMessages);
