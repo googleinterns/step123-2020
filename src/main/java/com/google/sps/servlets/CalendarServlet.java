@@ -31,7 +31,7 @@ public class CalendarServlet extends AbstractEventsServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String groupId = getParameter(request, GROUP_ID_PROPERTY);
 
-    if(!Strings.isNullOrEmpty(groupId)){
+    if (!Strings.isNullOrEmpty(groupId)){
       String out = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE, null);
 
       response.setContentType(CONTENT_TYPE_HTML);
@@ -48,12 +48,12 @@ public class CalendarServlet extends AbstractEventsServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String groupId = getParameter(request, GROUP_ID_PROPERTY);
 
-    if(!Strings.isNullOrEmpty(groupId)){
+    if (!Strings.isNullOrEmpty(groupId)){
       try {
         String calendarId = createCalendar(groupId);
         setGroupCalendarId(groupId, calendarId);
 
-        response.setContentType("text/plain");
+        response.setContentType(CONTENT_TYPE_PLAIN);
         response.getWriter().println(calendarId);
       } catch (Exception entityError) {
         response.getWriter().println(ENTITY_ERROR_MESSAGE);

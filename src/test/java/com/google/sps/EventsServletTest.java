@@ -55,7 +55,6 @@ public final class EventsServletTest extends Mockito {
   private String initialEventTime;
   private String endEventTime;
 
-
   private EventsServlet servlet;
   private DatastoreService datastore;
   private Entity groupEntity;

@@ -33,7 +33,7 @@ public class EventsServlet extends AbstractEventsServlet {
     String calendarId = getParameter(request, GROUP_CALENDARID_PROPERTY);
     String groupId = getParameter(request, GROUP_ID_PROPERTY);
 
-    if(!Strings.isNullOrEmpty(calendarId)) {
+    if (!Strings.isNullOrEmpty(calendarId)) {
       try {
         Events events = getEventsList(calendarId); 
 
@@ -67,7 +67,7 @@ public class EventsServlet extends AbstractEventsServlet {
     String eventStart = getParameter(request, EVENT_START_PROPERTY);
     String eventEnd = getParameter(request, EVENT_END_PROPERTY);
 
-    if(!Strings.isNullOrEmpty(groupId) && !Strings.isNullOrEmpty(eventTitle) 
+    if (!Strings.isNullOrEmpty(groupId) && !Strings.isNullOrEmpty(eventTitle) 
         && !Strings.isNullOrEmpty(eventStart) && !Strings.isNullOrEmpty(eventEnd)) {
       try {
         Event event = addEvent(ServletUtils.getGroupProperty(groupId, GROUP_CALENDARID_PROPERTY), 

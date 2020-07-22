@@ -61,11 +61,11 @@ public class GroupsServlet extends HttpServlet {
     String name = "Black Lives Matter";
     String image = "https://images.unsplash.com/photo-1591622414912-34f2a8f8172e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80";
 
-    if(!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(image)) {
+    if (!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(image)) {
       //TODO: Unhardcode
       String groupId = createGroup(name, image, "Group description would go here");
 
-      response.setContentType("text/html");
+      response.setContentType(CONTENT_TYPE_HTML);
       response.getWriter().println(groupId);
     }
   }
