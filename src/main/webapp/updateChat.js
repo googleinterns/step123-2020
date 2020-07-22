@@ -1,3 +1,6 @@
+goog.require('goog.dom');
+goog.require('templates.message');
+
 function init() {
     // Calls the updateChat servlet every second for new messages
     setInterval(function() {
@@ -7,10 +10,10 @@ function init() {
 
     fetch(urlString).then(response => response.json()).then(json => {
         for (let i = 0; i < json.length; i++) {
-            const p = document.createElement("P");
-            p.innerText = json[i];
-            p.classList.add("message");
-            messagesContainer.appendChild(p);
+            const messageTemplate = 
+                templates.message.messageBubble({"message": json[i]});
+            const messageHtmlNode = goog.dom.constHtmlToNode(goog.string.Const.from(messageTemplate));
+            messagesContainer.appendChild(messageHtmlNode);
         }
     });
 
