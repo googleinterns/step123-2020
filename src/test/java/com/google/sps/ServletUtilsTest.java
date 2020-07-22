@@ -66,7 +66,7 @@ public final class ServletUtilsTest extends Mockito {
 
   @Test
   public void getParameterWithValue() throws IOException {
-    // {language: english}
+    // {language: english} (param: value)
     when(request.getParameter(TESTING_PARAMETER)).thenReturn(TESTING_PARAMETER_VALUE);
 
     String expected = ServletUtils.getParameter(request, TESTING_PARAMETER);
@@ -76,7 +76,7 @@ public final class ServletUtilsTest extends Mockito {
 
   @Test
   public void getParameterWithNoValue() throws IOException { 
-    // {age: }
+    // {age: } (param: value)
     when(request.getParameter(NULL_PARAMETER)).thenReturn(null);
 
     String expected = ServletUtils.getParameter(request, NULL_PARAMETER);

@@ -1,6 +1,6 @@
 package com.google.sps.utils;
 
-import static com.google.sps.utils.StringConstants.GROUP_KIND;
+import static com.google.sps.utils.StringConstants.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -50,7 +50,7 @@ public final class ServletUtils {
   }
   
   public static void printBadRequestError(HttpServletResponse response, String errorMessage) throws IOException {
-    response.setContentType("text/plain");
+    response.setContentType(CONTENT_TYPE_PLAIN);
     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     response.getWriter().println(errorMessage);
   }

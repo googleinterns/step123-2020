@@ -10,6 +10,7 @@ public final class StringConstants {
   public static final String CALENDAR_TEMPLATE_NAMESPACE = "templates.calendar.calendarPage";
   public static final String CHAT_SOY_FILE = "chat.soy";
   public static final String CHAT_TEMPLATE_NAMESPACE = "templates.chat.";
+  public static final String TIMEZONE = "America/Los_Angeles";
 
   public static final Double COMMENT_SCORE_THRESHOLD = 0.85;
   public static final String ATTRIBUTE_SCORES = "attributeScores";
@@ -23,10 +24,17 @@ public final class StringConstants {
   public static final String TIMESTAMP_PROPERTY = "timestamp";
   public static final String VALUE = "value";
   
-  public static final String CALENDAR_ENTITY_ERROR_MESSAGE = "Incorrect group ID!";
   public static final String CALENDAR_BAD_REQUEST_MESSAGE = "Must have groupId in query string!";
   public static final String EVENTS_GET_BAD_REQUEST_MESSAGE = "Must have calendarId or groupId in query string!";
+  public static final String EVENTS_GET_INVALID_CALENDARID_MESSAGE = "Invalid credentials or calendar ID";
   public static final String EVENTS_POST_BAD_REQUEST_MESSAGE = "POST body must contain title and start and end times!";
+  public static final String ENTITY_ERROR_MESSAGE = "Invalid group ID!";
+
+  public static final String EVENT_DESCRIPTION_PROPERTY = "description";
+  public static final String EVENT_END_PROPERTY = "end";
+  public static final String EVENT_LOCATION_PROPERTY = "location";
+  public static final String EVENT_START_PROPERTY = "start";
+  public static final String EVENT_TITLE_PROPERTY = "title";
 
   public static final String GROUP_KIND = "Group";
   public static final String GROUPS_KEY = "groups";
@@ -43,4 +51,8 @@ public final class StringConstants {
   public static final String TEST_GROUP_IMAGE = "test image";
   public static final String TEST_GROUP_DESCRIPTION = "test description";
   public static final String TEST_GROUP_CALENDARID = "test calendar id";
+
+  public static final String CONTENT_TYPE_PLAIN = "text/plain";
+  public static final String CONTENT_TYPE_HTML = "text/html";
+  public static final String CONTENT_TYPE_JSON = "application/json";
 }

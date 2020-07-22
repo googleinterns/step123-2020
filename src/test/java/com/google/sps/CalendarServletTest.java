@@ -48,7 +48,7 @@ public final class CalendarServletTest extends Mockito {
   HttpServletResponse response;
 
   @Before
-  public void setUp() {
+  public void setUp() throws IOException {
     servlet = new CalendarServlet();
 
     helper.setUp();
@@ -60,6 +60,8 @@ public final class CalendarServletTest extends Mockito {
     groupEntity = TestUtils.createGroupEntity(datastore);
 
     MockitoAnnotations.initMocks(this);
+
+    when(response.getWriter()).thenReturn(printWriter);
   }
 
   @After
@@ -81,13 +83,12 @@ public final class CalendarServletTest extends Mockito {
   public void calendarGetWithGroupIdHasCorrectContentType() throws IOException {
     setUpCalendarGetWithGroupId();
 
-    verify(response).setContentType("text/html");
+    verify(response).setContentType(CONTENT_TYPE_HTML);
   }
 
   @Test
   public void calendarGetWithoutGroupId() throws IOException {
     when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(null);
-    when(response.getWriter()).thenReturn(printWriter);
     
     servlet.doGet(request, response);
     
@@ -113,7 +114,7 @@ public final class CalendarServletTest extends Mockito {
   public void calendarPostWithValidGroupIdHasCorrectContentType() throws IOException, EntityNotFoundException {
     setUpCalendarPostWithGroupId(TEST_GROUP_ID);
 
-    verify(response).setContentType("text/plain");
+    verify(response).setContentType(CONTENT_TYPE_PLAIN);
   }
 
   @Test
@@ -122,13 +123,12 @@ public final class CalendarServletTest extends Mockito {
     
     String errorCodeActual = stringWriter.getBuffer().toString().trim();
 
-    Assert.assertEquals(CALENDAR_ENTITY_ERROR_MESSAGE, errorCodeActual);
+    Assert.assertEquals(ENTITY_ERROR_MESSAGE, errorCodeActual);
   }
 
   @Test
   public void calendarPostWithNoGroupId() throws IOException {
     when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(null);
-    when(response.getWriter()).thenReturn(printWriter);
     
     servlet.doPost(request, response);
     
@@ -137,14 +137,12 @@ public final class CalendarServletTest extends Mockito {
 
   private void setUpCalendarGetWithGroupId() throws IOException {
     when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(TEST_GROUP_ID);
-    when(response.getWriter()).thenReturn(printWriter);
     
     servlet.doGet(request, response);
   }
 
   private void setUpCalendarPostWithGroupId(String groupId) throws IOException, EntityNotFoundException {
     when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(groupId);
-    when(response.getWriter()).thenReturn(printWriter);
 
     CalendarServlet servletSpy = Mockito.spy(servlet);
     Mockito.doReturn(TEST_POST_EXPECTED_CALENDARID).when(servletSpy).createCalendar(TEST_GROUP_ID);

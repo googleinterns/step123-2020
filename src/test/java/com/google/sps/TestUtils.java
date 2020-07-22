@@ -34,7 +34,7 @@ public final class TestUtils extends Mockito {
     String actualErrorMessage = stringWriter.getBuffer().toString().trim();
 
     verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-    verify(response).setContentType("text/plain");
+    verify(response).setContentType(CONTENT_TYPE_PLAIN);
 
     Assert.assertEquals(expectedErrorMessage, actualErrorMessage);
   }

@@ -34,7 +34,7 @@ public class CalendarServlet extends AbstractEventsServlet {
     if(!Strings.isNullOrEmpty(groupId)){
       String out = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE, null);
 
-      response.setContentType("text/html");
+      response.setContentType(CONTENT_TYPE_HTML);
       response.getWriter().println(out);
     } else {
       ServletUtils.printBadRequestError(response, CALENDAR_BAD_REQUEST_MESSAGE);
@@ -56,8 +56,7 @@ public class CalendarServlet extends AbstractEventsServlet {
         response.setContentType("text/plain");
         response.getWriter().println(calendarId);
       } catch (Exception entityError) {
-        entityError.printStackTrace();
-        response.getWriter().println(CALENDAR_ENTITY_ERROR_MESSAGE);
+        response.getWriter().println(ENTITY_ERROR_MESSAGE);
       }
     } else {
       ServletUtils.printBadRequestError(response, CALENDAR_BAD_REQUEST_MESSAGE);
@@ -69,7 +68,6 @@ public class CalendarServlet extends AbstractEventsServlet {
    */
   @VisibleForTesting
   public String createCalendar(String groupId) throws IOException, EntityNotFoundException {
-
     Calendar calendar = new Calendar()
         .setSummary(ServletUtils.getGroupProperty(groupId, GROUP_NAME_PROPERTY)).setTimeZone(TIMEZONE);
 
