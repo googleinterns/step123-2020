@@ -19,6 +19,8 @@ public final class StringConstants {
     public static final String GROUP_KIND = "Group";
     public static final String GROUP_NAME_PROPERTY = "name";
     public static final String GROUPS_KEY = "groups";
+    public static final String GROUPS_PAGE_NAMESPACE = "templates.groups.groupsPage";
+    public static final String GROUPS_SOY_FILE = "groups.soy";
     public static final String KEYS_TXT_FILE = "keys.txt";
     public static final String MESSAGES_KEY = "messages";
     public static final String MESSAGE_KIND = "Message-";
