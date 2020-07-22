@@ -28,7 +28,6 @@ public class MapServlet extends HttpServlet {
         File apiKeyFile = new File(classLoader.getResource("keys.txt").getFile());
         Scanner scanner = new Scanner(apiKeyFile);
         final String apiKey = scanner.nextLine();
-        final String referer = scanner.nextLine();
         scanner.close();
 
         // Hard coded user groups for testing, 
