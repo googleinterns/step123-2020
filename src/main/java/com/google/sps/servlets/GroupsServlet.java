@@ -1,6 +1,7 @@
 package com.google.sps.servlets;
 
 import static com.google.sps.utils.SoyRendererUtils.getOutputString;
+import static com.google.sps.utils.StringConstants.*;
 
 import com.google.template.soy.SoyFileSet;
 import com.google.template.soy.tofu.SoyTofu;

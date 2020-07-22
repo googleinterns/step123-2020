@@ -36,7 +36,7 @@ import org.apache.http.util.EntityUtils;
 
 @WebServlet("/chat")
 public class ChatServlet extends HttpServlet {
-    private static final String API_BASE_URL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=";
+    public static final String API_BASE_URL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=";
 
     enum Attribute {
         TOXICITY,
