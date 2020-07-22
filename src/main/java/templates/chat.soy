@@ -1,7 +1,7 @@
 {namespace templates.chat}
 
 {template .chatPage}
-{@param messages: list<string>}
+    {@param messages: list<string>}
 
     <html>
         <head>
@@ -11,7 +11,11 @@
             <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
             <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
             <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
-            <script src="chat.js"></script>
+            <script src="closure/closure-library/closure/goog/base.js"></script>
+            <script src="closure/closure-templates/javascript/checks.js"></script>
+            <script src="closure/closure-templates/javascript/soyutils_usegoog.js"></script>
+            <script src="templates/message.js"></script>
+            <script src="updateChat.js"></script>
         </head>
 
         <body onload="init()">
