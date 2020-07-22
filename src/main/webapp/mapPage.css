@@ -8,6 +8,20 @@ body {
   height: 100vh;
 }
 
+.icon-links {
+    text-decoration: none;
+}
+
+.nav-icons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 10px;
+}
+
+i.material-icons.mdc-list-item__graphic.nav-icon {
+    margin: 0;
+}
 
 .main-content {
   overflow: auto;

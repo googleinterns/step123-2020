@@ -12,6 +12,21 @@ div.mdc-list-item.mdc-list-item--activated {
     cursor: default;
 }
 
+.icon-links {
+    text-decoration: none;
+}
+
+.nav-icons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 10px;
+}
+
+i.material-icons.mdc-list-item__graphic.nav-icon {
+    margin: 0;
+}
+
 .groups-headline {
     color: #696969;
     margin: 10px 0 0 0;
