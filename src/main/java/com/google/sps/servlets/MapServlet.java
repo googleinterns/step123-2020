@@ -25,6 +25,7 @@ public class MapServlet extends HttpServlet {
 
         // Reads API Key and HTTP referer from file
         ClassLoader classLoader = MapServlet.class.getClassLoader();
+        // TODO change file name to the constant in Valeria's PR once merged
         File apiKeyFile = new File(classLoader.getResource("keys.txt").getFile());
         Scanner scanner = new Scanner(apiKeyFile);
         final String apiKey = scanner.nextLine();
