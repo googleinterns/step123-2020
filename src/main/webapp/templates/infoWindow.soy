@@ -3,8 +3,14 @@
 {template .getMarkerInfo}
   {@param name: string}
   {@param description: string}
+  {@param date: string}
+  {@param location: string}
+  {@param groupName: string}
     <div id="return">
     <h2>{$name}</h2>
     <p>{$description}</p>
+    <p>{$date}</p>
+    <p>{$location}</p>
+    <p>This event is part of the {$groupName} group.</p>
     </div>
 {/template}

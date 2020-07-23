@@ -28,12 +28,21 @@ templates.infoWindow.getMarkerInfo = function(opt_data, opt_ijData, opt_ijData_d
   var name = soy.asserts.assertType(typeof opt_data.name === 'string', 'name', opt_data.name, 'string');
   /** @type {string} */
   var description = soy.asserts.assertType(typeof opt_data.description === 'string', 'description', opt_data.description, 'string');
-  return soydata.VERY_UNSAFE.ordainSanitizedHtml('<div id="return"' + (goog.DEBUG && soy.$$debugSoyTemplateInfo ? ' data-debug-soy="templates.infoWindow.getMarkerInfo infoWindow.soy:6"' : '') + '><h2>' + soy.$$escapeHtml(name) + '</h2><p>' + soy.$$escapeHtml(description) + '</p></div>');
+  /** @type {string} */
+  var date = soy.asserts.assertType(typeof opt_data.date === 'string', 'date', opt_data.date, 'string');
+  /** @type {string} */
+  var location = soy.asserts.assertType(typeof opt_data.location === 'string', 'location', opt_data.location, 'string');
+  /** @type {string} */
+  var groupName = soy.asserts.assertType(typeof opt_data.groupName === 'string', 'groupName', opt_data.groupName, 'string');
+  return soydata.VERY_UNSAFE.ordainSanitizedHtml('<div id="return"' + (goog.DEBUG && soy.$$debugSoyTemplateInfo ? ' data-debug-soy="templates.infoWindow.getMarkerInfo infoWindow.soy:9"' : '') + '><h2>' + soy.$$escapeHtml(name) + '</h2><p>' + soy.$$escapeHtml(description) + '</p><p>' + soy.$$escapeHtml(date) + '</p><p>' + soy.$$escapeHtml(location) + '</p><p>This event is part of the ' + soy.$$escapeHtml(groupName) + ' group.</p></div>');
 };
 /**
  * @typedef {{
  *  name: string,
  *  description: string,
+ *  date: string,
+ *  location: string,
+ *  groupName: string,
  * }}
  */
 templates.infoWindow.getMarkerInfo.Params;

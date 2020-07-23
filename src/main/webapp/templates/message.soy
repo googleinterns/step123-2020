@@ -1,0 +1,9 @@
+{namespace templates.message}
+
+{template .messageBubble}
+    {@param message: string}
+
+    <li class="mdc-list-item" tabindex="0">
+        <span class="mdc-list-item__text message">{$message}</span>
+    </li>
+{/template}
