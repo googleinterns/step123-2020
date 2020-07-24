@@ -114,8 +114,6 @@ public class EventsServlet extends AbstractEventsServlet {
   }
 
   private EventDateTime createEventDateTime(String time) {
-    DateTime dateTime = new DateTime(time);
-
-    return new EventDateTime().setDateTime(dateTime).setTimeZone(TIMEZONE);
+    return new EventDateTime().setDateTime(new DateTime(time)).setTimeZone(TIMEZONE);
   }
 }

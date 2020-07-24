@@ -8,6 +8,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.lang.ClassLoader;
@@ -29,7 +30,7 @@ public final class ServletUtils {
   public static String getParameter(HttpServletRequest request, String name) {
     String value = request.getParameter(name);
     
-    return value == null ? DEFAULT_PARAM : value;
+    return Strings.isNullOrEmpty(value) ? DEFAULT_PARAM : value;
   }
 
   public static Entity getGroupEntity(String groupId) throws EntityNotFoundException {
