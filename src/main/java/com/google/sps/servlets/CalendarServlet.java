@@ -31,14 +31,15 @@ public class CalendarServlet extends AbstractEventsServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String groupId = getParameter(request, GROUP_ID_PROPERTY);
 
-    if (!Strings.isNullOrEmpty(groupId)){
-      String out = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE, null);
+    if (Strings.isNullOrEmpty(groupId)){
+      ServletUtils.printBadRequestError(response, CALENDAR_BAD_REQUEST_MESSAGE);
+      return;
+    }
+
+    String out = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE, null);
 
       response.setContentType(CONTENT_TYPE_HTML);
       response.getWriter().println(out);
-    } else {
-      ServletUtils.printBadRequestError(response, CALENDAR_BAD_REQUEST_MESSAGE);
-    }
   }
 
   /**
@@ -48,18 +49,19 @@ public class CalendarServlet extends AbstractEventsServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String groupId = getParameter(request, GROUP_ID_PROPERTY);
 
-    if (!Strings.isNullOrEmpty(groupId)){
-      try {
-        String calendarId = createCalendar(groupId);
-        setGroupCalendarId(groupId, calendarId);
-
-        response.setContentType(CONTENT_TYPE_PLAIN);
-        response.getWriter().println(calendarId);
-      } catch (Exception entityError) {
-        response.getWriter().println(ENTITY_ERROR_MESSAGE);
-      }
-    } else {
+    if (Strings.isNullOrEmpty(groupId)){
       ServletUtils.printBadRequestError(response, CALENDAR_BAD_REQUEST_MESSAGE);
+      return;
+    }
+
+    try {
+      String calendarId = createCalendar(groupId);
+      setGroupCalendarId(groupId, calendarId);
+
+      response.setContentType(CONTENT_TYPE_PLAIN);
+      response.getWriter().println(calendarId);
+    } catch (Exception entityError) {
+      response.getWriter().println(ENTITY_ERROR_MESSAGE);
     }
   }
 
