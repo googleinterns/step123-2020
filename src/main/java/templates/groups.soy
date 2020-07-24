@@ -14,10 +14,6 @@
         </head>
 
         <body>
-            <!-- <a href="#nav-drawer">
-                <i class="material-icons mdc-list-item__graphic" aria-hidden="true">menu</i>
-            </a> -->
-
             <aside class="mdc-drawer" id="nav-drawer" >
                 <div class="mdc-drawer__content">
                     <nav class="mdc-list" style="padding: 0">
@@ -49,9 +45,9 @@
                     // For each group, a new card is rendered with that group's info
                     {for $groupMap in $groups}
                         {call .groupCard}
-                            {param image: $groupMap['groupImage'] /}
-                            {param name: $groupMap['groupName'] /}
-                            {param description: $groupMap['groupDescription'] /}
+                            {param image: $groupMap['image'] /}
+                            {param name: $groupMap['name'] /}
+                            {param description: $groupMap['description'] /}
 
                         {/call}
                     {/for}

@@ -10,12 +10,15 @@ public final class StringConstants {
     public static final String ATTRIBUTE_SCORES = "attributeScores";
     public static final String CHAT_ERROR_NAMESPACE = "templates.chat.error";
     public static final String CHAT_PAGE_NAMESPACE = "templates.chat.chatPage";
+    public static final String CHAT_REDIRECT = "/chat?groupID=";
     public static final String CHAT_SOY_FILE = "chat.soy";
     public static final String CONTENT_TYPE_JSON = "application/json";
     public static final String ERROR_MESSAGE_KEY = "errorMessage";
     public static final String ERROR_MESSAGE_TEXT = "Your message contains content that may " + 
         "be deemed offensive by others. Please revise your message and try again.";
+    public static final String GROUP_DESCRIPTION_PROPERTY = "description";
     public static final String GROUP_ID_PROPERTY = "groupID";
+    public static final String GROUP_IMAGE_PROPERTY = "image";
     public static final String GROUP_KIND = "Group";
     public static final String GROUP_NAME_PROPERTY = "name";
     public static final String GROUPS_KEY = "groups";

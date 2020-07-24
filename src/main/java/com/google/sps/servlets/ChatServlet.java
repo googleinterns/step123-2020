@@ -57,10 +57,13 @@ public class ChatServlet extends HttpServlet {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         // This is just a sample group until group creation is coordinated
-        Entity sampleGroup = new Entity(GROUP_KIND, groupID);
-        sampleGroup.setProperty(GROUP_NAME_PROPERTY, "Black Lives Matter");
-        sampleGroup.setProperty(GROUP_ID_PROPERTY, groupID);
-        datastore.put(sampleGroup);
+        Entity blmEntity = new Entity(GROUP_KIND, "123");
+        blmEntity.setProperty(GROUP_NAME_PROPERTY, "Black Lives Matter");
+        datastore.put(blmEntity);
+
+        Entity sierraEntity = new Entity(GROUP_KIND, "456");
+        sierraEntity.setProperty(GROUP_NAME_PROPERTY, "Sierra Club");
+        datastore.put(sierraEntity);
 
         // Calls query on all entities of type Message
         Query messageQuery = new Query(MESSAGE_KIND + groupID).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
@@ -69,7 +72,7 @@ public class ChatServlet extends HttpServlet {
         Query groupQuery = new Query(GROUP_KIND);
         PreparedQuery preparedGroupQuery = datastore.prepare(groupQuery);
 
-        ImmutableMap<String, ImmutableList<String>> messagesGroupsData = getTemplateData(preparedMessageQuery,
+        ImmutableMap<String, ImmutableList> messagesGroupsData = getTemplateData(preparedMessageQuery,
             preparedGroupQuery);
 
         final String chatPageHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, messagesGroupsData);
@@ -94,7 +97,7 @@ public class ChatServlet extends HttpServlet {
         }
 
         if (messageText.isEmpty()) {
-            response.sendRedirect("/chat");
+            response.sendRedirect(CHAT_REDIRECT + groupID);
             return;
         }
 
@@ -123,7 +126,7 @@ public class ChatServlet extends HttpServlet {
             messageEntity.setProperty(TIMESTAMP_PROPERTY, timestamp);
             datastore.put(messageEntity);
 
-            response.sendRedirect("/chat");
+            response.sendRedirect(CHAT_REDIRECT + groupID);
         }
     }
 
@@ -131,7 +134,7 @@ public class ChatServlet extends HttpServlet {
      * Iterates through the queries to put all the required text into a list.
      * A map is then created the pass the lists into the template.
      */
-    private ImmutableMap<String, ImmutableList<String>> getTemplateData(PreparedQuery preparedMessageQuery,
+    private ImmutableMap<String, ImmutableList> getTemplateData(PreparedQuery preparedMessageQuery,
         PreparedQuery preparedGroupQuery) {
 
         // Creates lists of the data
@@ -139,9 +142,14 @@ public class ChatServlet extends HttpServlet {
             .map(message -> (String) message.getProperty(MESSAGE_TEXT_PROPERTY))
             .collect(toImmutableList());
 
-        ImmutableList<String> groupsList = Streams.stream(preparedGroupQuery.asIterable())
-            .map(group -> (String) group.getProperty(GROUP_NAME_PROPERTY))
-            .collect(toImmutableList());
+        ImmutableList.Builder<ImmutableMap<String, String>> builder = new ImmutableList.Builder<>();
+        for (Entity group : preparedGroupQuery.asIterable()) {
+            ImmutableMap<String, String> groupMap = ImmutableMap.of(
+                GROUP_NAME_PROPERTY, (String) group.getProperty(GROUP_NAME_PROPERTY),
+                GROUP_ID_PROPERTY, group.getKey().getName());
+            builder.add(groupMap);
+        }
+        ImmutableList<ImmutableMap<String, String>> groupsList = builder.build();
 
         // Data will be passed in as a list of messages/groups in a map (needed for template)
         return ImmutableMap.of(MESSAGES_KEY, messagesList, GROUPS_KEY, groupsList);
