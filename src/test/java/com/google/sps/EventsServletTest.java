@@ -132,33 +132,9 @@ public final class EventsServletTest extends Mockito {
 
     Assert.assertEquals(EVENTS_GET_INVALID_CALENDARID_MESSAGE, errorCodeActual);
   }
-
-  @Test
-  public void eventsGetWithGroupId() throws IOException, EntityNotFoundException {
-    when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(TEST_GROUP_ID);
-
-    servlet.doGet(request, response);
-
-    String actualCalendarId = stringWriter.getBuffer().toString().trim();
-
-    Assert.assertEquals(actualCalendarId, TEST_GROUP_CALENDARID);
-    verify(response).setContentType(CONTENT_TYPE_PLAIN);
-  }
-
-  @Test
-  public void eventsGetWithInvalidGroupId() throws IOException {
-    when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(TEST_GROUP_ID_INVALID);
-
-    servlet.doGet(request, response);
-
-    String errorCodeActual = stringWriter.getBuffer().toString().trim();
-
-    Assert.assertEquals(ENTITY_ERROR_MESSAGE, errorCodeActual);
-  }
-
+  
   @Test
   public void eventsGetWithNoIds() throws IOException {
-    when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(null);
     when(request.getParameter(GROUP_CALENDARID_PROPERTY)).thenReturn(null);
     
     servlet.doGet(request, response);

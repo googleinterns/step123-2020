@@ -25,34 +25,24 @@ public class EventsServlet extends AbstractEventsServlet {
 
   /**
    * Obtain a list of events from the specified group if given the Calendar ID.
-   * Obtain the Calendar ID of a group given the Group ID. If both provided, return list of events.
-   * These values should be in the query string.
+   * This value should be provided in the query string.
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String calendarId = getParameter(request, GROUP_CALENDARID_PROPERTY);
-    String groupId = getParameter(request, GROUP_ID_PROPERTY);
 
-    if (!Strings.isNullOrEmpty(calendarId)) {
-      try {
-        Events events = getEventsList(calendarId); 
-
-        response.setContentType(CONTENT_TYPE_JSON);
-        response.getWriter().println(events.toString());
-      } catch (Exception authenticationError) {
-        response.getWriter().println(EVENTS_GET_INVALID_CALENDARID_MESSAGE);
-      }
-    } else if (!Strings.isNullOrEmpty(groupId)) {
-      try {
-        calendarId = ServletUtils.getGroupProperty(groupId, GROUP_CALENDARID_PROPERTY);
-
-        response.setContentType(CONTENT_TYPE_PLAIN);
-        response.getWriter().println(calendarId);
-      } catch (Exception entityError) {
-        response.getWriter().println(ENTITY_ERROR_MESSAGE);
-      }
-    } else {
+    if (Strings.isNullOrEmpty(calendarId)) {
       ServletUtils.printBadRequestError(response, EVENTS_GET_BAD_REQUEST_MESSAGE);
+      return;
+    }
+
+    try {
+      Events events = getEventsList(calendarId); 
+
+      response.setContentType(CONTENT_TYPE_JSON);
+      response.getWriter().println(events.toString());
+    } catch (Exception authenticationError) {
+      response.getWriter().println(EVENTS_GET_INVALID_CALENDARID_MESSAGE);
     }
   }
 
