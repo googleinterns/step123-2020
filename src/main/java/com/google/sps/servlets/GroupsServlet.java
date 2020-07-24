@@ -46,17 +46,17 @@ public class GroupsServlet extends HttpServlet {
     try {
       Entity groupEntity = ServletUtils.getGroupEntity(GROUP_ID_STRING);
       Map<String, Object> group = groupEntity.getProperties();
-      // Since we will not display the group ID, we can remove it.
+      // Not displaying the group ID, so remove it.
       group.remove(GROUP_ID_PROPERTY);
 
+      // Turn the Map values into Strings rather than Objects for the soy template to read
       ImmutableList<Map<String, String>> groups = ImmutableList.of((Map) group);
       
       // Each group has its own map which points to its info and all maps are passed into the template as a list
       // This will make it easier when groups are queried from Datastore
       ImmutableMap<String, ImmutableList<Map<String, String>>> data = ImmutableMap.of(GROUPS_KEY, groups);
 
-      String htmlString = SoyRendererUtils.getOutputString(GROUPS_SOY_FILE, GROUPS_TEMPLATE_NAMESPACE,
-          data);
+      String htmlString = SoyRendererUtils.getOutputString(GROUPS_SOY_FILE, GROUPS_TEMPLATE_NAMESPACE, data);
 
       response.setContentType(CONTENT_TYPE_HTML);
       response.getWriter().println(htmlString);
