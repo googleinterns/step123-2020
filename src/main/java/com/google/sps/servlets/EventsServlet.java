@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/events")
 public class EventsServlet extends AbstractEventsServlet {
+  private final String SORT_EVENTS_BY = "startTime";
   private final int MAX_EVENTS = 50;
 
   /**
@@ -57,20 +58,21 @@ public class EventsServlet extends AbstractEventsServlet {
     String eventStart = getParameter(request, EVENT_START_PROPERTY);
     String eventEnd = getParameter(request, EVENT_END_PROPERTY);
 
-    if (!Strings.isNullOrEmpty(groupId) && !Strings.isNullOrEmpty(eventTitle) 
-        && !Strings.isNullOrEmpty(eventStart) && !Strings.isNullOrEmpty(eventEnd)) {
-      try {
-        Event event = addEvent(ServletUtils.getGroupProperty(groupId, GROUP_CALENDARID_PROPERTY), 
-            eventTitle, getParameter(request, EVENT_LOCATION_PROPERTY),
-            getParameter(request, EVENT_DESCRIPTION_PROPERTY), eventStart, eventEnd);
-
-        response.setContentType(CONTENT_TYPE_JSON);
-        response.getWriter().println(event.toString());
-      } catch (Exception entityError) {
-        response.getWriter().println(ENTITY_ERROR_MESSAGE);
-      }
-    } else {
+    if (Strings.isNullOrEmpty(groupId) || Strings.isNullOrEmpty(eventTitle) 
+        || Strings.isNullOrEmpty(eventStart) || Strings.isNullOrEmpty(eventEnd)) {
       ServletUtils.printBadRequestError(response, EVENTS_POST_BAD_REQUEST_MESSAGE);
+      return;
+    }
+
+    try {
+      Event event = addEvent(ServletUtils.getGroupProperty(groupId, GROUP_CALENDARID_PROPERTY), 
+          eventTitle, getParameter(request, EVENT_LOCATION_PROPERTY),
+          getParameter(request, EVENT_DESCRIPTION_PROPERTY), eventStart, eventEnd);
+
+      response.setContentType(CONTENT_TYPE_JSON);
+      response.getWriter().println(event.toString());
+    } catch (Exception entityError) {
+      response.getWriter().println(ENTITY_ERROR_MESSAGE);
     }
   }
 
@@ -87,7 +89,7 @@ public class EventsServlet extends AbstractEventsServlet {
     return service.events().list(calendarId)
         .setTimeMin(now)
         .setMaxResults(MAX_EVENTS)
-        .setOrderBy("startTime")
+        .setOrderBy(SORT_EVENTS_BY)
         .setSingleEvents(true)
         .execute();
   }

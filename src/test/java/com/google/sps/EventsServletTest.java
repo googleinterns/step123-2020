@@ -55,11 +55,11 @@ public final class EventsServletTest extends Mockito {
   private String initialEventTime;
   private String endEventTime;
 
-  private EventsServlet servlet;
+  final private EventsServlet servlet = new EventsServlet();
   private DatastoreService datastore;
   private Entity groupEntity;
   private PrintWriter printWriter;
-  private StringWriter stringWriter;
+  final private StringWriter stringWriter = new StringWriter();
 
   @Mock
   HttpServletRequest request;
@@ -72,12 +72,10 @@ public final class EventsServletTest extends Mockito {
 
   @Before
   public void setUp() throws IOException {
-    servlet = new EventsServlet();
-
     helper.setUp();
     datastore = DatastoreServiceFactory.getDatastoreService();
     
-    stringWriter = new StringWriter();
+    stringWriter.flush();
     printWriter = new PrintWriter(stringWriter);
 
     groupEntity = TestUtils.createGroupEntity(datastore);

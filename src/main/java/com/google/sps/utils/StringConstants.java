@@ -10,6 +10,8 @@ public final class StringConstants {
   public static final String CALENDAR_TEMPLATE_NAMESPACE = "templates.calendar.calendarPage";
   public static final String CHAT_SOY_FILE = "chat.soy";
   public static final String CHAT_TEMPLATE_NAMESPACE = "templates.chat.";
+  public static final String GROUPS_SOY_FILE = "groups.soy";
+  public static final String GROUPS_TEMPLATE_NAMESPACE = "templates.groups.groupsPage";
   public static final String TIMEZONE = "America/Los_Angeles";
 
   public static final Double COMMENT_SCORE_THRESHOLD = 0.85;
