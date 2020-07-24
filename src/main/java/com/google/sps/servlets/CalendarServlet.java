@@ -45,11 +45,11 @@ public class CalendarServlet extends AbstractEventsServlet {
       return;
     }
 
-    String out = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE,
-        ImmutableMap.of("calendarId", calendarId, "timezone", TIMEZONE));
+    String htmlString = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE,
+        ImmutableMap.of(GROUP_CALENDARID_PROPERTY, calendarId, "timezone", TIMEZONE));
 
       response.setContentType(CONTENT_TYPE_HTML);
-      response.getWriter().println(out);
+      response.getWriter().println(htmlString);
   }
 
   /**
@@ -76,7 +76,7 @@ public class CalendarServlet extends AbstractEventsServlet {
   }
 
   /**
-   * Return the Calendar ID of the created calendar.
+   * Return the Calendar ID after creating a calendar for the given groupId.
    */
   @VisibleForTesting
   public String createCalendar(String groupId) throws IOException, EntityNotFoundException {
