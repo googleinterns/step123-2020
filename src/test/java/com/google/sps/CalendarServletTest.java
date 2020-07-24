@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.common.collect.ImmutableMap;
 import com.google.sps.servlets.CalendarServlet;
 import com.google.sps.TestUtils;
 import com.google.sps.utils.ServletUtils;
@@ -73,7 +74,8 @@ public final class CalendarServletTest extends Mockito {
   public void calendarGetWithGroupIdHasCorrectSoyString() throws IOException {
     setUpCalendarGetWithGroupId();
 
-    String expectedHtml = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE, null);
+    String expectedHtml = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE,
+        ImmutableMap.of("calendarId", TEST_GROUP_CALENDARID, "timezone", TIMEZONE));
     String actualHtml = stringWriter.getBuffer().toString().trim();
     
     Assert.assertEquals(expectedHtml, actualHtml);

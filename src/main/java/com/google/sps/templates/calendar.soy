@@ -1,20 +1,20 @@
 {namespace templates.calendar}
 
 {template .calendarPage}
+  {@param calendarId: string}
+  {@param timezone: string}
   <html lang="en">
     <head>
       <meta charset="UTF-8">
       <title>The Solidarity Initiative - Events</title>
       <link rel="stylesheet" href="calendar.css">
-      <script src="closure/closure-library/closure/goog/base.js"></script>
-      <script src="closure/closure-templates/javascript/checks.js"></script>
-      <script src="closure/closure-templates/javascript/soyutils_usegoog.js"></script>
-      <script src="templates/eventsoy.js"></script>
       <script src="calendar.js"></script>
     </head>
 
     <body onload="initEvents();">
-      <div id="events-calendar"></div>
+      <div id="events-calendar">
+        <iframe class="calendar-iframe" src="https://calendar.google.com/calendar/embed?src={$calendarId}&ctz={$timezone}"></iframe>
+      </div>
     </body>
 </html>
 {/template}

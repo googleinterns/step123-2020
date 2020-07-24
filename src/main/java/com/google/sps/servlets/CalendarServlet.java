@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.google.sps.utils.ServletUtils;
 import com.google.sps.utils.SoyRendererUtils;
 import java.io.File;
@@ -36,7 +37,16 @@ public class CalendarServlet extends AbstractEventsServlet {
       return;
     }
 
-    String out = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE, null);
+    String calendarId = "";
+    try {
+      calendarId = ServletUtils.getGroupProperty(groupId, GROUP_CALENDARID_PROPERTY);
+    } catch (Exception entityError) {
+      ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
+      return;
+    }
+
+    String out = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE,
+        ImmutableMap.of("calendarId", calendarId, "timezone", TIMEZONE));
 
       response.setContentType(CONTENT_TYPE_HTML);
       response.getWriter().println(out);
