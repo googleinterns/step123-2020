@@ -33,7 +33,11 @@ function initMap() {
     autoCompleteAndZoom(); 
 
     document.getElementById('submit').addEventListener('click', () => {
-        geocodeAddress(geocoder);
+        filterDate(); 
+    });
+
+    document.getElementById('clearDate').addEventListener('click', () => {
+        clearDate(); 
     });
 }
 
@@ -109,8 +113,13 @@ function toggleGroupMarkers(checkbox, groupId) {
  * Adds a group and its events to the map based on the group passed
  */
 function addGroupMarkers(groupId) {
-    if(groupMarkers.has(groupId)) {
-        setMapMarkers(map, groupId);
+    if (groupMarkers.has(groupId)) {
+        dateInput = (document.querySelector('input[type="date"]')).value;
+        if (dateInput.length == 0) {
+            setMapMarkers(map, groupId);
+        } else {
+            filterGroupDate(groupId, dateInput)
+        }
     }
 }
 
@@ -118,7 +127,7 @@ function addGroupMarkers(groupId) {
  * Removes the markers of the given group from the map
  */
 function removeGroupMarkers(groupId) { 
-    if(groupMarkers.has(groupId)) {
+    if (groupMarkers.has(groupId)) {
         setMapMarkers(null, groupId);
     }
 }
@@ -141,6 +150,7 @@ function getMarkerInfo(groupId, geocoder) {
                             eventMarker.groupName, 
                             eventMarker.location, 
                             eventMarker.dateOutput,
+                            eventMarker.simpleDate,
                             groupId);
             });
         });
@@ -152,7 +162,7 @@ function getMarkerInfo(groupId, geocoder) {
  * Using the eventID get the name and description for
  * the infoWindow 
  */
-function addMarkerToMap(address, descriptionText, nameText, groupName, date, location, groupId) {
+function addMarkerToMap(address, descriptionText, nameText, groupName, location, date, simpleDate, groupId) {
     const infoContent = templates.infoWindow.getMarkerInfo({
         'name': nameText, 
         'description': descriptionText,
@@ -172,27 +182,63 @@ function addMarkerToMap(address, descriptionText, nameText, groupName, date, loc
     });
       
     marker.addListener('click', () => infoWindow.open(map,marker));
-    addToGroupMarkers(groupId, marker);
+
+    const dateMarker = {
+        date: simpleDate,
+        marker: marker,
+    } 
+    addToGroupMarkers(groupId, dateMarker);
 }
 
 /**
  * Add marker to the list with the groupId as the key
  * Create add the key/value pair if not already there
  */
-function addToGroupMarkers(groupId, marker) {
-    console.log(groupMarkers);
-    console.log(groupId);
+function addToGroupMarkers(groupId, dateMarker) {
     if (!groupMarkers.has(groupId)) {
-        groupMarkers.set(groupId, new Array(marker));
+        groupMarkers.set(groupId, new Array(dateMarker));
     } else {
-        groupMarkers.get(groupId).push(marker); 
+        groupMarkers.get(groupId).push(dateMarker); 
     }
 }
 
 // Sets the map on all markers in the array.
 function setMapMarkers(map, groupId) {
     const markers = groupMarkers.get(groupId);
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
+    for (let i = 0; i < markers.length; i++) {
+        markers[i].marker.setMap(map);
     }
+}
+
+function filterDate() {
+    const dateControl = document.querySelector('input[type="date"]');
+    const dateInput = dateControl.value; 
+    if (dateInput.length == 0) {
+        return; 
+    }
+
+    const checkedGroups = document.querySelectorAll('input[name="groupCheckbox"]:checked');
+    checkedGroups.forEach((checkedGroup) => {
+        filterGroupDate(checkedGroup.value, dateInput);
+    });
+
+}
+
+function filterGroupDate(groupId, dateInput) {
+    const markers = groupMarkers.get(groupId);
+    for (let i = 0; i < markers.length; i++) {
+        if (dateInput != markers[i].date) {
+            markers[i].marker.setMap(null);
+        } else {
+            markers[i].marker.setMap(map);
+        }
+    }
+}
+
+function clearDate() {
+    document.getElementById("date").value = "";
+    const checkedGroups = document.querySelectorAll('input[name="groupCheckbox"]:checked');
+    checkedGroups.forEach((checkedGroup) => {
+        setMapMarkers(map, checkedGroup.value);
+    });
 }
