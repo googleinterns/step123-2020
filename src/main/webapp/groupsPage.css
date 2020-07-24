@@ -1,14 +1,53 @@
-.heading {
-    text-align: center;
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+aside.mdc-drawer {
+    width: 100vw;
+}
+
+#nav-drawer:target {
+    display: block;
+}
+
+div.mdc-list-item.mdc-list-item--activated {
+    cursor: default;
+    margin: 10px auto;
+    width: fit-content;
+}
+
+.icon-links {
+    padding: 0 35px;
+    text-decoration: none;
+}
+
+.nav-icons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 15px 10px;
+}
+
+i.material-icons.mdc-list-item__graphic.nav-icon {
+    margin: 0;
+}
+
+.main-view {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
 }
 
 .card-gallery {
-    margin: auto;
-    width: 750px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .mdc-card {
-    margin: auto;
+    margin: 15px auto;
     width: 500px;
 }
 
