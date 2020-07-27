@@ -52,7 +52,7 @@ public final class ChatServletTest extends Mockito {
     private PrintWriter printWriter;
     private ChatServlet servlet;
     private StringWriter stringWriter;
-    private ImmutableMap<String, ImmutableList> templateData;
+    private ImmutableMap templateData;
 
     @Mock
     HttpServletRequest request;
@@ -111,7 +111,7 @@ public final class ChatServletTest extends Mockito {
         servlet.doGet(request, response);
         
         templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of(), GROUPS_KEY, 
-            SAMPLE_GROUP_LIST);
+            SAMPLE_GROUP_LIST, CURR_GROUP_KEY, BLM_GROUP_ID);
         String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, templateData);
         String actualHtml = stringWriter.getBuffer().toString().trim();
 
@@ -135,7 +135,7 @@ public final class ChatServletTest extends Mockito {
         servlet.doGet(request, response);
 
         templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of(MESSAGE_TEXT_NON_TOXIC),
-            GROUPS_KEY, SAMPLE_GROUP_LIST);
+            GROUPS_KEY, SAMPLE_GROUP_LIST, CURR_GROUP_KEY, SIERRA_GROUP_ID);
         String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, templateData);
         String actualHtml = stringWriter.getBuffer().toString().trim();
 
@@ -165,7 +165,7 @@ public final class ChatServletTest extends Mockito {
         servlet.doGet(request, response);
 
         templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of(firstMessage),
-            GROUPS_KEY, SAMPLE_GROUP_LIST);
+            GROUPS_KEY, SAMPLE_GROUP_LIST, CURR_GROUP_KEY, BLM_GROUP_ID);
         String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, templateData);
         String actualHtml = stringWriter.getBuffer().toString().trim();
 
