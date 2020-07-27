@@ -29,12 +29,16 @@ i.material-icons.mdc-list-item__graphic.nav-icon {
 
 .groups-headline {
     color: #696969;
-    margin: 10px 0 0 0;
+    margin: 10px 0;
     padding: 0 16px;
 }
 
 .group-label {
     font-size: 12pt;
+}
+
+.currGroup {
+    background-color: #e2e2e2;
 }
 
 .main-view {
