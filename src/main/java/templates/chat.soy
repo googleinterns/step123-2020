@@ -59,29 +59,35 @@
             </aside>
 
             <main class="main-view">
-                <div class="main-container">
-                    <ul id="messages-container" class="mdc-list">
-                        {for $message in $messages}
-                            <li class="mdc-list-item mdc-list-item--disabled" tabindex="0">
-                                <span class="mdc-list-item__text message">{$message}</span>
-                            </li>
-                        {/for}
-                    </ul>
+                {if strLen($currGroup) == 0}
+                    <p class="mdc-typography--body1 no-groups-error">
+                        Oops, you haven't joined any groups yet. Click the groups icon at the top to join a cause.
+                    </p>
+                {else}
+                    <div class="main-container">
+                        <ul id="messages-container" class="mdc-list">
+                            {for $message in $messages}
+                                <li class="mdc-list-item mdc-list-item--disabled" tabindex="0">
+                                    <span class="mdc-list-item__text message">{$message}</span>
+                                </li>
+                            {/for}
+                        </ul>
 
-                    <div class="btn-container">
-                        <form class="message-form" action="/chat" method="POST">
-                            <label class="mdc-text-field mdc-text-field--filled">
-                                <input class="mdc-text-field__input" type="text" name="message-text" aria-labelledby="my-label-id">
-                                <span class="mdc-line-ripple"></span>
-                            </label>
+                        <div class="btn-container">
+                            <form class="message-form" action="/chat" method="POST">
+                                <label class="mdc-text-field mdc-text-field--filled">
+                                    <input class="mdc-text-field__input" type="text" name="message-text" aria-labelledby="my-label-id">
+                                    <span class="mdc-line-ripple"></span>
+                                </label>
 
-                            <input id="groupID" name="groupID" style="display:none">
-                            <button class="mdc-button mdc-button--raised" type="submit">
-                                <span class="mdc-button__label">POST</span>
-                            </button>
-                        </form>
+                                <input id="groupID" name="groupID" style="display:none">
+                                <button class="mdc-button mdc-button--raised" type="submit">
+                                    <span class="mdc-button__label">POST</span>
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                </div>
+                {/if}
             </main>
         </body>
 

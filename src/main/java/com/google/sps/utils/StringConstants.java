@@ -13,6 +13,7 @@ public final class StringConstants {
     public static final String CHAT_REDIRECT = "/chat?groupID=";
     public static final String CHAT_SOY_FILE = "chat.soy";
     public static final String CONTENT_TYPE_JSON = "application/json";
+    public static final String CURR_GROUP_KEY = "currGroup";
     public static final String ERROR_MESSAGE_KEY = "errorMessage";
     public static final String ERROR_MESSAGE_TEXT = "Your message contains content that may " + 
         "be deemed offensive by others. Please revise your message and try again.";

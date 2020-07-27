@@ -78,7 +78,10 @@ public class ChatServlet extends HttpServlet {
         }
         ImmutableList<ImmutableMap<String, String>> groupsList = builder.build();
 
-        if (groupID == null) {
+        if (groupsList.isEmpty()) {
+            // If there are no groups, then the current group is just an empty ID
+            groupID = "";
+        } else if (groupID == null) {
             groupID = DEFAULT_GROUP;
         }
 
@@ -92,7 +95,7 @@ public class ChatServlet extends HttpServlet {
             .collect(toImmutableList());
 
         ImmutableMap messagesGroupsData = ImmutableMap.of(MESSAGES_KEY, messagesList, GROUPS_KEY,
-            groupsList, "currGroup", groupID);
+            groupsList, CURR_GROUP_KEY, groupID);
 
         final String chatPageHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, messagesGroupsData);
 

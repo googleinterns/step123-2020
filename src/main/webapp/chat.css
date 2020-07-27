@@ -52,6 +52,11 @@ i.material-icons.mdc-list-item__graphic.nav-icon {
     margin-bottom: 10px;
 }
 
+.no-groups-error {
+    margin: auto;
+    text-align: center;
+}
+
 .message-form {
     align-items: center;
     display: flex;
