@@ -2,6 +2,7 @@
 
 {template .mapPage}
     {@param groups : list<map<string, string>>}
+    {@param key : string}
 
     <html>
         <head>
@@ -11,7 +12,7 @@
             <link rel="stylesheet" href="mapPage.css">
             <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
             <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
-            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCm3MiL3acn2Y9ZoHXfCOWVvnJCzg2m3Us"></script>
+            <script src="https://maps.googleapis.com/maps/api/js?key={$key}&libraries=places"></script>
             <script src="closure/closure-library/closure/goog/base.js"></script>
             <script src="closure/closure-templates/javascript/checks.js"></script>
             <script src="closure/closure-templates/javascript/soyutils_usegoog.js"></script>
@@ -31,6 +32,19 @@
                         </a>
 
                         <hr class="mdc-list-divider">
+                        <div class="nav-icons">
+                            <a class="icon-links" href="/chat">
+                                <i class="material-icons mdc-list-item__graphic nav-icon">message</i>
+                            </a>
+                            <a class="icon-links" href="/calendar">
+                                <i class="material-icons mdc-list-item__graphic nav-icon">date_range</i>
+                            </a>
+                            <a class="icon-links" href="/groups">
+                                <i class="material-icons mdc-list-item__graphic nav-icon">group</i>
+                            </a>
+                        </div>
+
+                        <li role="separator" class="mdc-list-divider"></li>
                         <h6 class="mdc-list-group__subheader">Relocate Map</h6>
 
                         <a class="mdc-list-item" href="#">
@@ -82,7 +96,7 @@
             <div class="mdc-form-field ">
       
                 <div class="mdc-checkbox">
-                    <input type="checkbox" class="mdc-checkbox__native-control" id="check-item1" onclick="toggleGroupMarkers(this, {$groupID})">
+                    <input type="checkbox" class="mdc-checkbox__native-control" checked id="check-item1" onclick="toggleGroupMarkers(this, {$groupID})">
                         <div class="mdc-checkbox__background">
                             <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
                                 <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>

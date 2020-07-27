@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/groups")
 public class GroupsServlet extends HttpServlet {
-  //TODO: Unhardcode (gemove). Group parameters will be obtained from user input once implemented for more groups.
+  //TODO: Unhardcode (remove). Group parameters will be obtained from user input once implemented for more groups.
   private final String GROUP_CALENDARID = "fk6u4m5isbl8i6cj1io1pkpli4@group.calendar.google.com";
   private final String GROUP_DESCRIPTION = "Group for the Black Lives Matter movement.";
   private final long GROUP_ID = 123L;

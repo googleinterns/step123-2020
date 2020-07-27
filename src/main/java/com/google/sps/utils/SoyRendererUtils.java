@@ -14,7 +14,6 @@ public final class SoyRendererUtils {
      */
     public static String getOutputString(String templateFile, String templateNamespace, 
         ImmutableMap templateData) {
-
         SoyFileSet sfs = SoyFileSet
             .builder()
             .add(new File(CLASS_LOADER.getResource(templateFile).getFile()))
