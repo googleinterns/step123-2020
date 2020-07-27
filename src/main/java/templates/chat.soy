@@ -10,7 +10,8 @@
             <meta charset="UTF-8">
             <title>The Solidarity Initiative - Chat</title>
             <link rel="stylesheet" href="chat.css">
-            <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+            <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" 
+                rel="stylesheet">
             <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
             <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
             <script src="closure/closure-library/closure/goog/base.js"></script>
@@ -47,8 +48,8 @@
 
                         <div class="selection-controls-container">
                             {for $groupMap in $groups}
-                                <a class="mdc-list-item {if $groupMap['groupID'] == $currGroup}{css('currGroup')}{/if}" 
-                                    href="/chat?groupID={$groupMap['groupID']}" tabindex="0">
+                                <a class="mdc-list-item {if $groupMap['groupId'] == $currGroup}{css('currGroup')}{/if}" 
+                                    href="/chat?groupId={$groupMap['groupId']}" tabindex="0">
                                     <span class="mdc-list-item__text group-label">{$groupMap['name']}</span>
                                 </a>
                             {/for}
@@ -76,11 +77,12 @@
                         <div class="btn-container">
                             <form class="message-form" action="/chat" method="POST">
                                 <label class="mdc-text-field mdc-text-field--filled">
-                                    <input class="mdc-text-field__input" type="text" name="message-text" aria-labelledby="my-label-id">
+                                    <input class="mdc-text-field__input" type="text" name="message-text" 
+                                        aria-labelledby="my-label-id">
                                     <span class="mdc-line-ripple"></span>
                                 </label>
 
-                                <input id="groupID" name="groupID" style="display:none">
+                                <input id="groupId" name="groupId" style="display:none">
                                 <button class="mdc-button mdc-button--raised" type="submit">
                                     <span class="mdc-button__label">POST</span>
                                 </button>

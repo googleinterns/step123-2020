@@ -47,18 +47,9 @@ public class ChatServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String groupID = (String) request.getParameter(GROUP_ID_PROPERTY);
+        String groupId = (String) request.getParameter(GROUP_ID_PROPERTY);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-        // This is just a sample group until group creation is coordinated
-        Entity blmEntity = new Entity(GROUP_KIND, "123");
-        blmEntity.setProperty(GROUP_NAME_PROPERTY, "Black Lives Matter");
-        datastore.put(blmEntity);
-
-        Entity sierraEntity = new Entity(GROUP_KIND, "456");
-        sierraEntity.setProperty(GROUP_NAME_PROPERTY, "Sierra Club");
-        datastore.put(sierraEntity);
 
         Query groupQuery = new Query(GROUP_KIND);
         PreparedQuery preparedGroupQuery = datastore.prepare(groupQuery);
@@ -80,13 +71,13 @@ public class ChatServlet extends HttpServlet {
 
         if (groupsList.isEmpty()) {
             // If there are no groups, then the current group is just an empty ID
-            groupID = "";
-        } else if (groupID == null) {
-            groupID = DEFAULT_GROUP;
+            groupId = "";
+        } else if (groupId == null) {
+            groupId = DEFAULT_GROUP;
         }
 
         // Calls query on all entities of type Message
-        Query messageQuery = new Query(MESSAGE_KIND + groupID).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
+        Query messageQuery = new Query(MESSAGE_KIND + groupId).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
         PreparedQuery preparedMessageQuery = datastore.prepare(messageQuery);
 
         // Creates lists of the data
@@ -95,7 +86,7 @@ public class ChatServlet extends HttpServlet {
             .collect(toImmutableList());
 
         ImmutableMap messagesGroupsData = ImmutableMap.of(MESSAGES_KEY, messagesList, GROUPS_KEY,
-            groupsList, CURR_GROUP_KEY, groupID);
+            groupsList, CURR_GROUP_KEY, groupId);
 
         final String chatPageHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, messagesGroupsData);
 
@@ -109,15 +100,15 @@ public class ChatServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String messageText = (String) request.getParameter(MESSAGE_TEXT_PROPERTY);
-        String groupID = (String) request.getParameter(GROUP_ID_PROPERTY);
+        String groupId = (String) request.getParameter(GROUP_ID_PROPERTY);
         final long timestamp = System.currentTimeMillis();
 
-        if (groupID.isEmpty()) {
-            groupID = DEFAULT_GROUP;
+        if (groupId.isEmpty()) {
+            groupId = DEFAULT_GROUP;
         }
 
         if (messageText.isEmpty()) {
-            response.sendRedirect(CHAT_REDIRECT + groupID);
+            response.sendRedirect(CHAT_REDIRECT + groupId);
             return;
         }
 
@@ -141,12 +132,12 @@ public class ChatServlet extends HttpServlet {
             response.getWriter().println(errorPageHtml);
         } else {
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-            Entity messageEntity = new Entity(MESSAGE_KIND + groupID);
+            Entity messageEntity = new Entity(MESSAGE_KIND + groupId);
             messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, messageText);
             messageEntity.setProperty(TIMESTAMP_PROPERTY, timestamp);
             datastore.put(messageEntity);
 
-            response.sendRedirect(CHAT_REDIRECT + groupID);
+            response.sendRedirect(CHAT_REDIRECT + groupId);
         }
     }
 

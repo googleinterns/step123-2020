@@ -14,7 +14,7 @@ aside.mdc-drawer {
 
 div.mdc-list-item.mdc-list-item--activated {
     cursor: default;
-    margin: 10px auto;
+    margin: 10px auto !important;
     width: fit-content;
 }
 

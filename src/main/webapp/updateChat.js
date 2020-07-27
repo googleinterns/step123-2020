@@ -4,15 +4,15 @@ goog.require('templates.message');
 function init() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const groupID = urlParams.get('groupID');
-    const groupIdInput = goog.dom.getElement("groupID");
-    goog.dom.setProperties(groupIdInput, {'value': groupID});
+    const groupId = urlParams.get('groupId');
+    const groupIdInput = goog.dom.getElement("groupId");
+    goog.dom.setProperties(groupIdInput, {'value': groupId});
 
     // Calls the updateChat servlet every second for new messages
     setInterval(() => {
         const messagesContainer = goog.dom.getElement("messages-container");
         const currNumMessages = goog.dom.getElementsByClass("message").length;
-        const urlString = "/updateChat?groupID=" + groupID + 
+        const urlString = "/updateChat?groupId=" + groupId + 
             "&currMessages=" + currNumMessages;
 
         fetch(urlString).then(response => response.json()).then(json => {

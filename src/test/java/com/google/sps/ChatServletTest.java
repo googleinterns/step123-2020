@@ -34,9 +34,11 @@ import org.mockito.MockitoAnnotations;
 
 @RunWith(JUnit4.class)
 public final class ChatServletTest extends Mockito {
+    private static final String BLACK_LIVES_MATTER = "Black Lives Matter";
     private static final String BLM_GROUP_ID = "123";
     private static final String MESSAGE_TEXT_NON_TOXIC = "hello";
     private static final String MESSAGE_TEXT_TOXIC = "what kind of idiot name is foo?";
+    private static final String SIERRA_CLUB = "Sierra Club";
     private static final String SIERRA_GROUP_ID = "456";
     
     private static final ImmutableList<ImmutableMap<String, String>> SAMPLE_GROUP_LIST = 
@@ -66,6 +68,14 @@ public final class ChatServletTest extends Mockito {
         
         helper.setUp();
         datastore = DatastoreServiceFactory.getDatastoreService();
+
+        Entity blmEntity = new Entity(GROUP_KIND, BLM_GROUP_ID);
+        blmEntity.setProperty(GROUP_NAME_PROPERTY, BLACK_LIVES_MATTER);
+        datastore.put(blmEntity);
+        
+        Entity sierraEntity = new Entity(GROUP_KIND, SIERRA_GROUP_ID);
+        sierraEntity.setProperty(GROUP_NAME_PROPERTY, SIERRA_CLUB);
+        datastore.put(sierraEntity);
 
         MockitoAnnotations.initMocks(this);
 
