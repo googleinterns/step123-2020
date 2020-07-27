@@ -45,21 +45,21 @@ public final class EventsServletTest extends Mockito {
   private final String TEST_EVENT_HTML = "test event HTML";
   private final String TEST_EVENT_LOCATION = "test event location";
   private final String TEST_EVENT_TITLE = "test event title";
-  
-  private final LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+
   private final DateTimeFormatter formatter = DateTimeFormatter
       .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
       .withZone(ZoneId.of(TIMEZONE));
+  private final EventsServlet servlet = new EventsServlet();  
+  private final LocalServiceTestHelper helper =
+      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+  private final StringWriter stringWriter = new StringWriter();
   
   private String initialEventTime;
   private String endEventTime;
 
-  final private EventsServlet servlet = new EventsServlet();
   private DatastoreService datastore;
   private Entity groupEntity;
   private PrintWriter printWriter;
-  final private StringWriter stringWriter = new StringWriter();
 
   @Mock
   HttpServletRequest request;
