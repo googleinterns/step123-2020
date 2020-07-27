@@ -5,13 +5,21 @@ package com.google.sps.utils;
  * throughout the application.
  */
 public final class StringConstants {
+  /**
+   * Application and file constants
+   */
   public static final String APPLICATION_NAME = "The Solidarity Initiative";
   public static final String CALENDAR_SOY_FILE = "calendar.soy";
   public static final String CALENDAR_TEMPLATE_NAMESPACE = "templates.calendar.calendarPage";
   public static final String CHAT_SOY_FILE = "chat.soy";
   public static final String CHAT_TEMPLATE_NAMESPACE = "templates.chat.";
+  public static final String GROUPS_SOY_FILE = "groups.soy";
+  public static final String GROUPS_TEMPLATE_NAMESPACE = "templates.groups.groupsPage";
   public static final String TIMEZONE = "America/Los_Angeles";
-
+  
+  /**
+   * Chat constants
+   */
   public static final Double COMMENT_SCORE_THRESHOLD = 0.85;
   public static final String ATTRIBUTE_SCORES = "attributeScores";
   public static final String ERROR_MESSAGE_KEY = "errorMessage";
@@ -24,18 +32,34 @@ public final class StringConstants {
   public static final String TIMESTAMP_PROPERTY = "timestamp";
   public static final String VALUE = "value";
   
+  /**
+   * Bad request servlet error messages
+   */
   public static final String CALENDAR_BAD_REQUEST_MESSAGE = "Must have groupId in query string!";
   public static final String EVENTS_GET_BAD_REQUEST_MESSAGE = "Must have calendarId or groupId in query string!";
   public static final String EVENTS_GET_INVALID_CALENDARID_MESSAGE = "Invalid credentials or calendar ID";
   public static final String EVENTS_POST_BAD_REQUEST_MESSAGE = "POST body must contain title and start and end times!";
   public static final String ENTITY_ERROR_MESSAGE = "Invalid group ID!";
 
+  /**
+   * Servlets' content type
+   */
+  public static final String CONTENT_TYPE_PLAIN = "text/plain";
+  public static final String CONTENT_TYPE_HTML = "text/html";
+  public static final String CONTENT_TYPE_JSON = "application/json";
+
+  /**
+   * Events constant properties
+   */
   public static final String EVENT_DESCRIPTION_PROPERTY = "description";
   public static final String EVENT_END_PROPERTY = "end";
   public static final String EVENT_LOCATION_PROPERTY = "location";
   public static final String EVENT_START_PROPERTY = "start";
   public static final String EVENT_TITLE_PROPERTY = "title";
-
+  
+  /**
+   * Group constants
+   */
   public static final String GROUP_KIND = "Group";
   public static final String GROUPS_KEY = "groups";
   public static final String GROUP_CALENDARID_PROPERTY = "calendarId";
@@ -44,6 +68,9 @@ public final class StringConstants {
   public static final String GROUP_IMAGE_PROPERTY = "image";
   public static final String GROUP_NAME_PROPERTY = "name";
   
+  /**
+   * Testing constants
+   */
   public static final String NULL_PARAMETER = "age";
   public static final String TEST_GROUP_ID = "535";
   public static final String TEST_GROUP_ID_INVALID = "600";

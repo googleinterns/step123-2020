@@ -66,22 +66,22 @@ public final class ServletUtilsTest extends Mockito {
 
   @Test
   public void getParameterWithValue() throws IOException {
-    // {language: english} (param: value)
+    // The request contains "language" as the parameter, and "english" as the value.
     when(request.getParameter(TESTING_PARAMETER)).thenReturn(TESTING_PARAMETER_VALUE);
 
-    String expected = ServletUtils.getParameter(request, TESTING_PARAMETER);
+    String actual = ServletUtils.getParameter(request, TESTING_PARAMETER);
 
-    Assert.assertEquals(expected, TESTING_PARAMETER_VALUE);
+    Assert.assertEquals(TESTING_PARAMETER_VALUE, actual);
   }
 
   @Test
   public void getParameterWithNoValue() throws IOException { 
-    // {age: } (param: value)
+    // The request contains "age" as the parameter, and a null value.
     when(request.getParameter(NULL_PARAMETER)).thenReturn(null);
 
-    String expected = ServletUtils.getParameter(request, NULL_PARAMETER);
+    String actual = ServletUtils.getParameter(request, NULL_PARAMETER);
 
-    Assert.assertEquals(expected, ServletUtils.DEFAULT_PARAM);
+    Assert.assertEquals(ServletUtils.DEFAULT_PARAM, actual);
   }
 
   @Test

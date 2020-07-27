@@ -24,9 +24,10 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet for getting or creating the Calendar page for each group
  */
 @WebServlet("/calendar")
-public class CalendarServlet extends AbstractEventsServlet {
+public class CalendarServlet extends HttpServlet {
+
   /**
-   * Display the Calendar page for each group. Query string must contain groupId.
+   * Display the Calendar page for each group.
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -53,9 +54,8 @@ public class CalendarServlet extends AbstractEventsServlet {
   }
 
   /**
-   * Create a Calendar for the group being created. Query string must contain groupId.
+   * Create the Calendar page for the group being created
    */
-  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String groupId = getParameter(request, GROUP_ID_PROPERTY);
 
