@@ -155,7 +155,15 @@
                     <include>*.soy</include>
                 </includes>
             </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>*.txt</include>
+                </includes>
+            </resource>
         </resources>
+
         <plugins>
             <!-- Provides `mvn package appengine:run` for local testing
                  and `mvn package appengine:deploy` for deploying. -->

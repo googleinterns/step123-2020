@@ -1,28 +1,96 @@
 {namespace templates.chat}
 
 {template .chatPage}
-{@param messages: list<string>}
+    {@param messages: list<string>}
+    {@param groups: list<string>}
 
     <html>
         <head>
             <meta charset="UTF-8">
             <title>The Solidarity Initiative - Chat</title>
-            <script src="chat.js"></script>
+            <link rel="stylesheet" href="chat.css">
+            <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+            <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+            <script src="closure/closure-library/closure/goog/base.js"></script>
+            <script src="closure/closure-templates/javascript/checks.js"></script>
+            <script src="closure/closure-templates/javascript/soyutils_usegoog.js"></script>
+            <script src="templates/message.js"></script>
+            <script src="updateChat.js"></script>
         </head>
 
         <body onload="init()">
-            <div id="messages-container">
-                {for $message in $messages}
-                    <p class="message">{$message}</p>
-                {/for}
-            </div>
+            <aside class="mdc-drawer">
+                <div class="mdc-drawer__content">
+                    <nav class="mdc-list">
+                        <div class="mdc-list-item mdc-list-item--activated" aria-current="page">
+                            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">message</i>
+                            <span class="mdc-list-item__text"><h2>Chat</h2></span>
+                        </div>
 
-            <form action="/chat" method="POST">
-                <input type="text" name="message-text">
-                <input type="submit">
-            </form>
+                        <hr class="mdc-list-divider">
+                        <div class="nav-icons">
+                            <a class="icon-links" href="/map">
+                                <i class="material-icons mdc-list-item__graphic nav-icon">map</i>
+                            </a>
+                            <a class="icon-links" href="/calendar">
+                                <i class="material-icons mdc-list-item__graphic nav-icon">date_range</i>
+                            </a>
+                            <a class="icon-links" href="/groups">
+                                <i class="material-icons mdc-list-item__graphic nav-icon">group</i>
+                            </a>
+                        </div>
+
+                        <li role="separator" class="mdc-list-divider"></li>
+                        <h2 class="mdc-typography--headline5 groups-headline">Groups</h2>
+
+                        <div class="selection-controls-container">
+                            {for $group in $groups}
+                                <a class="mdc-list-item" href="/chat" tabindex="0">
+                                    <span class="mdc-list-item__text group-label">{$group}</span>
+                                </a>
+                            {/for}
+                        </div>
+      
+                    </nav>
+                </div>
+            </aside>
+
+            <main class="main-view">
+                <div class="main-container">
+                    <ul id="messages-container" class="mdc-list">
+                        {for $message in $messages}
+                            <li class="mdc-list-item mdc-list-item--disabled" tabindex="0">
+                                <span class="mdc-list-item__text message">{$message}</span>
+                            </li>
+                        {/for}
+                    </ul>
+
+                    <div class="btn-container">
+                        <form class="message-form" action="/chat" method="POST">
+                            <label class="mdc-text-field mdc-text-field--filled">
+                                <input class="mdc-text-field__input" type="text" name="message-text" aria-labelledby="my-label-id">
+                                <span class="mdc-line-ripple"></span>
+                            </label>
+
+                            <button class="mdc-button mdc-button--raised" type="submit">
+                                <span class="mdc-button__label">POST</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </main>
         </body>
 
     </html>
 
+{/template}
+
+{template .error}
+    {@param errorMessage: string}
+
+    <p>{$errorMessage}</p>
+    <a href="/chat">
+        <button>Return to chat</button>
+    </a>
 {/template}

@@ -9,6 +9,10 @@
       <title>The Solidarity Initiative - Events</title>
       <link rel="stylesheet" href="calendar.css">
       <script src="calendar.js"></script>
+      <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+      <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCm3MiL3acn2Y9ZoHXfCOWVvnJCzg2m3Us&libraries=places"></script>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     </head>
 
     <body onload="initEvents();">
@@ -16,5 +20,5 @@
         <iframe class="calendar-iframe" src="https://calendar.google.com/calendar/embed?src={$calendarId}&ctz={$timezone}"></iframe>
       </div>
     </body>
-</html>
+  </html>
 {/template}
