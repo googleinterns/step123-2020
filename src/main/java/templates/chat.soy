@@ -99,9 +99,24 @@
 
 {template .error}
     {@param errorMessage: string}
+    {@param currGroup: string}
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>The Solidarity Initiative - Chat</title>
+        <link rel="stylesheet" href="errorChat.css">
+        <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" 
+            rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    </head>
 
-    <p>{$errorMessage}</p>
-    <a href="/chat">
-        <button>Return to chat</button>
-    </a>
+    <body>
+        <p class="mdc-typography--body1 error">{$errorMessage}</p>
+        <a class="btn-link" href="/chat?groupId={$currGroup}">
+            <button class="mdc-button mdc-button--raised">
+                <span class="mdc-button__label">Return to chat</span>
+            </button>
+        </a>
+    </body>
 {/template}

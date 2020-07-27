@@ -125,7 +125,7 @@ public class ChatServlet extends HttpServlet {
         // If the comment is  toxic, then do not post it to Datastore
         if (commentScore >= COMMENT_SCORE_THRESHOLD) {
             ImmutableMap<String, String> errorData = ImmutableMap.of(ERROR_MESSAGE_KEY, 
-                ERROR_MESSAGE_TEXT);
+                ERROR_MESSAGE_TEXT, CURR_GROUP_KEY, groupId);
 
             final String errorPageHtml = getOutputString(CHAT_SOY_FILE, CHAT_ERROR_NAMESPACE, errorData);
 

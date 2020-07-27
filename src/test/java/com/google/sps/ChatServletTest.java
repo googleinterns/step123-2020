@@ -218,7 +218,7 @@ public final class ChatServletTest extends Mockito {
         Entity actualMessages = datastore.prepare(messageQuery).asSingleEntity();
 
         ImmutableMap<String, String> errorData = ImmutableMap.of(ERROR_MESSAGE_KEY, 
-            ERROR_MESSAGE_TEXT);
+            ERROR_MESSAGE_TEXT, CURR_GROUP_KEY, SIERRA_GROUP_ID);
 
         String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_ERROR_NAMESPACE, errorData);
         String actualHtml = stringWriter.getBuffer().toString().trim();
