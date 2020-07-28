@@ -1,26 +1,47 @@
 body {
+    margin: 0;
     overflow: scroll;
     text-align: center;
 }
 
-h1 {
-    font-size: 48pt;
+.heading {
+    font-weight: 500 !important;
+}
+
+#title-heading {
+    font-size: 52pt;
 }
 
 .text-highlight {
     background-color: white;
+    border-radius: 4px;
+    box-shadow: 2px 2px 4px 2px rgba(0,0,0,.12);
     margin: auto;
-    width: 750px;
+    width: 850px;
 }
 
 .img-container {
     align-items: center;
-    /* Photo by Lerone Pieters on Unsplash (https://unsplash.com/@thevantagepoint718?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) */
-    background: url("images/lerone-pieters.jpg") center no-repeat;
+    background: url("images/chris-slupski.jpg") center no-repeat;
     background-size: cover;
     display: flex;
     flex-direction: column;
     height: 100vh;
+}
+
+.photo-credit {
+    align-self: flex-end;
+    color: #353535;
+    font-size: 12pt;
+    margin: 10px;
+}
+
+.photo-link:link {
+    color: #585858;
+}
+
+.photo-link:hover {
+    color: black;
 }
 
 .text-container {
@@ -32,8 +53,12 @@ h1 {
     justify-content: center;
 }
 
+#mission-heading {
+    margin-bottom: 15px;
+}
+
 .mission-statement {
-    font-size: 24pt;
+    font-size: 20pt;
     width: 750px;
 }
 

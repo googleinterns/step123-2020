@@ -5,6 +5,7 @@ body {
 }
 
 aside.mdc-drawer {
+    height: auto;
     width: 100vw;
 }
 
