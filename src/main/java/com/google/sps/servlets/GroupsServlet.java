@@ -5,7 +5,9 @@ import static com.google.sps.utils.StringConstants.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity; 
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.common.collect.ImmutableList;
@@ -28,6 +30,39 @@ public class GroupsServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
+        createSampleGroups(datastore);
+
+        Query groupsQuery = new Query(GROUP_KIND);
+        PreparedQuery preparedGroupsQuery = datastore.prepare(groupsQuery); 
+
+        ImmutableList.Builder<ImmutableMap<String, String>> groupsListBuilder = new ImmutableList.Builder<>();
+        for (Entity group : preparedGroupsQuery.asIterable()) {
+            ImmutableMap<String, String> groupMap = ImmutableMap.of(
+                GROUP_NAME_PROPERTY, (String) group.getProperty(GROUP_NAME_PROPERTY),
+                GROUP_IMAGE_PROPERTY, (String) group.getProperty(GROUP_IMAGE_PROPERTY),
+                GROUP_DESCRIPTION_PROPERTY, (String) group.getProperty(GROUP_DESCRIPTION_PROPERTY));
+            groupsListBuilder.add(groupMap);
+        }
+        
+        ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
+        
+        // Each group has its own map which points to its info and all maps are passed into the template as a list
+        // This will make it easier when groups are queried from Datastore
+        ImmutableMap<String, ImmutableList<ImmutableMap<String, String>>> groupsData = 
+            ImmutableMap.of(GROUPS_KEY, groupsList);
+
+        String groupsPageHtml = getOutputString(GROUPS_SOY_FILE, GROUPS_PAGE_NAMESPACE, groupsData);
+        response.getWriter().println(groupsPageHtml);
+    }
+
+    /**
+     * Handles creating sample groups in datastore if they don't yet exist until user-created groups
+     * can be made
+     */
+    private void createSampleGroups(DatastoreService datastore) {
+        try {
+            datastore.get(KeyFactory.createKey(GROUP_KIND, "123"));
+        } catch(EntityNotFoundException e) {
         // Hard coded groups for now, but hopefully will use user-created groups from datastore
         // Photo by Hybrid on Unsplash 
         // (https://unsplash.com/@artbyhybrid?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
@@ -38,7 +73,11 @@ public class GroupsServlet extends HttpServlet {
         blmEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, "Advocating against police brutality and all racially " + 
             "motivated discrimination against Black Americans.");
         datastore.put(blmEntity);
-        
+        }
+
+        try {
+            datastore.get(KeyFactory.createKey(GROUP_KIND, "456"));
+        } catch(EntityNotFoundException e) {
         // Photo by Conscious Design on Unsplash
         // (https://unsplash.com/@conscious_design?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
         Entity sierraEntity = new Entity(GROUP_KIND, "456");
@@ -48,27 +87,6 @@ public class GroupsServlet extends HttpServlet {
         sierraEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, "Help protect Earth's natural resources and " + 
             "ensure a healthy environment for future generations.");
         datastore.put(sierraEntity);
-
-        Query groupsQuery = new Query(GROUP_KIND);
-        PreparedQuery preparedGroupsQuery = datastore.prepare(groupsQuery); 
-
-        ImmutableList.Builder<ImmutableMap<String, String>> builder = new ImmutableList.Builder<>();
-        for (Entity group : preparedGroupsQuery.asIterable()) {
-            ImmutableMap<String, String> groupMap = ImmutableMap.of(
-                GROUP_NAME_PROPERTY, (String) group.getProperty(GROUP_NAME_PROPERTY),
-                GROUP_IMAGE_PROPERTY, (String) group.getProperty(GROUP_IMAGE_PROPERTY),
-                GROUP_DESCRIPTION_PROPERTY, (String) group.getProperty(GROUP_DESCRIPTION_PROPERTY));
-            builder.add(groupMap);
         }
-        
-        ImmutableList<ImmutableMap<String, String>> groupsList = builder.build();
-        
-        // Each group has its own map which points to its info and all maps are passed into the template as a list
-        // This will make it easier when groups are queried from Datastore
-        ImmutableMap<String, ImmutableList<ImmutableMap<String, String>>> groupsData = 
-            ImmutableMap.of(GROUPS_KEY, groupsList);
-
-        String groupsPageHtml = getOutputString(GROUPS_SOY_FILE, GROUPS_PAGE_NAMESPACE, groupsData);
-        response.getWriter().println(groupsPageHtml);
     }
 }

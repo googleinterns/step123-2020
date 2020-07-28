@@ -41,11 +41,14 @@ public final class ChatServletTest extends Mockito {
     private static final String SIERRA_CLUB = "Sierra Club";
     private static final String SIERRA_GROUP_ID = "456";
     
+    private static final ImmutableMap<String, String> BLM_GROUP = ImmutableMap.of(
+        GROUP_NAME_PROPERTY, BLACK_LIVES_MATTER,
+        GROUP_ID_PROPERTY, BLM_GROUP_ID);
+    private static final ImmutableMap<String, String> SIERRA_GROUP = ImmutableMap.of(
+        GROUP_NAME_PROPERTY, SIERRA_CLUB,
+        GROUP_ID_PROPERTY, SIERRA_GROUP_ID);
     private static final ImmutableList<ImmutableMap<String, String>> SAMPLE_GROUP_LIST = 
-        ImmutableList.of(ImmutableMap.of(GROUP_NAME_PROPERTY, "Black Lives Matter",
-        GROUP_ID_PROPERTY, BLM_GROUP_ID),
-        ImmutableMap.of(GROUP_NAME_PROPERTY, "Sierra Club",
-        GROUP_ID_PROPERTY, SIERRA_GROUP_ID));
+        ImmutableList.of(BLM_GROUP, SIERRA_GROUP);
     
     private static final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());

@@ -54,20 +54,18 @@ public class ChatServlet extends HttpServlet {
         Query groupQuery = new Query(GROUP_KIND);
         PreparedQuery preparedGroupQuery = datastore.prepare(groupQuery);
 
-        ImmutableList.Builder<ImmutableMap<String, String>> builder = new ImmutableList.Builder<>();
-        int i = 0;
+        ImmutableList.Builder<ImmutableMap<String, String>> groupsListBuilder = new ImmutableList.Builder<>();
         for (Entity group : preparedGroupQuery.asIterable()) {
-            if (i == 0) {
+            if (DEFAULT_GROUP == null) {
                 DEFAULT_GROUP = group.getKey().getName();
             }
 
             ImmutableMap<String, String> groupMap = ImmutableMap.of(
                 GROUP_NAME_PROPERTY, (String) group.getProperty(GROUP_NAME_PROPERTY),
                 GROUP_ID_PROPERTY, group.getKey().getName());
-            builder.add(groupMap);
-            i++;
+            groupsListBuilder.add(groupMap);
         }
-        ImmutableList<ImmutableMap<String, String>> groupsList = builder.build();
+        ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
 
         if (groupsList.isEmpty()) {
             // If there are no groups, then the current group is just an empty ID
