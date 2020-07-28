@@ -26,6 +26,15 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/groups")
 public class GroupsServlet extends HttpServlet {
+  //TODO: Unhardcode (remove). Group parameters will be obtained from user input once implemented for more groups.
+  private final String GROUP_CALENDARID = "fk6u4m5isbl8i6cj1io1pkpli4@group.calendar.google.com";
+  private final String GROUP_DESCRIPTION = "Group for the Black Lives Matter movement.";
+  private final long GROUP_ID = 123L;
+  private final String GROUP_ID_STRING = "123";
+  // Photo by Hybrid on Unsplash (https://unsplash.com/@artbyhybrid?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+  private final String GROUP_IMAGE = "https://images.unsplash.com/photo-1591622414912-34f2a8f8172e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80";
+  private final String GROUP_NAME = "Black Lives Matter";
+  
   /**
    * Renders a HTML template with cards representing the various
    * groups that have already been created.

@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet for getting or creating the Calendar page for each group
  */
 @WebServlet("/calendar")
-public class CalendarServlet extends HttpServlet {
+public class CalendarServlet extends AbstractEventsServlet {
 
   /**
    * Display the Calendar page for each group.
