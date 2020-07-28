@@ -8,6 +8,10 @@
       <meta charset="UTF-8">
       <title>The Solidarity Initiative - Events</title>
       <link rel="stylesheet" href="calendar.css">
+      <script src="closure/closure-library/closure/goog/base.js"></script>
+      <script src="closure/closure-templates/javascript/checks.js"></script>
+      <script src="closure/closure-templates/javascript/soyutils_usegoog.js"></script>
+      <script src="templates/eventsoy.js"></script>
       <script src="calendar.js"></script>
       <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
       <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
@@ -16,9 +20,33 @@
     </head>
 
     <body onload="initEvents();">
-      <div id="events-calendar">
-        <iframe class="calendar-iframe" src="https://calendar.google.com/calendar/embed?src={$calendarId}&ctz={$timezone}"></iframe>
-      </div>
+
+      <aside class="mdc-drawer">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <a class="mdc-list-item mdc-list-item--activated" href="#" aria-current="page">
+              <i class="material-icons mdc-list-item__graphic" aria-hidden="true">event</i>
+              <span class="mdc-list-item__text"><h2>Event Calendar</h2></span>
+            </a>
+
+            <a class="mdc-list-item" href="#">
+              <label class="mdc-text-field mdc-text-field--filled">
+                <span class="mdc-text-field__ripple"></span>
+                <input class="mdc-text-field__input" id="address" type="text" aria-labelledby="my-label-id">
+                <span class="mdc-line-ripple"></span>
+              </label>  
+            </a>
+
+          </nav>
+        </div>
+      </aside>
+
+      <main class="main-content" id="main-content">
+        <div id="events-calendar">
+          <iframe class="calendar-iframe" src="https://calendar.google.com/calendar/embed?src={$calendarId}&ctz={$timezone}"></iframe>
+        </div>
+      </main> 
+
     </body>
   </html>
 {/template}
