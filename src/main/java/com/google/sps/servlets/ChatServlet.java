@@ -34,7 +34,7 @@ import org.apache.http.util.EntityUtils;
 @WebServlet("/chat")
 public class ChatServlet extends HttpServlet {
     public static final String API_BASE_URL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=";
-    private static String DEFAULT_GROUP = null;
+    private static String defaultGroup = null;
 
     enum Attribute {
         TOXICITY,
@@ -47,8 +47,6 @@ public class ChatServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String groupId = (String) request.getParameter(GROUP_ID_PROPERTY);
-
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         Query groupQuery = new Query(GROUP_KIND);
@@ -56,8 +54,8 @@ public class ChatServlet extends HttpServlet {
 
         ImmutableList.Builder<ImmutableMap<String, String>> groupsListBuilder = new ImmutableList.Builder<>();
         for (Entity group : preparedGroupQuery.asIterable()) {
-            if (DEFAULT_GROUP == null) {
-                DEFAULT_GROUP = group.getKey().getName();
+            if (defaultGroup == null) {
+                defaultGroup = group.getKey().getName();
             }
 
             ImmutableMap<String, String> groupMap = ImmutableMap.of(
@@ -67,11 +65,12 @@ public class ChatServlet extends HttpServlet {
         }
         ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
 
+        String groupId = (String) request.getParameter(GROUP_ID_PROPERTY);
         if (groupsList.isEmpty()) {
             // If there are no groups, then the current group is just an empty ID
             groupId = "";
         } else if (groupId == null) {
-            groupId = DEFAULT_GROUP;
+            groupId = defaultGroup;
         }
 
         // Calls query on all entities of type Message
@@ -102,7 +101,7 @@ public class ChatServlet extends HttpServlet {
         final long timestamp = System.currentTimeMillis();
 
         if (groupId.isEmpty()) {
-            groupId = DEFAULT_GROUP;
+            groupId = defaultGroup;
         }
 
         if (messageText.isEmpty()) {
