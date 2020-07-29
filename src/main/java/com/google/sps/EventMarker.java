@@ -20,8 +20,8 @@ import java.util.Date;
     private String simpleDate;
     private String dateOutput; 
     private String groupName;
-    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy hh:mm a");
-    private static final DateTimeFormatter simpleFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy hh:mm a");
+    private static final DateTimeFormatter SIMPLE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public EventMarker(String name, String description, String location, DateTime date, String groupName) {
         this.name = name;
@@ -41,14 +41,14 @@ import java.util.Date;
      * Formats the Date ex. Monday, June 08, 2000 12:30PM
      */
     private void formatDate() {      
-        dateOutput = OffsetDateTime.parse(date.toStringRfc3339()).format(format); 
+        dateOutput = OffsetDateTime.parse(date.toStringRfc3339()).format(FORMAT); 
     }
 
     /**
      * Formats the Date to a simplified version: 2020-08-13
      */
     private void simpleDate() {
-       simpleDate = OffsetDateTime.parse(date.toStringRfc3339()).format(simpleFormat);
+       simpleDate = OffsetDateTime.parse(date.toStringRfc3339()).format(SIMPLE_FORMAT);
     }
 
     public DateTime getDateTime() {

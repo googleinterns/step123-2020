@@ -1,5 +1,8 @@
 package com.google.sps.servlets;
 
+import static com.google.sps.utils.SoyRendererUtils.getOutputString;
+import static com.google.sps.utils.StringConstants.*;
+
 import com.google.template.soy.SoyFileSet;
 import com.google.template.soy.tofu.SoyTofu;
 import com.google.common.collect.ImmutableList;
@@ -25,8 +28,7 @@ public class MapServlet extends HttpServlet {
 
         // Reads API Key and HTTP referer from file
         ClassLoader classLoader = MapServlet.class.getClassLoader();
-        // TODO change file name to the constant in Valeria's PR once merged
-        File apiKeyFile = new File(classLoader.getResource("keys.txt").getFile());
+        File apiKeyFile = new File(classLoader.getResource(KEYS_TXT_FILE).getFile());
         Scanner scanner = new Scanner(apiKeyFile);
         final String apiKey = scanner.nextLine();
         scanner.close();
@@ -38,17 +40,9 @@ public class MapServlet extends HttpServlet {
         ImmutableMap<String, String> groupMap2 = ImmutableMap.of("groupName", "Sierra Club",
             "groupID", "456");
 
-        SoyFileSet sfs = SoyFileSet
-            .builder()
-            .add(new File("../../src/main/java/templates/mapPages.soy"))
-            .build();
-        SoyTofu tofu = sfs.compileToTofu();
-        
-        String out = tofu
-            .newRenderer("templates.mapPages.mapPage")
-            // TODO change to constants from Valeria's StringConstants.java for the strings once her PR is merged
-            .setData(ImmutableMap.of("groups", ImmutableList.of(groupMap, groupMap2), "key", apiKey))
-            .render();
-        response.getWriter().println(out);
+        final String mapPageHtml = getOutputString(MAP_SOY_FILE, MAP_TEMPLATE_NAMESPACE, 
+            ImmutableMap.of(GROUPS_KEY, ImmutableList.of(groupMap, groupMap2), "key", apiKey));
+
+        response.getWriter().println(mapPageHtml);
     }
 }
