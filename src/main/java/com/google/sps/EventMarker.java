@@ -20,6 +20,7 @@ import java.util.Date;
     private String simpleDate;
     private String dateOutput; 
     private String groupName;
+
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy hh:mm a");
     private static final DateTimeFormatter SIMPLE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
