@@ -45,45 +45,45 @@
                     </nav>
                 </div>
             </aside>
-                
-            <main class="main-view">
-                <div id="new-group-container">
-                    <a id="close-btn" onclick="hideForm()">
-                        <i class="material-icons mdc-list-item__graphic add-icon">close</i>
-                    </a>
-                    <form class="new-group-form" action="/groups" method="POST">
-                        <h2 class="mdc-typography--headline2 new-group-heading">Create a new group</h2>
-                        <div class="input-section">
-                            <p class="mdc-typography--headline5 form-label">Name:</p>
-                            <label class="mdc-text-field mdc-text-field--filled">
-                                <input class="mdc-text-field__input" type="text" name="name" 
-                                    aria-labelledby="my-label-id">
-                                    <span class="mdc-line-ripple"></span>
-                            </label>
-                        </div>
-                        <div class="input-section">
-                            <p class="mdc-typography--headline5 form-label">Image link:</p>
-                            <label class="mdc-text-field mdc-text-field--filled">
-                                <input class="mdc-text-field__input" type="text" name="image" 
-                                    aria-labelledby="my-label-id">
-                                    <span class="mdc-line-ripple"></span>
-                            </label>
-                        </div>
-                        <p class="mdc-typography--body2 photo-disclaimer">Please make sure to have permission 
-                            to use the photo.<br>
-                            We recommend <a class="unsplash-link" href="https://unsplash.com/">Unsplash</a> for finding 
-                            free pictures.
-                        </p>
-                        <div class="input-section">
-                            <p class="mdc-typography--headline5 form-label">Description:</p>
-                            <textarea id="description-area" name="description" rows="4" cols="42"></textarea>
-                        </div>
-                        <button class="mdc-button mdc-button--raised submit-btn" type="submit">
-                            <span class="mdc-button__label">SUBMIT</span>
-                        </button>
-                    </form>
-                </div>
+            
+            <div id="new-group-container">
+                <a id="close-btn" onclick="hideForm()">
+                    <i class="material-icons mdc-list-item__graphic add-icon">close</i>
+                </a>
+                <form class="new-group-form" action="/groups" method="POST">
+                    <h2 class="mdc-typography--headline2 new-group-heading">Create a new group</h2>
+                    <div class="input-section">
+                        <p class="mdc-typography--headline5 form-label">Name:</p>
+                        <label class="mdc-text-field mdc-text-field--filled">
+                            <input class="mdc-text-field__input" type="text" name="name" 
+                                aria-labelledby="my-label-id" required>
+                                <span class="mdc-line-ripple"></span>
+                        </label>
+                    </div>
+                    <div class="input-section">
+                        <p class="mdc-typography--headline5 form-label">Image link:</p>
+                        <label class="mdc-text-field mdc-text-field--filled">
+                            <input class="mdc-text-field__input" type="text" name="image" 
+                                aria-labelledby="my-label-id" required>
+                                <span class="mdc-line-ripple"></span>
+                        </label>
+                    </div>
+                    <p class="mdc-typography--body2 photo-disclaimer">Please make sure to have permission 
+                        to use the photo.<br>
+                        We recommend <a class="unsplash-link" href="https://unsplash.com/">Unsplash</a> for finding 
+                        free pictures.
+                    </p>
+                    <div class="input-section">
+                        <p class="mdc-typography--headline5 form-label">Description:</p>
+                        <textarea id="description-area" name="description" rows="4" cols="42" required></textarea>
+                    </div>
+                    <button class="mdc-button mdc-button--raised submit-btn" type="submit">
+                        <span class="mdc-button__label">SUBMIT</span>
+                    </button>
+                </form>
+            </div>
 
+            <main class="main-view">
                 <div class="card-gallery">
                     
                     // For each group, a new card is rendered with that group's info
@@ -119,18 +119,7 @@
         <div class="mdc-card__actions">
             <div class="mdc-card__action-buttons">
                 <button class="mdc-button mdc-card__action mdc-card__action--button">
-                    <span class="mdc-button__ripple"></span>Details
-                </button>
-                <button class="mdc-button mdc-card__action mdc-card__action--button">
                     <span class="mdc-button__ripple"></span>Join
-                </button>
-            </div>
-
-            <div class="mdc-card__action-icons">
-                <button class="mdc-icon-button mdc-card__action mdc-card__action--icon--unbounded" aria-pressed="false" 
-                    aria-label="Add to favorites" title="Add to favorites">
-                    <i class="material-icons mdc-icon-button__icon mdc-icon-button__icon--on">favorite</i>
-                    <i class="material-icons mdc-icon-button__icon">favorite_border</i>
                 </button>
             </div>
         </div>
