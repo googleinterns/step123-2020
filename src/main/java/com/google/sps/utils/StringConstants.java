@@ -15,6 +15,8 @@ public final class StringConstants {
   public static final String CHAT_TEMPLATE_NAMESPACE = "templates.chat.";
   public static final String GROUPS_SOY_FILE = "groups.soy";
   public static final String GROUPS_TEMPLATE_NAMESPACE = "templates.groups.groupsPage";
+  public static final String MAP_SOY_FILE = "mapPages.soy";
+  public static final String MAP_TEMPLATE_NAMESPACE = "templates.mapPages.mapPage";
   public static final String TIMEZONE = "America/Los_Angeles";
   
   /**
@@ -31,6 +33,10 @@ public final class StringConstants {
   public static final String SUMMARY_SCORE = "summaryScore";
   public static final String TIMESTAMP_PROPERTY = "timestamp";
   public static final String VALUE = "value";
+  public static final String CHAT_PAGE_NAMESPACE = "templates.chat.chatPage";
+  public static final String KEYS_TXT_FILE = "keys.txt";
+  public static final String CHAT_ERROR_NAMESPACE = "templates.chat.error";
+  public static final String REFERER_HEADER = "Referer";
   
   /**
    * Bad request servlet error messages
