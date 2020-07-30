@@ -83,7 +83,7 @@ public class GroupsServlet extends HttpServlet {
   }
 
   /**
-   * Add the group with groupId to the user's list of groups.
+   * Add the group with groupId to a user's list of groups.
    */
   @Override
   public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -104,7 +104,6 @@ public class GroupsServlet extends HttpServlet {
       ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
       return;
     }
-
   }
 
   /**
