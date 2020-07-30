@@ -15,6 +15,7 @@ import com.google.sps.utils.ServletUtils;
 import com.google.sps.utils.SoyRendererUtils;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -45,7 +46,8 @@ public class GroupsServlet extends HttpServlet {
     // as groups are added to datastore
     try {
       Entity groupEntity = ServletUtils.getGroupEntity(GROUP_ID_STRING);
-      Map<String, Object> group = groupEntity.getProperties();
+      Map<String, Object> group = new HashMap<>(groupEntity.getProperties());
+      System.out.println(groupEntity.getProperties());
       // Not displaying the group ID, so remove it.
       group.remove(GROUP_ID_PROPERTY);
 
@@ -61,7 +63,8 @@ public class GroupsServlet extends HttpServlet {
       response.setContentType(CONTENT_TYPE_HTML);
       response.getWriter().println(htmlString);
     } catch (Exception entityError) {
-       ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
+      entityError.printStackTrace();
+      ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
     }
   }
 
@@ -73,7 +76,7 @@ public class GroupsServlet extends HttpServlet {
     //TODO: Unhardcode. Only one hardcoded group will be created and displayed temporarily, but 
     // will change to enable more groups.
     String groupId = createGroup(GROUP_NAME, GROUP_IMAGE, GROUP_DESCRIPTION);
-
+    
     response.setContentType(CONTENT_TYPE_HTML);
     response.getWriter().println(groupId);
   }
