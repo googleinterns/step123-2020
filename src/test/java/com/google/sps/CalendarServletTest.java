@@ -75,7 +75,7 @@ public final class CalendarServletTest extends Mockito {
     setUpCalendarGetWithGroupId();
 
     String expectedHtml = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE,
-        ImmutableMap.of("calendarId", TEST_GROUP_CALENDARID, "timezone", TIMEZONE));
+        ImmutableMap.of(GROUP_CALENDARID_PROPERTY, TEST_GROUP_CALENDARID, GROUP_ID_PROPERTY, TEST_GROUP_ID, TIMEZONE_PARAM, TIMEZONE));
     String actualHtml = stringWriter.getBuffer().toString().trim();
     
     Assert.assertEquals(expectedHtml, actualHtml);
@@ -112,7 +112,8 @@ public final class CalendarServletTest extends Mockito {
     
     Assert.assertEquals(TEST_POST_EXPECTED_CALENDARID, ServletUtils.getGroupProperty(TEST_GROUP_ID, GROUP_CALENDARID_PROPERTY));
   }
-
+  
+  @Test
   public void calendarPostWithValidGroupIdHasCorrectContentType() throws IOException, EntityNotFoundException {
     setUpCalendarPostWithGroupId(TEST_GROUP_ID);
 

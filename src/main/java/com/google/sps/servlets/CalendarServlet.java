@@ -3,6 +3,9 @@ package com.google.sps.servlets;
 import static com.google.sps.utils.ServletUtils.getParameter;
 import static com.google.sps.utils.StringConstants.*;
 
+import com.google.api.services.calendar.model.Acl;
+import com.google.api.services.calendar.model.AclRule;
+import com.google.api.services.calendar.model.AclRule.Scope;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -13,6 +16,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.sps.utils.ServletUtils;
 import com.google.sps.utils.SoyRendererUtils;
+import com.google.sps.servlets.GroupsServlet;
 import java.io.File;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -25,6 +29,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/calendar")
 public class CalendarServlet extends AbstractEventsServlet {
+  private final String SCOPE_TYPE = "default";
+  private final String USER_CALENDAR_PERMISSIONS = "reader";
 
   /**
    * Display the Calendar page for each group.
@@ -47,10 +53,11 @@ public class CalendarServlet extends AbstractEventsServlet {
     }
 
     String htmlString = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE,
-        ImmutableMap.of(GROUP_CALENDARID_PROPERTY, calendarId, "timezone", TIMEZONE));
+        ImmutableMap.of(GROUP_CALENDARID_PROPERTY, calendarId, GROUP_ID_PROPERTY, groupId,
+            TIMEZONE_PARAM, TIMEZONE));
 
-      response.setContentType(CONTENT_TYPE_HTML);
-      response.getWriter().println(htmlString);
+    response.setContentType(CONTENT_TYPE_HTML);
+    response.getWriter().println(htmlString);
   }
 
   /**
@@ -85,9 +92,13 @@ public class CalendarServlet extends AbstractEventsServlet {
 
     com.google.api.services.calendar.Calendar service = getCalendarService();
 
-    Calendar createdCalendar = service.calendars().insert(calendar).execute();
+    String createdCalendarId = service.calendars().insert(calendar).execute().getId();
+    
+    // Enable reader permission for user
+    AclRule rule = new AclRule().setScope(new Scope().setType(SCOPE_TYPE)).setRole(USER_CALENDAR_PERMISSIONS);
+    service.acl().insert(createdCalendarId, rule).execute();
 
-    return createdCalendar.getId();
+    return createdCalendarId;
   }
 
   private void setGroupCalendarId(String groupId, String calendarId) throws EntityNotFoundException {
