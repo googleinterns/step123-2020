@@ -35,13 +35,13 @@ public class MapServlet extends HttpServlet {
  
         // Hard coded user groups for testing, 
         // Will get groups from user/datastore after functionality is verified
-        ImmutableMap<String, String> groupMap = ImmutableMap.of("groupName", "Black Lives Matter",
-            "groupID", "123");
-        ImmutableMap<String, String> groupMap2 = ImmutableMap.of("groupName", "Sierra Club",
-            "groupID", "456");
+        ImmutableMap<String, String> groupMap = ImmutableMap.of(GROUP_NAME_KEY, "Black Lives Matter",
+            GROUP_ID_KEY, "123");
+        ImmutableMap<String, String> groupMap2 = ImmutableMap.of(GROUP_NAME_KEY, "Sierra Club",
+            GROUP_ID_KEY, "456");
  
         final String mapPageHtml = getOutputString(MAP_SOY_FILE, MAP_TEMPLATE_NAMESPACE, 
-            ImmutableMap.of(GROUPS_KEY, ImmutableList.of(groupMap, groupMap2), "key", apiKey));
+            ImmutableMap.of(GROUPS_KEY, ImmutableList.of(groupMap, groupMap2), API_KEY_NAME, apiKey));
  
         response.getWriter().println(mapPageHtml);
     }

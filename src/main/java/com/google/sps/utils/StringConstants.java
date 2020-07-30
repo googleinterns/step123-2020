@@ -75,6 +75,13 @@ public final class StringConstants {
   public static final String GROUP_NAME_PROPERTY = "name";
   
   /**
+   * Map constants
+   */
+  public static final String API_KEY_NAME = "key";
+  public static final String GROUP_ID_KEY = "groupID";
+  public static final String GROUP_NAME_KEY = "groupName";
+
+  /**
    * Testing constants
    */
   public static final String NULL_PARAMETER = "age";

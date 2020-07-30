@@ -60,8 +60,7 @@ public class SortedMarkersServlet extends HttpServlet {
         ArrayList<EventMarker> mapEvents = new ArrayList<EventMarker>();
         EventsServlet eventsServlet = new EventsServlet();
         
-        // CalendarID and group Name are both hardcoded for now
-        // The events are from the calendar though
+        // TODO: Convert the hardcoded calendarID and groupName when getEventsList() param is changed to groupID
         Events calEvents = eventsServlet.getEventsList("fk6u4m5isbl8i6cj1io1pkpli4@group.calendar.google.com");
         for (Event calEvent : calEvents.getItems()) {
             EventMarker mapEvent = new EventMarker(
