@@ -4,7 +4,6 @@ goog.require('templates.eventsoy');
 
 function initEvents() {
   addressAutoComplete();
-  //TODO: Events POST form
 }
 
 function addressAutoComplete() {

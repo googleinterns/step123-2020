@@ -8,9 +8,32 @@ body {
   height: 100%;
   width: 100%;
 }
- 
+
+#hours {
+  padding-right: 5px;
+}
+
+.icon-links {
+  text-decoration: none;
+}
+
 .main-content {
   overflow: auto;
   height: 100%;
   width: 100%;
+}
+
+#minutes {
+  padding-left: 5px;
+}
+
+.nav-icons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding: 10px;
+}
+
+.time {
+  width: 50%;
 }

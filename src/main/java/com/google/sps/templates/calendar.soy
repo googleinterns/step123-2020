@@ -2,6 +2,7 @@
 
 {template .calendarPage}
   {@param calendarId: string}
+  {@param groupId: string}
   {@param timezone: string}
   <html lang="en">
     <head>
@@ -29,15 +30,77 @@
               <span class="mdc-list-item__text"><h2>Event Calendar</h2></span>
             </a>
 
-            <a class="mdc-list-item" href="#">
-              <label class="mdc-text-field mdc-text-field--filled">
-                <span class="mdc-text-field__ripple"></span>
-                <input class="mdc-text-field__input" id="address" type="text" aria-labelledby="my-label-id">
-                <span class="mdc-line-ripple"></span>
-              </label>  
+            <hr class="mdc-list-divider">
+            <div class="nav-icons">
+              <a class="icon-links" href="/chat">
+                <i class="material-icons mdc-list-item__graphic nav-icon">message</i>
+              </a>
+              <a class="icon-links" href="/calendar">
+                <i class="material-icons mdc-list-item__graphic nav-icon">date_range</i>
+              </a>
+              <a class="icon-links" href="/groups">
+                <i class="material-icons mdc-list-item__graphic nav-icon">group</i>
+              </a>
+            </div>
+
+            <li role="separator" class="mdc-list-divider"></li>
+            <form action="/events" method="POST" id="create-event">
+              <input type="hidden" name="groupId" value="{$groupId}">
+              <h6 class="mdc-list-group__subheader">Title</h6>
+
+              <a class="mdc-list-item">
+                <label class="mdc-text-field mdc-text-field--filled">
+                  <span class="mdc-text-field__ripple"></span>
+                  <input class="mdc-text-field__input" id="title" type="text" name="title" aria-labelledby="my-label-id" required minlength="2">
+                  <span class="mdc-line-ripple"></span>
+                </label>  
+              </a>
+
+              <h6 class="mdc-list-group__subheader">Description</h6>
+
+              <a class="mdc-list-item">
+                <label class="mdc-text-field mdc-text-field--filled">
+                  <span class="mdc-text-field__ripple"></span>
+                  <input class="mdc-text-field__input" id="description" type="text" name="description" aria-labelledby="my-label-id" required minlength="2">
+                  <span class="mdc-line-ripple"></span>
+                </label>  
+              </a>
+
+              <h6 class="mdc-list-group__subheader">Location</h6>
+
+              <a class="mdc-list-item">
+                <label class="mdc-text-field mdc-text-field--filled">
+                  <span class="mdc-text-field__ripple"></span>
+                  <input class="mdc-text-field__input" id="address" type="text" name="location" aria-labelledby="my-label-id" required minlength="2">
+                  <span class="mdc-line-ripple"></span>
+                </label>  
+              </a>
+ 
+              <li role="separator" class="mdc-list-divider"></li>
+              <h6 class="mdc-list-group__subheader">Start Time</h6>
+                        
+              <a class="mdc-list-item">
+                <input type="datetime-local" id="date" name="start">
+              </a>
+ 
+              <h6 class="mdc-list-group__subheader">Duration</h6>
+                         
+              <a class="mdc-list-item">
+                <input class="time" type="number" id="hours" name="hours" min="0" max="23" value="23">
+                <input class="time" type="number" id="minutes" name="minutes" min="0" max="59" value="59">
+              </a>
+  
+              <li role="separator" class="mdc-list-divider"></li>
+            </form>
+            <a class="mdc-list-item">
+              <button class="mdc-button" type="submit" form="create-event">
+                <div class="mdc-button__ripple"></div>
+                <span class="mdc-button__label">Create Event</span>
+                <i class="material-icons mdc-button__icon" aria-hidden="true">event</i>
+              </button>
             </a>
 
-          </nav>
+           </nav>
         </div>
       </aside>
 

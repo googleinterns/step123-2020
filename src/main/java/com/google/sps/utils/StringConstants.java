@@ -18,7 +18,10 @@ public final class StringConstants {
   public static final String GROUPS_SOY_FILE = "groups.soy";
   public static final String GROUPS_TEMPLATE_NAMESPACE = "templates.groups.groupsPage";
   public static final String TIMEZONE = "America/Los_Angeles";
-  
+  public static final String TIMEZONE_OFFSET = ":00-07:00";
+  public static final int TIMEZONE_OFFSET_INT = -420;
+  public static final String TIMEZONE_PARAM = "timezone";
+
   /**
    * Chat constants
    */
@@ -56,8 +59,9 @@ public final class StringConstants {
    * Events constant properties
    */
   public static final String EVENT_DESCRIPTION_PROPERTY = "description";
-  public static final String EVENT_END_PROPERTY = "end";
+  public static final String EVENT_HOURS_PROPERTY = "hours";
   public static final String EVENT_LOCATION_PROPERTY = "location";
+  public static final String EVENT_MINUTES_PROPERTY = "hours";
   public static final String EVENT_START_PROPERTY = "start";
   public static final String EVENT_TITLE_PROPERTY = "title";
   
