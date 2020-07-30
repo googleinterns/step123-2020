@@ -55,4 +55,12 @@ public final class ServletUtils {
     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     response.getWriter().println(errorMessage);
   }
+
+  public static void enforceUserLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    if(request.getUserPrincipal() == null) {
+      // If user is not logged in, redirect to index page.
+      response.sendRedirect("/");
+      return;
+    }
+  }
 }
