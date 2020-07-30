@@ -21,8 +21,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/events")
 public class EventsServlet extends AbstractEventsServlet {
+  private final String CALENDAR_REDIRECT = "/calendar?groupId=";
   private final String SORT_EVENTS_BY = "startTime";
   private final int MAX_EVENTS = 50;
+  private final long MS_IN_ONE_HOUR = 3600000L;
+  private final long MS_IN_ONE_MINUTE = 60000L;
 
   /**
    * Obtain a list of events from the specified group if given the Calendar ID.
@@ -49,17 +52,17 @@ public class EventsServlet extends AbstractEventsServlet {
 
   /**
    * Create an event and add it to the calendar of the specified group. Query string should contain groupId
-   * POST body should contain: title,  description (opt), location (opt), start time, and end time.
+   * POST body should contain: title, description (opt), location (opt), start time, and duration (hours and mins).
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String groupId = getParameter(request, GROUP_ID_PROPERTY);
     String eventTitle = getParameter(request, EVENT_TITLE_PROPERTY);
     String eventStart = getParameter(request, EVENT_START_PROPERTY);
-    String eventEnd = getParameter(request, EVENT_END_PROPERTY);
+    String eventEnd = getEventEndTime(eventStart, getParameter(request, EVENT_HOURS_PROPERTY), getParameter(request, EVENT_MINUTES_PROPERTY));
 
     if (Strings.isNullOrEmpty(groupId) || Strings.isNullOrEmpty(eventTitle) 
-        || Strings.isNullOrEmpty(eventStart) || Strings.isNullOrEmpty(eventEnd)) {
+        || Strings.isNullOrEmpty(eventEnd)) {
       ServletUtils.printBadRequestError(response, EVENTS_POST_BAD_REQUEST_MESSAGE);
       return;
     }
@@ -67,19 +70,29 @@ public class EventsServlet extends AbstractEventsServlet {
     try {
       Event event = addEvent(ServletUtils.getGroupProperty(groupId, GROUP_CALENDARID_PROPERTY), 
           eventTitle, getParameter(request, EVENT_LOCATION_PROPERTY),
-          getParameter(request, EVENT_DESCRIPTION_PROPERTY), eventStart, eventEnd);
+          getParameter(request, EVENT_DESCRIPTION_PROPERTY), eventStart + TIMEZONE_OFFSET, eventEnd);
 
       response.setContentType(CONTENT_TYPE_JSON);
       response.getWriter().println(event.toString());
     } catch (Exception entityError) {
       response.getWriter().println(ENTITY_ERROR_MESSAGE);
     }
+    response.sendRedirect(CALENDAR_REDIRECT + groupId);
   }
 
   /**
-   * Called from another servlet to get the events rather than through a GET request
+   * Called from another servlet to get the events rather than through a GET request.
+   * Return null if invalid groupId.
    */
-  public Events getEventsList(String calendarId) throws IOException {
+  public Events getEventsList(String groupId) throws IOException {
+    String calendarId = "";
+
+    try {
+      calendarId = ServletUtils.getGroupProperty(groupId, GROUP_CALENDARID_PROPERTY);
+    } catch (Exception entityError) {
+      return null;
+    }
+
     return getEventsList(getCalendarService(), calendarId);
   }
 
@@ -105,8 +118,7 @@ public class EventsServlet extends AbstractEventsServlet {
     return event;
   }
 
-  @VisibleForTesting
-  public Event createEvent(String eventTitle, String eventLocation, String eventDescription,
+  private Event createEvent(String eventTitle, String eventLocation, String eventDescription,
      String eventStart, String eventEnd) {
     EventDateTime startTime = createEventDateTime(eventStart);
     EventDateTime endTime = createEventDateTime(eventEnd);
@@ -117,5 +129,18 @@ public class EventsServlet extends AbstractEventsServlet {
 
   private EventDateTime createEventDateTime(String time) {
     return new EventDateTime().setDateTime(new DateTime(time)).setTimeZone(TIMEZONE);
+  }
+
+  @VisibleForTesting
+  public String getEventEndTime(String startTime, String hours, String minutes) {
+    if(Strings.isNullOrEmpty(startTime) || Strings.isNullOrEmpty(hours) || Strings.isNullOrEmpty(minutes)) {
+      return null;
+    }
+    
+    //Add the start time in milliseconds to the amount of hours and minutes.
+    long endTimeMs = new DateTime(startTime + TIMEZONE_OFFSET).getValue() + 
+        (Long.valueOf(hours) * MS_IN_ONE_HOUR) + (Long.valueOf(minutes) * MS_IN_ONE_MINUTE);
+
+    return new DateTime(endTimeMs, TIMEZONE_OFFSET_INT).toStringRfc3339();
   }
 }
