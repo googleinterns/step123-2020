@@ -2,12 +2,6 @@ goog.require('goog.dom');
 goog.require('templates.message');
 
 function init() {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const groupId = urlParams.get('groupId');
-    const groupIdInput = goog.dom.getElement("groupId");
-    goog.dom.setProperties(groupIdInput, {'value': groupId});
-
     // Calls the updateChat servlet every second for new messages
     setInterval(() => {
         const messagesContainer = goog.dom.getElement("messages-container");

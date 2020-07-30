@@ -36,8 +36,10 @@ import org.mockito.MockitoAnnotations;
 public final class ChatServletTest extends Mockito {
     private static final String BLACK_LIVES_MATTER = "Black Lives Matter";
     private static final String BLM_GROUP_ID = "123";
+    private static final String EMPTY_GROUP_ID = "";
     private static final String MESSAGE_TEXT_NON_TOXIC = "hello";
     private static final String MESSAGE_TEXT_TOXIC = "what kind of idiot name is foo?";
+    private static final String NULL_GROUP_ID = null;
     private static final String SIERRA_CLUB = "Sierra Club";
     private static final String SIERRA_GROUP_ID = "456";
     
@@ -132,6 +134,42 @@ public final class ChatServletTest extends Mockito {
     }
 
     @Test
+    public void servletGetNoCommentsNullGroupId() throws IOException {
+        // GET method should return the template for the BLM group
+        // though it has no comments
+
+        when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(NULL_GROUP_ID);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        servlet.doGet(request, response);
+        
+        templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of(), GROUPS_KEY, 
+            SAMPLE_GROUP_LIST, CURR_GROUP_KEY, BLM_GROUP_ID);
+        String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, templateData);
+        String actualHtml = stringWriter.getBuffer().toString().trim();
+
+        Assert.assertEquals(expectedHtml, actualHtml);
+    }
+
+    @Test
+    public void servletGetNoCommentsEmptyGroupId() throws IOException {
+        // GET method should return the template for the BLM group
+        // though it has no comments
+
+        when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(EMPTY_GROUP_ID);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        servlet.doGet(request, response);
+        
+        templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of(), GROUPS_KEY, 
+            SAMPLE_GROUP_LIST, CURR_GROUP_KEY, BLM_GROUP_ID);
+        String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, templateData);
+        String actualHtml = stringWriter.getBuffer().toString().trim();
+
+        Assert.assertEquals(expectedHtml, actualHtml);
+    }
+
+    @Test
     public void servletGetWithComment() throws IOException {
         // GET method should return the chat template but with one
         // comment that says "hello"
@@ -149,6 +187,54 @@ public final class ChatServletTest extends Mockito {
 
         templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of(MESSAGE_TEXT_NON_TOXIC),
             GROUPS_KEY, SAMPLE_GROUP_LIST, CURR_GROUP_KEY, SIERRA_GROUP_ID);
+        String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, templateData);
+        String actualHtml = stringWriter.getBuffer().toString().trim();
+
+        Assert.assertEquals(expectedHtml, actualHtml);
+    }
+
+    @Test
+    public void servletGetWithCommentNullGroupId() throws IOException {
+        // GET method is called and should respond with the HTML
+        // string of the chat template with one comment (for BLM group)
+
+        // Creating a comment that says "hello" for BLM
+        Entity messageEntity = new Entity(MESSAGE_KIND + BLM_GROUP_ID);
+        messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, MESSAGE_TEXT_NON_TOXIC);
+        messageEntity.setProperty(TIMESTAMP_PROPERTY, 1);
+        datastore.put(messageEntity);
+
+        when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(NULL_GROUP_ID);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        servlet.doGet(request, response);
+        
+        templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of("hello"), GROUPS_KEY, 
+            SAMPLE_GROUP_LIST, CURR_GROUP_KEY, BLM_GROUP_ID);
+        String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, templateData);
+        String actualHtml = stringWriter.getBuffer().toString().trim();
+
+        Assert.assertEquals(expectedHtml, actualHtml);
+    }
+
+    @Test
+    public void servletGetDifferentGroupCommentEmptyGroupId() throws IOException {
+        // GET method is called and should respond with the HTML
+        // string of the chat template with no comments (for BLM group)
+
+        // Creating a comment that says "hello" for the Sierra Club
+        Entity messageEntity = new Entity(MESSAGE_KIND + SIERRA_GROUP_ID);
+        messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, MESSAGE_TEXT_NON_TOXIC);
+        messageEntity.setProperty(TIMESTAMP_PROPERTY, 1);
+        datastore.put(messageEntity);
+
+        when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(EMPTY_GROUP_ID);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        servlet.doGet(request, response);
+        
+        templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of(), GROUPS_KEY, 
+            SAMPLE_GROUP_LIST, CURR_GROUP_KEY, BLM_GROUP_ID);
         String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, templateData);
         String actualHtml = stringWriter.getBuffer().toString().trim();
 

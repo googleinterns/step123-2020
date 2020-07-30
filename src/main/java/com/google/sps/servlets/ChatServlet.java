@@ -69,7 +69,7 @@ public class ChatServlet extends HttpServlet {
         if (groupsList.isEmpty()) {
             // If there are no groups, then the current group is just an empty ID
             groupId = "";
-        } else if (groupId == null) {
+        } else if (groupId == null || groupId.isEmpty()) {
             groupId = defaultGroup;
         }
 
