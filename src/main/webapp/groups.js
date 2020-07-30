@@ -1,13 +1,16 @@
-var newGroupContainer;
+goog.require('goog.dom');
+goog.require('goog.style');
+
+let newGroupContainer;
 
 function init() {
-    newGroupContainer = document.getElementById("new-group-container");
+    newGroupContainer = goog.dom.getElement("new-group-container");
 }
 
 function showForm() {
-    newGroupContainer.style.display = "flex";
+    goog.style.setStyle(newGroupContainer, "display", "flex");
 }
 
 function hideForm() {
-    newGroupContainer.style.display = "none";
+    goog.style.setStyle(newGroupContainer, "display", "none");
 }

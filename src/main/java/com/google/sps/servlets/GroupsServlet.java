@@ -111,31 +111,31 @@ public class GroupsServlet extends HttpServlet {
     private void createSampleGroups(DatastoreService datastore) {
         try {
             datastore.get(KeyFactory.createKey(GROUP_KIND, "123"));
-        } catch(EntityNotFoundException e) {
-        // Hard coded groups for now, but hopefully will use user-created groups from datastore
-        // Photo by Hybrid on Unsplash 
-        // (https://unsplash.com/@artbyhybrid?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
-        Entity blmEntity = new Entity(GROUP_KIND, "123");
-        blmEntity.setProperty(GROUP_NAME_PROPERTY, "Black Lives Matter");
-        blmEntity.setProperty(GROUP_IMAGE_PROPERTY, "https://images.unsplash.com/photo-1591622414912-34f2a8f8172" + 
-            "e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80");
-        blmEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, "Advocating against police brutality and all racially " + 
-            "motivated discrimination against Black Americans.");
-        datastore.put(blmEntity);
+        } catch (EntityNotFoundException groupNotCreated) {
+            // Hard coded groups for now, but hopefully will use user-created groups from datastore
+            // Photo by Hybrid on Unsplash 
+            // (https://unsplash.com/@artbyhybrid?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+            Entity blmEntity = new Entity(GROUP_KIND, "123");
+            blmEntity.setProperty(GROUP_NAME_PROPERTY, "Black Lives Matter");
+            blmEntity.setProperty(GROUP_IMAGE_PROPERTY, "https://images.unsplash.com/photo-1591622414912-34f2a8f8172" + 
+                "e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80");
+            blmEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, "Advocating against police brutality and all racially " + 
+                "motivated discrimination against Black Americans.");
+            datastore.put(blmEntity);
         }
 
         try {
             datastore.get(KeyFactory.createKey(GROUP_KIND, "456"));
-        } catch(EntityNotFoundException e) {
-        // Photo by Conscious Design on Unsplash
-        // (https://unsplash.com/@conscious_design?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
-        Entity sierraEntity = new Entity(GROUP_KIND, "456");
-        sierraEntity.setProperty(GROUP_NAME_PROPERTY, "Sierra Club");
-        sierraEntity.setProperty(GROUP_IMAGE_PROPERTY, "https://images.unsplash.com/photo-1584747167399-06a9ba" + 
-            "8302b0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2704&q=80");
-        sierraEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, "Help protect Earth's natural resources and " + 
-            "ensure a healthy environment for future generations.");
-        datastore.put(sierraEntity);
+        } catch (EntityNotFoundException groupNotCreated) {
+            // Photo by Conscious Design on Unsplash
+            // (https://unsplash.com/@conscious_design?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+            Entity sierraEntity = new Entity(GROUP_KIND, "456");
+            sierraEntity.setProperty(GROUP_NAME_PROPERTY, "Sierra Club");
+            sierraEntity.setProperty(GROUP_IMAGE_PROPERTY, "https://images.unsplash.com/photo-1584747167399-06a9ba" + 
+                "8302b0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2704&q=80");
+            sierraEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, "Help protect Earth's natural resources and " + 
+                "ensure a healthy environment for future generations.");
+            datastore.put(sierraEntity);
         }
     }
 }
