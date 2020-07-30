@@ -91,7 +91,7 @@ public class GroupsServlet extends HttpServlet {
     String groupId = getParameter(request, GROUP_ID_PROPERTY);
     
     if (Strings.isNullOrEmpty(groupId)) {
-      ServletUtils.printBadRequestError(response, EVENTS_GET_BAD_REQUEST_MESSAGE);
+      ServletUtils.printBadRequestError(response, INVALID_GROUPID_BAD_REQUEST_MESSAGE);
       return;
     }
 
