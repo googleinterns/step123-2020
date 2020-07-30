@@ -72,8 +72,8 @@ public class SortedMarkersServlet extends HttpServlet {
                 "Black Lives Matter");
             mapEvents.add(mapEvent);
         }
-        SortedMarkers sorted = new SortedMarkers(mapEvents); 
-        return sorted.getSortedMarkers();
+        SortedMarkers sortedEvents = new SortedMarkers(mapEvents); 
+        return sortedEvents.getSortedMarkers();
         
     } catch (IOException e) {
         e.printStackTrace(); 
