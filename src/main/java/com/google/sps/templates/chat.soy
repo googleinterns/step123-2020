@@ -2,14 +2,16 @@
 
 {template .chatPage}
     {@param messages: list<string>}
-    {@param groups: list<string>}
+    {@param groups: list<map<string, string>>}
+    {@param currGroup: string}
 
     <html>
         <head>
             <meta charset="UTF-8">
             <title>The Solidarity Initiative - Chat</title>
             <link rel="stylesheet" href="chat.css">
-            <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+            <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" 
+                rel="stylesheet">
             <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
             <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
             <script src="closure/closure-library/closure/goog/base.js"></script>
@@ -45,9 +47,10 @@
                         <h2 class="mdc-typography--headline5 groups-headline">Groups</h2>
 
                         <div class="selection-controls-container">
-                            {for $group in $groups}
-                                <a class="mdc-list-item" href="/chat" tabindex="0">
-                                    <span class="mdc-list-item__text group-label">{$group}</span>
+                            {for $groupMap in $groups}
+                                <a class="mdc-list-item {if $groupMap['groupId'] == $currGroup}{css('currGroup')}{/if}" 
+                                    href="/chat?groupId={$groupMap['groupId']}" tabindex="0">
+                                    <span class="mdc-list-item__text group-label">{$groupMap['name']}</span>
                                 </a>
                             {/for}
                         </div>
@@ -57,28 +60,36 @@
             </aside>
 
             <main class="main-view">
-                <div class="main-container">
-                    <ul id="messages-container" class="mdc-list">
-                        {for $message in $messages}
-                            <li class="mdc-list-item mdc-list-item--disabled" tabindex="0">
-                                <span class="mdc-list-item__text message">{$message}</span>
-                            </li>
-                        {/for}
-                    </ul>
+                {if strLen($currGroup) == 0}
+                    <p class="mdc-typography--body1 no-groups-error">
+                        Oops, you haven't joined any groups yet. Click the groups icon at the top to join a cause.
+                    </p>
+                {else}
+                    <div class="main-container">
+                        <ul id="messages-container" class="mdc-list">
+                            {for $message in $messages}
+                                <li class="mdc-list-item mdc-list-item--disabled" tabindex="0">
+                                    <span class="mdc-list-item__text message">{$message}</span>
+                                </li>
+                            {/for}
+                        </ul>
 
-                    <div class="btn-container">
-                        <form class="message-form" action="/chat" method="POST">
-                            <label class="mdc-text-field mdc-text-field--filled">
-                                <input class="mdc-text-field__input" type="text" name="message-text" aria-labelledby="my-label-id">
-                                <span class="mdc-line-ripple"></span>
-                            </label>
+                        <div class="btn-container">
+                            <form class="message-form" action="/chat" method="POST">
+                                <label class="mdc-text-field mdc-text-field--filled">
+                                    <input class="mdc-text-field__input" type="text" name="message-text" 
+                                        aria-labelledby="my-label-id">
+                                    <span class="mdc-line-ripple"></span>
+                                </label>
 
-                            <button class="mdc-button mdc-button--raised" type="submit">
-                                <span class="mdc-button__label">POST</span>
-                            </button>
-                        </form>
+                                <input id="groupId" name="groupId" value="{$currGroup}" style="display:none">
+                                <button class="mdc-button mdc-button--raised" type="submit">
+                                    <span class="mdc-button__label">POST</span>
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                </div>
+                {/if}
             </main>
         </body>
 
@@ -88,9 +99,24 @@
 
 {template .error}
     {@param errorMessage: string}
+    {@param currGroup: string}
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>The Solidarity Initiative - Chat</title>
+        <link rel="stylesheet" href="errorChat.css">
+        <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" 
+            rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    </head>
 
-    <p>{$errorMessage}</p>
-    <a href="/chat">
-        <button>Return to chat</button>
-    </a>
+    <body>
+        <p class="mdc-typography--body1 error">{$errorMessage}</p>
+        <a class="btn-link" href="/chat?groupId={$currGroup}">
+            <button class="mdc-button mdc-button--raised">
+                <span class="mdc-button__label">Return to chat</span>
+            </button>
+        </a>
+    </body>
 {/template}

@@ -4,8 +4,9 @@
 }
 
 body {
-  display: flex;
-  height: 100vh;
+    display: flex;
+    height: 100vh;
+    margin: 0;
 }
 
 .icon-links {
@@ -24,7 +25,7 @@ i.material-icons.mdc-list-item__graphic.nav-icon {
 }
 
 .main-content {
-  overflow: auto;
-  height: 100%;
-  width: 100%;
+    overflow: auto;
+    height: 100%;
+    width: 100%;
 }

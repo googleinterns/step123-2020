@@ -9,20 +9,27 @@
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="551319260291-3tv6apt079vqt3nj0jr60h0t6gv9c3t9.apps.googleusercontent.com">
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
-    <script src="script.js"></script>
   </head>
 
   <body>
     <div class="img-container">
       <div class="text-highlight">
-        <h1>The Solidarity Initiative</h1>
+        <h1 class="mdc-typography--headline3 heading" id="title-heading">The Solidarity Initiative</h1>
       </div>
+      <p class="mdc-typography--body2 photo-credit">Photo by 
+        <a class="photo-link" href="https://unsplash.com/@kslupski?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Chris Slupski
+        </a> on 
+        <a class="photo-link" href="https://unsplash.com/s/photos/protest?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash
+        </a>
+      </p>
+
+      <i class="material-icons mdc-list-item__graphic down-icon" aria-hidden="true">expand_more</i>
     </div>
 
     <div class="text-container">
-      <h1>Activism is important.</h1>
+      <h1 class="mdc-typography--headline3 heading" id="mission-heading">Activism is important.</h1>
 
-      <h3 class="mission-statement">
+      <h3 class="mdc-typography--headline5 mission-statement">
         The Solidarity Initiative aims to give those in marginalized communities a platform through technology. Whether
         a seasoned activist or just looking for ways to help, the Solidarity Initiative can help connect you to a group
         who cares. Join events, start a protest, and securely communicate all within one website.
@@ -31,9 +38,6 @@
       <a id="btn-link" href="/groups">
         <div class="g-signin2"></div>
       </a>
-      
     </div>
-
   </body>
-
 </html>
