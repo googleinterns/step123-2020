@@ -47,7 +47,6 @@ public class GroupsServlet extends HttpServlet {
     try {
       Entity groupEntity = ServletUtils.getGroupEntity(GROUP_ID_STRING);
       Map<String, Object> group = new HashMap<>(groupEntity.getProperties());
-      System.out.println(groupEntity.getProperties());
       // Not displaying the group ID, so remove it.
       group.remove(GROUP_ID_PROPERTY);
 

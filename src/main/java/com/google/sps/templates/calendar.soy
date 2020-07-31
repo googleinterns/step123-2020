@@ -32,11 +32,11 @@
 
             <hr class="mdc-list-divider">
             <div class="nav-icons">
+              <a class="icon-links" href="/map">
+                <i class="material-icons mdc-list-item__graphic nav-icon">map</i>
+              </a>
               <a class="icon-links" href="/chat">
                 <i class="material-icons mdc-list-item__graphic nav-icon">message</i>
-              </a>
-              <a class="icon-links" href="/calendar">
-                <i class="material-icons mdc-list-item__graphic nav-icon">date_range</i>
               </a>
               <a class="icon-links" href="/groups">
                 <i class="material-icons mdc-list-item__graphic nav-icon">group</i>
@@ -51,7 +51,7 @@
               <a class="mdc-list-item">
                 <label class="mdc-text-field mdc-text-field--filled">
                   <span class="mdc-text-field__ripple"></span>
-                  <input class="mdc-text-field__input" id="title" type="text" name="title" aria-labelledby="my-label-id" required minlength="2">
+                  <input class="mdc-text-field__input" id="title" type="text" name="title" aria-labelledby="my-label-id" minlength="2" required>
                   <span class="mdc-line-ripple"></span>
                 </label>  
               </a>
@@ -61,7 +61,7 @@
               <a class="mdc-list-item">
                 <label class="mdc-text-field mdc-text-field--filled">
                   <span class="mdc-text-field__ripple"></span>
-                  <input class="mdc-text-field__input" id="description" type="text" name="description" aria-labelledby="my-label-id" required minlength="2">
+                  <input class="mdc-text-field__input" id="description" type="text" name="description" aria-labelledby="my-label-id" minlength="2">
                   <span class="mdc-line-ripple"></span>
                 </label>  
               </a>
@@ -71,7 +71,7 @@
               <a class="mdc-list-item">
                 <label class="mdc-text-field mdc-text-field--filled">
                   <span class="mdc-text-field__ripple"></span>
-                  <input class="mdc-text-field__input" id="address" type="text" name="location" aria-labelledby="my-label-id" required minlength="2">
+                  <input class="mdc-text-field__input" id="address" type="text" name="location" aria-labelledby="my-label-id" minlength="2">
                   <span class="mdc-line-ripple"></span>
                 </label>  
               </a>
@@ -80,14 +80,14 @@
               <h6 class="mdc-list-group__subheader">Start Time</h6>
                         
               <a class="mdc-list-item">
-                <input type="datetime-local" id="date" name="start">
+                <input type="datetime-local" id="date" name="start" required>
               </a>
  
               <h6 class="mdc-list-group__subheader">Duration</h6>
                          
               <a class="mdc-list-item">
-                <input class="time" type="number" id="hours" name="hours" min="0" max="23" value="23">
-                <input class="time" type="number" id="minutes" name="minutes" min="0" max="59" value="59">
+                <input class="time" type="number" id="hours" name="hours" min="0" max="23" value="23" required>
+                <input class="time" type="number" id="minutes" name="minutes" min="0" max="59" value="59" required>
               </a>
   
               <li role="separator" class="mdc-list-divider"></li>
