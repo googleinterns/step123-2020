@@ -11,10 +11,13 @@ public final class StringConstants {
   public static final String APPLICATION_NAME = "The Solidarity Initiative";
   public static final String CALENDAR_SOY_FILE = "calendar.soy";
   public static final String CALENDAR_TEMPLATE_NAMESPACE = "templates.calendar.calendarPage";
+  public static final String CHAT_ERROR_NAMESPACE = "templates.chat.error";
   public static final String CHAT_SOY_FILE = "chat.soy";
   public static final String CHAT_TEMPLATE_NAMESPACE = "templates.chat.";
+  public static final String CHAT_PAGE_NAMESPACE = "templates.chat.chatPage";
   public static final String GROUPS_SOY_FILE = "groups.soy";
   public static final String GROUPS_TEMPLATE_NAMESPACE = "templates.groups.groupsPage";
+  public static final String KEYS_TXT_FILE = "keys.txt";
   public static final String TIMEZONE = "America/Los_Angeles";
   
   /**
@@ -28,6 +31,7 @@ public final class StringConstants {
   public static final String MESSAGES_KEY = "messages";
   public static final String MESSAGE_KIND = "Message-";
   public static final String MESSAGE_TEXT_PROPERTY = "message-text";
+  public static final String REFERER_HEADER = "Referer";
   public static final String SUMMARY_SCORE = "summaryScore";
   public static final String TIMESTAMP_PROPERTY = "timestamp";
   public static final String VALUE = "value";
@@ -35,7 +39,7 @@ public final class StringConstants {
   /**
    * Bad request servlet error messages
    */
-  public static final String CALENDAR_BAD_REQUEST_MESSAGE = "Must have groupId in query string!";
+  public static final String INVALID_GROUPID_BAD_REQUEST_MESSAGE = "Must have groupId in query string!";
   public static final String EVENTS_GET_BAD_REQUEST_MESSAGE = "Must have calendarId or groupId in query string!";
   public static final String EVENTS_GET_INVALID_CALENDARID_MESSAGE = "Invalid credentials or calendar ID";
   public static final String EVENTS_POST_BAD_REQUEST_MESSAGE = "POST body must contain title and start and end times!";
@@ -68,6 +72,8 @@ public final class StringConstants {
   public static final String GROUP_ID_PROPERTY = "groupId";
   public static final String GROUP_IMAGE_PROPERTY = "image";
   public static final String GROUP_NAME_PROPERTY = "name";
+  public static final String USER_KIND = "User";
+  public static final String USER_EMAIL_PROPERTY = "email";
   
   /**
    * Testing constants
