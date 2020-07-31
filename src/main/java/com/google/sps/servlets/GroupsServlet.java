@@ -71,14 +71,15 @@ public class GroupsServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String name = getParameter(request, GROUP_NAME_PROPERTY);
+    String description = getParameter(request, GROUP_DESCRIPTION_PROPERTY);
     String image = getParameter(request, GROUP_IMAGE_PROPERTY);
 
-    if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(image)){
+    if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(description) || Strings.isNullOrEmpty(image)){
       ServletUtils.printBadRequestError(response, GROUPS_BAD_REQUEST_MESSAGE);
       return;
     }
     
-    String groupId = createGroup(name, getParameter(request, GROUP_DESCRIPTION_PROPERTY), image);
+    String groupId = createGroup(name, description, image);
 
     response.setContentType(CONTENT_TYPE_PLAIN);
     response.getWriter().println(groupId);
