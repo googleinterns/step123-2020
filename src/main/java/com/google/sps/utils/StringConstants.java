@@ -17,6 +17,7 @@ public final class StringConstants {
   public static final String CHAT_TEMPLATE_NAMESPACE = "templates.chat.";
   public static final String GROUPS_SOY_FILE = "groups.soy";
   public static final String GROUPS_TEMPLATE_NAMESPACE = "templates.groups.groupsPage";
+  public static final String KEYS_TXT_FILE = "keys.txt";
   public static final String TIMEZONE = "America/Los_Angeles";
   public static final String TIMEZONE_OFFSET = ":00-07:00";
   public static final int TIMEZONE_OFFSET_INT = -420;
@@ -42,7 +43,7 @@ public final class StringConstants {
   /**
    * Bad request servlet error messages
    */
-  public static final String CALENDAR_BAD_REQUEST_MESSAGE = "Must have groupId in query string!";
+  public static final String INVALID_GROUPID_BAD_REQUEST_MESSAGE = "Must have groupId in query string!";
   public static final String EVENTS_GET_BAD_REQUEST_MESSAGE = "Must have calendarId or groupId in query string!";
   public static final String EVENTS_GET_INVALID_CALENDARID_MESSAGE = "Invalid credentials or calendar ID";
   public static final String EVENTS_POST_BAD_REQUEST_MESSAGE = "POST body must contain title and start and end times!";
@@ -75,6 +76,8 @@ public final class StringConstants {
   public static final String GROUP_ID_PROPERTY = "groupId";
   public static final String GROUP_IMAGE_PROPERTY = "image";
   public static final String GROUP_NAME_PROPERTY = "name";
+  public static final String USER_KIND = "User";
+  public static final String USER_EMAIL_PROPERTY = "email";
   
   /**
    * Testing constants
