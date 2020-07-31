@@ -8,6 +8,9 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.template.soy.SoyFileSet;
 import com.google.template.soy.tofu.SoyTofu;
 import com.google.common.base.Strings;
@@ -130,19 +133,25 @@ public class GroupsServlet extends HttpServlet {
    */
   private void addUserToGroup(String groupId, String email) throws IOException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    long groupIdLong = Long.valueOf(groupId);
 
-    try {
-      Entity user = datastore.get(KeyFactory.createKey(USER_KIND, email));
+    Query userQuery = new Query(USER_KIND).addFilter(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, email);
+    PreparedQuery userPreparedQuery = datastore.prepare(userQuery);
+    Entity user = userPreparedQuery.asSingleEntity();
 
+    if (user != null) {
       HashSet<Long> groups = (HashSet<Long>) user.getProperty(GROUPS_KEY);
-      groups.add(Long.valueOf(groupId));
+      groups.add(groupIdLong);
       user.setProperty(GROUPS_KEY, groups);
 
       datastore.put(user);
-    } catch (EntityNotFoundException newUser) {
-      Entity user = new Entity(USER_KIND, email);
+    } else {
+      user = new Entity(USER_KIND, email);
 
       user.setProperty(USER_EMAIL_PROPERTY, email);
+
+      HashSet<Long> groups = new HashSet<Long>();
+      groups.add(groupIdLong);
       user.setProperty(GROUPS_KEY, new HashSet<Long>());
 
       datastore.put(user);
