@@ -1,10 +1,16 @@
 package com.google.sps.servlets;
 
+import static com.google.sps.utils.ServletUtils.getParameter;
 import static com.google.sps.utils.StringConstants.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.template.soy.SoyFileSet;
 import com.google.template.soy.tofu.SoyTofu;
 import com.google.common.base.Strings;
@@ -15,6 +21,7 @@ import com.google.sps.utils.ServletUtils;
 import com.google.sps.utils.SoyRendererUtils;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -74,8 +81,32 @@ public class GroupsServlet extends HttpServlet {
     // will change to enable more groups.
     String groupId = createGroup(GROUP_NAME, GROUP_IMAGE, GROUP_DESCRIPTION);
 
-    response.setContentType(CONTENT_TYPE_HTML);
+    response.setContentType(CONTENT_TYPE_PLAIN);
     response.getWriter().println(groupId);
+  }
+
+  /**
+   * Add the group with groupId to a user's list of groups.
+   */
+  @Override
+  public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    ServletUtils.enforceUserLogin(request, response);
+    String groupId = getParameter(request, GROUP_ID_PROPERTY);
+    
+    if (Strings.isNullOrEmpty(groupId)) {
+      ServletUtils.printBadRequestError(response, INVALID_GROUPID_BAD_REQUEST_MESSAGE);
+      return;
+    }
+
+    try {
+      addUserToGroup(request.getUserPrincipal().getName(), groupId);
+
+      response.setContentType(CONTENT_TYPE_PLAIN);
+      response.getWriter().println(groupId);
+    } catch (Exception exceptionError) {
+      ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
+      return;
+    }
   }
 
   /**
@@ -95,5 +126,32 @@ public class GroupsServlet extends HttpServlet {
     DatastoreServiceFactory.getDatastoreService().put(groupEntity);
 
     return GROUP_ID_STRING;
+  }
+
+  /**
+   * Adds user with email to group with groupId. If the user is not in datastore, a new user is created.
+   */
+  private void addUserToGroup(String groupId, String email) throws IOException {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    long groupIdLong = Long.valueOf(groupId);
+
+    Query userQuery = new Query(USER_KIND).addFilter(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, email);
+    PreparedQuery userPreparedQuery = datastore.prepare(userQuery);
+    Entity user = userPreparedQuery.asSingleEntity();
+
+    if (user != null) {
+      HashSet<Long> groups = (HashSet<Long>) user.getProperty(GROUPS_KEY);
+      groups.add(groupIdLong);
+      user.setProperty(GROUPS_KEY, groups);
+    } else {
+      user = new Entity(USER_KIND, email);
+
+      user.setProperty(USER_EMAIL_PROPERTY, email);
+
+      HashSet<Long> groups = new HashSet<Long>();
+      groups.add(groupIdLong);
+      user.setProperty(GROUPS_KEY, new HashSet<Long>());
+    }
+    datastore.put(user);
   }
 }

@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="index.css">
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="551319260291-3tv6apt079vqt3nj0jr60h0t6gv9c3t9.apps.googleusercontent.com">
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <script src="script.js"></script>
   </head>
@@ -27,9 +29,7 @@
       </h3>
 
       <a id="btn-link" href="/groups">
-        <button class="mdc-button mdc-button--raised">
-            <span class="mdc-button__label">Join the movement.</span>
-        </button>
+        <div class="g-signin2"></div>
       </a>
       
     </div>
