@@ -80,7 +80,6 @@ public final class StringConstants {
    * Map constants
    */
   public static final String API_KEY_NAME = "key";
-  public static final String GROUP_ID_KEY = "groupID";
   public static final String GROUP_NAME_KEY = "groupName";
 
   /**

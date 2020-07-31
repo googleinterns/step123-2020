@@ -8,6 +8,9 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.sps.utils.ServletUtils;
@@ -44,13 +47,16 @@ public class MapServlet extends HttpServlet {
         // Stores the IDs for all the groups the user ahs joined
         HashSet<Long> userGroups = new HashSet<Long>();
 
-        try {
-            Entity user = datastore.get(KeyFactory.createKey(USER_KIND, userEmail));
+        Query userQuery = new Query(USER_KIND).addFilter(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, userEmail);
+        PreparedQuery userPreparedQuery = datastore.prepare(userQuery);
+        Entity user = userPreparedQuery.asSingleEntity();
+
+        if (user != null) {
             userGroups = (HashSet<Long>) user.getProperty(GROUPS_KEY);
 
-        } catch (EntityNotFoundException newUser) {
+        } else {
             // if the user does not exist, create one and add to datastore
-            Entity user = new Entity(USER_KIND, userEmail);
+            user = new Entity(USER_KIND, userEmail);
 
             user.setProperty(USER_EMAIL_PROPERTY, userEmail);
             user.setProperty(GROUPS_KEY, userGroups);
@@ -74,7 +80,7 @@ public class MapServlet extends HttpServlet {
         ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
  
         final String mapPageHtml = getOutputString(MAP_SOY_FILE, MAP_TEMPLATE_NAMESPACE, 
-            ImmutableMap.of(GROUPS_KEY, groupsList, "key", apiKey));
+            ImmutableMap.of(GROUPS_KEY, groupsList, API_KEY_NAME, apiKey));
  
         response.getWriter().println(mapPageHtml);
     }

@@ -84,8 +84,8 @@
            
                             {for $groupMap in $groups}
                                 {call .groupCheckbox}
-                                    {param groupName: $groupMap['groupName'] /}
-                                    {param groupID: $groupMap['groupID'] /}
+                                    {param groupName: $groupMap['name'] /}
+                                    {param groupId: $groupMap['groupId'] /}
                                 {/call}
                             {/for}
                         </div>
@@ -105,13 +105,13 @@
 
 {template .groupCheckbox}
     {@param groupName: string}
-    {@param groupID: string}
+    {@param groupId: string}
         <div>
             <div class="mdc-form-field ">
       
                 <div class="mdc-checkbox">
                     <input type="checkbox" class="mdc-checkbox__native-control" checked name="groupCheckbox" 
-                    value={$groupID} onclick="toggleGroupMarkers(this, {$groupID})">
+                    value={$groupId} onclick="toggleGroupMarkers(this, {$groupId})">
                         <div class="mdc-checkbox__background">
                             <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
                                 <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>

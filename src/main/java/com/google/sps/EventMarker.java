@@ -13,16 +13,16 @@ import java.util.Date;
  * Marker data for each event to be added to the map.
  */
  public class EventMarker {
-    private String name;
-    private String description;
-    private String location; 
-    private DateTime date; 
-    private String simpleDate;
-    private String dateOutput; 
-    private String groupName;
- 
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy hh:mm a");
     private static final DateTimeFormatter SIMPLE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private DateTime date;
+    private String dateOutput; 
+    private String description;
+    private String groupName;
+    private String location; 
+    private String name;
+    private String simpleDate;
  
     public EventMarker(String name, String description, String location, DateTime date, String groupName) {
         this.name = name;
@@ -31,7 +31,7 @@ import java.util.Date;
         this.date = date;
         this.groupName = groupName;
         formatDate();
-        simpleDate();
+        formatSimpleDate();
     } 
  
     public String getName() {
@@ -48,7 +48,7 @@ import java.util.Date;
     /**
      * Formats the Date to a simplified version: 2020-08-13
      */
-    private void simpleDate() {
+    private void formatSimpleDate() {
        simpleDate = OffsetDateTime.parse(date.toStringRfc3339()).format(SIMPLE_FORMAT);
     }
  
