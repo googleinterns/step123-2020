@@ -40,6 +40,7 @@ public final class StringConstants {
   public static final String EVENTS_GET_INVALID_CALENDARID_MESSAGE = "Invalid credentials or calendar ID";
   public static final String EVENTS_POST_BAD_REQUEST_MESSAGE = "POST body must contain title and start and end times!";
   public static final String ENTITY_ERROR_MESSAGE = "Invalid group ID!";
+  public static final String GROUPS_BAD_REQUEST_MESSAGE = "Must contain a group name and image!";
 
   /**
    * Servlets' content type
