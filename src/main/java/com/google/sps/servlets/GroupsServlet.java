@@ -57,6 +57,7 @@ public class GroupsServlet extends HttpServlet {
         ImmutableList.Builder<ImmutableMap<String, String>> groupsListBuilder = new ImmutableList.Builder<>();
         for (Entity group : preparedGroupsQuery.asIterable()) {
             ImmutableMap<String, String> groupMap = ImmutableMap.of(
+                GROUP_ID_PROPERTY, group.getKey().getName(),
                 GROUP_NAME_PROPERTY, (String) group.getProperty(GROUP_NAME_PROPERTY),
                 GROUP_IMAGE_PROPERTY, (String) group.getProperty(GROUP_IMAGE_PROPERTY),
                 GROUP_DESCRIPTION_PROPERTY, (String) group.getProperty(GROUP_DESCRIPTION_PROPERTY));
@@ -96,7 +97,7 @@ public class GroupsServlet extends HttpServlet {
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ServletUtils.enforceUserLogin(request, response);
         String groupId = getParameter(request, GROUP_ID_PROPERTY);
-        
+                
         if (Strings.isNullOrEmpty(groupId)) {
         ServletUtils.printBadRequestError(response, INVALID_GROUPID_BAD_REQUEST_MESSAGE);
         return;

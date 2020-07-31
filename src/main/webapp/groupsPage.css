@@ -64,6 +64,7 @@ i.material-icons.mdc-list-item__graphic.add-icon {
     right: 0;
     top: 0;
     width: 750px;
+    z-index: 1;
 }
 
 .hidden {
@@ -135,7 +136,6 @@ label.mdc-text-field.mdc-text-field--filled {
     grid-template-columns: repeat(3, 1fr);
     height: max-content;
     position: relative;
-    z-index: -1;
 }
 
 .mdc-card {
