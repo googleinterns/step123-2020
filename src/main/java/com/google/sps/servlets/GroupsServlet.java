@@ -143,8 +143,6 @@ public class GroupsServlet extends HttpServlet {
       HashSet<Long> groups = (HashSet<Long>) user.getProperty(GROUPS_KEY);
       groups.add(groupIdLong);
       user.setProperty(GROUPS_KEY, groups);
-
-      datastore.put(user);
     } else {
       user = new Entity(USER_KIND, email);
 
@@ -153,8 +151,7 @@ public class GroupsServlet extends HttpServlet {
       HashSet<Long> groups = new HashSet<Long>();
       groups.add(groupIdLong);
       user.setProperty(GROUPS_KEY, new HashSet<Long>());
-
-      datastore.put(user);
     }
+    datastore.put(user);
   }
 }
