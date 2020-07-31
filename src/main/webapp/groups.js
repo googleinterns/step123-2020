@@ -1,5 +1,5 @@
 goog.require('goog.dom');
-goog.require('goog.style');
+goog.require('goog.dom.classlist');
 
 let newGroupContainer;
 
@@ -7,10 +7,6 @@ function init() {
     newGroupContainer = goog.dom.getElement("new-group-container");
 }
 
-function showForm() {
-    goog.style.setStyle(newGroupContainer, "display", "flex");
-}
-
-function hideForm() {
-    goog.style.setStyle(newGroupContainer, "display", "none");
+function toggleHidden() {
+    goog.dom.classlist.toggle(newGroupContainer, "hidden");
 }
