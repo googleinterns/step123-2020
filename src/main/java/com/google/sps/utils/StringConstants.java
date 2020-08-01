@@ -72,6 +72,7 @@ public final class StringConstants {
   public static final String GROUP_ID_PROPERTY = "groupId";
   public static final String GROUP_IMAGE_PROPERTY = "image";
   public static final String GROUP_NAME_PROPERTY = "name";
+  public static final String USER_GROUPS = "userGroups";
   public static final String USER_KIND = "User";
   public static final String USER_EMAIL_PROPERTY = "email";
   

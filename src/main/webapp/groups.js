@@ -12,8 +12,9 @@ function toggleHidden() {
 }
 
 function joinGroup(groupId) {
-    const bodyData = {'groupId': groupId};
-    const response = fetch("/groups",  {
+    const bodyData = {"groupId": groupId};
+    console.log("groupId: " + groupId);
+    const response = fetch("/groups" + groupId,  {
         method: "PUT",
         body: JSON.stringify(bodyData)
     });

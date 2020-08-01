@@ -1,7 +1,8 @@
 {namespace templates.groups}
 
 {template .groupsPage}
-    {@param groups : list<map<string, string>>}
+    {@param groups: list<map<string, string>>}
+    {@param userGroups: list<int>}
 
     <html>
         <head>
@@ -94,6 +95,7 @@
                             {param name: $groupMap['name'] /}
                             {param description: $groupMap['description'] /}
                             {param groupId: $groupMap['groupId'] /}
+                            {param userGroups: $userGroups /}
 
                         {/call}
                     {/for}
@@ -108,6 +110,7 @@
     {@param name: string}
     {@param description: string}
     {@param groupId: string}
+    {@param userGroups: list<int>}
 
     <div class="mdc-card">
         <div class="mdc-card__media mdc-card__media--16-9" style="background-image: url({$image});"></div>
@@ -121,9 +124,15 @@
 
         <div class="mdc-card__actions">
             <div class="mdc-card__action-buttons">
-                <button class="mdc-button mdc-card__action mdc-card__action--button" onclick="joinGroup({$groupId})">
-                    <span class="mdc-button__ripple"></span>Join
-                </button>
+                {if listContains($userGroups, $groupId)}
+                    <button class="mdc-button mdc-card__action mdc-card__action--button" disabled>
+                        <span class="mdc-button__ripple"></span>Joined
+                    </button>
+                {else}
+                    <button class="mdc-button mdc-card__action mdc-card__action--button" onclick="joinGroup({$groupId})">
+                        <span class="mdc-button__ripple"></span>Join
+                    </button>
+                {/if}
             </div>
         </div>
     </div>

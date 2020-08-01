@@ -65,11 +65,12 @@ public class GroupsServlet extends HttpServlet {
         }
         
         ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
+        ImmutableList<Long> userGroups= ImmutableList.copyOf(SoyRendererUtils.getGroupIdList(request));
         
         // Each group has its own map which points to its info and all maps are passed into the template as a list
         // This will make it easier when groups are queried from Datastore
-        ImmutableMap<String, ImmutableList<ImmutableMap<String, String>>> groupsData = 
-            ImmutableMap.of(GROUPS_KEY, groupsList);
+        ImmutableMap<String, ImmutableList> groupsData = 
+            ImmutableMap.of(GROUPS_KEY, groupsList, USER_GROUPS, userGroups);
 
         String groupsPageHtml = SoyRendererUtils.getOutputString(GROUPS_SOY_FILE, GROUPS_TEMPLATE_NAMESPACE, groupsData);
 
@@ -102,7 +103,6 @@ public class GroupsServlet extends HttpServlet {
         ServletUtils.printBadRequestError(response, INVALID_GROUPID_BAD_REQUEST_MESSAGE);
         return;
         }
-
         try {
         addUserToGroup(request.getUserPrincipal().getName(), groupId);
 
