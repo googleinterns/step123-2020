@@ -108,8 +108,6 @@ public final class ServletUtils {
             GROUP_IMAGE_PROPERTY, (String) group.getProperty(GROUP_IMAGE_PROPERTY));
         groupsListBuilder.add(groupMap);
       } catch (EntityNotFoundException invalidGroup) {
-        System.out.println("SYDNEY --- THE GROUP IS INVALID");
-        invalidGroup.printStackTrace();
         continue;
       }
     }
