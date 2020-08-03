@@ -39,7 +39,8 @@
                         </div>
 
                         <hr class="mdc-list-divider">
-                        <a  id="create-group-link" onclick="showForm()">
+
+                        <a  id="create-group-link" onclick="toggleHidden()">
                             <i class="material-icons mdc-list-item__graphic add-icon">add</i>
                             <h2 class="mdc-typography--headline5 create-group-headline">Start a movement</h2>
                         </a>
@@ -47,8 +48,8 @@
                 </div>
             </aside>
             
-            <div id="new-group-container">
-                <a id="close-btn" onclick="hideForm()">
+            <div id="new-group-container" class="hidden">
+                <a id="close-btn" onclick="toggleHidden()">
                     <i class="material-icons mdc-list-item__graphic add-icon">close</i>
                 </a>
                 <form class="new-group-form" action="/groups" method="POST">

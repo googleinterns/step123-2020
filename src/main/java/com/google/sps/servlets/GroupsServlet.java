@@ -94,7 +94,7 @@ public class GroupsServlet extends HttpServlet {
   public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
     ServletUtils.enforceUserLogin(request, response);
     String groupId = getParameter(request, GROUP_ID_PROPERTY);
-    
+
     if (Strings.isNullOrEmpty(groupId)) {
       ServletUtils.printBadRequestError(response, INVALID_GROUPID_BAD_REQUEST_MESSAGE);
       return;
@@ -105,11 +105,12 @@ public class GroupsServlet extends HttpServlet {
 
       response.setContentType(CONTENT_TYPE_PLAIN);
       response.getWriter().println(groupId);
-    } catch (Exception exceptionError) {
-      ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
-      return;
-    }
+     } catch (Exception exceptionError) {
+       ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
+       return;
+     }
   }
+    
   /*
    * Returns the Group ID as a string after creating a group with the user-input parameters.
    */
@@ -152,7 +153,6 @@ public class GroupsServlet extends HttpServlet {
       HashSet<Long> groups = new HashSet<Long>();
       groups.add(groupIdLong);
       user.setProperty(GROUPS_KEY, new HashSet<Long>());
+      datastore.put(user);
     }
-    datastore.put(user);
-  }
 }

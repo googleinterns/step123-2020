@@ -1,17 +1,152 @@
-.heading {
-    text-align: center;
+body {
+    display: flex;
+    margin: 0;
 }
 
-.card-gallery {
+div.mdc-list-item.mdc-list-item--activated {
+    cursor: default;
+}
+
+.icon-links {
+    text-decoration: none;
+}
+
+.nav-icons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 10px;
+}
+
+i.material-icons.mdc-list-item__graphic.nav-icon {
+    margin: 0;
+}
+
+#create-group-link {
+    align-items: center;
+    color: black;
+    cursor: pointer;
+    display: flex;
+    text-decoration: none;
+}
+
+#create-group-link:hover {
+    background-color: #e2e2e2;
+}
+
+i.material-icons.mdc-list-item__graphic.add-icon {
+    margin: 10px;
+}
+
+.create-group-headline {
+    font-size: 14pt !important;
+    margin: 10px 0;
+}
+
+.main-view {
+    display: flex;
+    flex-grow: 1;
+    height: 100vh;
+}
+
+#new-group-container {
+    align-items: center;
+    background-color: #efefef;
+    border-radius: 5px;
+    bottom: 0;
+    box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, .12);
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    left: 0;
     margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
     width: 750px;
 }
 
+.hidden {
+    display: none !important;
+}
+
+#close-btn {
+    align-self: flex-end;
+    color: black;
+    cursor: pointer;
+    margin: 4px 4px 0 0;
+    position: absolute;
+    text-decoration: none;
+}
+
+.new-group-form {
+    display: flex;
+    flex-direction: column;
+    margin: 20px auto;
+}
+
+.new-group-heading {
+    font-size: 24pt !important;
+    font-weight: 400;
+    text-align: center;
+}
+
+.input-section {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.form-label {
+    font-size: 14pt !important;
+    margin: 10px;
+    text-align: center;
+}
+
+label.mdc-text-field.mdc-text-field--filled {
+    align-items: center;
+    background-color: white;
+    display: flex;
+    height: 40px;
+    width: 350px
+}
+
+.photo-disclaimer {
+    margin-top: 0;
+    text-align: end;
+}
+
+.unsplash-link {
+    color: #171717;
+}
+
+#description-area {
+    background-color: white;
+    font-family: roboto, sans-serif;
+    font-size: 11pt;
+}
+
+.submit-btn {
+    margin: 20px auto;
+}
+
+.card-gallery {
+    display: grid;
+    flex-grow: 1;
+    grid-template-columns: repeat(3, 1fr);
+    height: max-content;
+    position: relative;
+    z-index: -1;
+}
+
 .mdc-card {
-    margin: auto;
+    margin: 15px auto;
     width: 500px;
 }
 
 .group-name, .group-desc {
     padding: 0 15px;
+}
+
+.desc-container {
+    flex-grow: 1;
 }
