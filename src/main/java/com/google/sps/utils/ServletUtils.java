@@ -70,24 +70,27 @@ public final class ServletUtils {
     }
   }
 
-  public static ImmutableList<ImmutableMap<String, String>> getGroupsList(HttpServletRequest request) {
+  public static ImmutableList<ImmutableMap<String, String>> getGroupsList(String userEmail) {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    String userEmail = request.getUserPrincipal().getName();
+
     // Stores the IDs for all the groups the user ahs joined
     HashSet<Long> userGroups = new HashSet<Long>();
-
-    Query userQuery = new Query(USER_KIND).addFilter(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, userEmail);
+    
+    Query userQuery = new Query(USER_KIND).addFilter(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, 
+        KeyFactory.createKey(USER_KIND, userEmail));
     PreparedQuery userPreparedQuery = datastore.prepare(userQuery);
     Entity user = userPreparedQuery.asSingleEntity();
 
     if (user != null) {
       userGroups = (HashSet<Long>) user.getProperty(GROUPS_KEY);
-
     } else {
-      // if the user does not exist, create one and add to datastore
+      // If the user does not exist, create one and add to datastore
       user = new Entity(USER_KIND, userEmail);
 
       user.setProperty(USER_EMAIL_PROPERTY, userEmail);
+
+      // New users have the default group added
+      userGroups.add(123L);
       user.setProperty(GROUPS_KEY, userGroups);
 
       datastore.put(user);
@@ -96,7 +99,7 @@ public final class ServletUtils {
     ImmutableList.Builder<ImmutableMap<String, String>> groupsListBuilder = new ImmutableList.Builder<>();
     for (Long groupId : userGroups) {
       try {
-        Entity group = datastore.get(KeyFactory.createKey(GROUP_KIND, groupId));
+        Entity group = datastore.get(KeyFactory.createKey(GROUP_KIND, String.valueOf(groupId)));
         ImmutableMap<String, String> groupMap = ImmutableMap.of(
             GROUP_NAME_PROPERTY, (String) group.getProperty(GROUP_NAME_PROPERTY),
             GROUP_ID_PROPERTY, group.getKey().getName(),
@@ -105,12 +108,12 @@ public final class ServletUtils {
             GROUP_IMAGE_PROPERTY, (String) group.getProperty(GROUP_IMAGE_PROPERTY));
         groupsListBuilder.add(groupMap);
       } catch (EntityNotFoundException invalidGroup) {
+        System.out.println("SYDNEY --- THE GROUP IS INVALID");
+        invalidGroup.printStackTrace();
         continue;
       }
-            
     }
-    ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
-    return groupsList; 
+    return groupsListBuilder.build(); 
   }
 
 

@@ -59,5 +59,9 @@ import java.util.Date;
     public String getDateString() {
         return dateOutput; 
     }
+
+    public String getSimpleDate() {
+        return simpleDate;
+    }
  
  }

@@ -4,6 +4,8 @@ import static com.google.sps.utils.ServletUtils.getGroupsList;
 import static com.google.sps.utils.SoyRendererUtils.getOutputString;
 import static com.google.sps.utils.StringConstants.*;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.sps.utils.ServletUtils;
@@ -35,7 +37,8 @@ public class MapServlet extends HttpServlet {
         final String apiKey = scanner.nextLine();
         scanner.close();
 
-        ImmutableList<ImmutableMap<String, String>> groupsList = getGroupsList(request); 
+        String userEmail = request.getUserPrincipal().getName();
+        ImmutableList<ImmutableMap<String, String>> groupsList = getGroupsList(userEmail); 
 
         final String mapPageHtml = getOutputString(MAP_SOY_FILE, MAP_TEMPLATE_NAMESPACE, 
             ImmutableMap.of(GROUPS_KEY, groupsList, API_KEY_NAME, apiKey));

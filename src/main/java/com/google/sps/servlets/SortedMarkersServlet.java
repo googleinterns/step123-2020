@@ -73,7 +73,6 @@ public class SortedMarkersServlet extends HttpServlet {
         }
         SortedMarkers sortedEvents = new SortedMarkers(mapEvents); 
         return sortedEvents.getSortedMarkers();
-        
     } catch (IOException e) {
         e.printStackTrace(); 
         return null; 

@@ -15,7 +15,6 @@ public final class StringConstants {
   public static final String CHAT_PAGE_NAMESPACE = "templates.chat.chatPage";
   public static final String CHAT_SOY_FILE = "chat.soy";
   public static final String CHAT_TEMPLATE_NAMESPACE = "templates.chat.";
-  public static final String CHAT_PAGE_NAMESPACE = "templates.chat.chatPage";
   public static final String GROUPS_SOY_FILE = "groups.soy";
   public static final String GROUPS_TEMPLATE_NAMESPACE = "templates.groups.groupsPage";
   public static final String MAP_SOY_FILE = "mapPages.soy";
