@@ -1,42 +1,46 @@
 goog.require('goog.dom');
 goog.require('goog.dom.TagName');
 goog.require('templates.infoWindow');
-
+ 
 // Array that will hold the groups and there markers in a 2D Array
 // The array will allow the markers to be easilly all disabled as 
 // Groups were unchecked or checked 
 let groupMarkers = new Map(); 
-
+ 
 // Default map placement centered at Mountain View, CA
 const DEFAULT_LAT = 37.3868;
 const DEFAULT_LNG = -122.085;
 const DEFAULT_ZOOM = 10;
  
 let map; 
-
+ 
 /**
  * Initialize the map to show Mountain View and events in that area
  */
 function initMap() {
     const mapViewDefault = {lat: DEFAULT_LAT, lng: DEFAULT_LNG}; 
-
+ 
     map = new google.maps.Map(goog.dom.getElement('map'), {
         // Zoom level will change automatically with user's search
         zoom: DEFAULT_ZOOM,
         center: mapViewDefault,
     });
-
+ 
     const geocoder = new google.maps.Geocoder();
     // TODO: repace the hardcoded event ID with actually value
     getMarkerInfo('123', geocoder);
-
+ 
     autoCompleteAndZoom(); 
-
+ 
     document.getElementById('submit').addEventListener('click', () => {
-        geocodeAddress(geocoder);
+        filterDate(); 
+    });
+ 
+    document.getElementById('clearDate').addEventListener('click', () => {
+        clearDate(); 
     });
 }
-
+ 
 /**
  * Adds the auto Complete for the address search bar 
  * Allows user to hit enter instead of button
@@ -45,26 +49,26 @@ function initMap() {
 function autoCompleteAndZoom() {
     const address = document.getElementById('address');
     const searchBox = new google.maps.places.SearchBox(address);
-
+ 
     map.addListener("bounds_changed", function() {
         searchBox.setBounds(map.getBounds());
     });
-
+ 
     searchBox.addListener("places_changed", function() {
         const places = searchBox.getPlaces();
-
+ 
         // Checks if there are not autocomplete options
         if (places.length == 0) {
             return;
         }
-
+ 
         let bounds = new google.maps.LatLngBounds();
         places.forEach(function(place) {
             if (!place.geometry) {
                 console.log("Returned place contains no geometry");
                 return;
             }
-
+ 
             // Get the bounds for the location
             if (place.geometry.viewport) {
                 bounds.union(place.geometry.viewport);
@@ -75,13 +79,13 @@ function autoCompleteAndZoom() {
         map.fitBounds(bounds);
     }); 
 }
-
+ 
 /**
  * Finds the location on the map for the given address
  */
 function geocodeAddress(geocoder) {
     const address = document.getElementById('address').value;
-
+ 
     geocoder.geocode({'address': address}, (results, status) => {
         if (status === 'OK') {
             map.setCenter(results[0].geometry.location);
@@ -90,7 +94,7 @@ function geocodeAddress(geocoder) {
         }
     });
 }
-
+ 
 /**
  * Determines which group was checked or unchecked
  * Then sends that group to either be removed from the map if unchecked
@@ -104,25 +108,30 @@ function toggleGroupMarkers(checkbox, groupId) {
         removeGroupMarkers(groupId);
     }
 }
-
+ 
 /**
  * Adds a group and its events to the map based on the group passed
  */
 function addGroupMarkers(groupId) {
-    if(groupMarkers.has(groupId)) {
-        setMapMarkers(map, groupId);
+    if (groupMarkers.has(groupId)) {
+        dateInput = (document.querySelector('input[type="date"]')).value;
+        if (dateInput.length == 0) {
+            setMapMarkers(map, groupId);
+        } else {
+            filterGroupDate(groupId, dateInput)
+        }
     }
 }
-
+ 
 /**
  * Removes the markers of the given group from the map
  */
 function removeGroupMarkers(groupId) { 
-    if(groupMarkers.has(groupId)) {
+    if (groupMarkers.has(groupId)) {
         setMapMarkers(null, groupId);
     }
 }
-
+ 
 /**
  * Fetch all the events to add to the map 
  */
@@ -141,18 +150,19 @@ function getMarkerInfo(groupId, geocoder) {
                             eventMarker.groupName, 
                             eventMarker.location, 
                             eventMarker.dateOutput,
+                            eventMarker.simpleDate,
                             groupId);
             });
         });
     });
 }
-
+ 
 /**
  * Add markers onto the map 
  * Using the eventID get the name and description for
  * the infoWindow 
  */
-function addMarkerToMap(address, descriptionText, nameText, groupName, date, location, groupId) {
+function addMarkerToMap(address, descriptionText, nameText, groupName, location, date, simpleDate, groupId) {
     const infoContent = templates.infoWindow.getMarkerInfo({
         'name': nameText, 
         'description': descriptionText,
@@ -160,7 +170,7 @@ function addMarkerToMap(address, descriptionText, nameText, groupName, date, loc
         'location': location,
         'groupName': groupName,
     });
-
+ 
     const infoWindow = new google.maps.InfoWindow({
         content: goog.dom.constHtmlToNode(goog.string.Const.from(infoContent)),
     });
@@ -172,27 +182,63 @@ function addMarkerToMap(address, descriptionText, nameText, groupName, date, loc
     });
       
     marker.addListener('click', () => infoWindow.open(map,marker));
-    addToGroupMarkers(groupId, marker);
+ 
+    const dateMarker = {
+        date: simpleDate,
+        marker: marker,
+    } 
+    addToGroupMarkers(groupId, dateMarker);
 }
-
+ 
 /**
  * Add marker to the list with the groupId as the key
  * Create add the key/value pair if not already there
  */
-function addToGroupMarkers(groupId, marker) {
-    console.log(groupMarkers);
-    console.log(groupId);
+function addToGroupMarkers(groupId, dateMarker) {
     if (!groupMarkers.has(groupId)) {
-        groupMarkers.set(groupId, new Array(marker));
+        groupMarkers.set(groupId, new Array(dateMarker));
     } else {
-        groupMarkers.get(groupId).push(marker); 
+        groupMarkers.get(groupId).push(dateMarker); 
     }
 }
-
+ 
 // Sets the map on all markers in the array.
 function setMapMarkers(map, groupId) {
     const markers = groupMarkers.get(groupId);
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
+    for (let i = 0; i < markers.length; i++) {
+        markers[i].marker.setMap(map);
     }
+}
+ 
+function filterDate() {
+    const dateControl = document.querySelector('input[type="date"]');
+    const dateInput = dateControl.value; 
+    if (dateInput.length == 0) {
+        return; 
+    }
+ 
+    const checkedGroups = document.querySelectorAll('input[name="groupCheckbox"]:checked');
+    checkedGroups.forEach((checkedGroup) => {
+        filterGroupDate(checkedGroup.value, dateInput);
+    });
+ 
+}
+ 
+function filterGroupDate(groupId, dateInput) {
+    const markers = groupMarkers.get(groupId);
+    for (let i = 0; i < markers.length; i++) {
+        if (dateInput != markers[i].date) {
+            markers[i].marker.setMap(null);
+        } else {
+            markers[i].marker.setMap(map);
+        }
+    }
+}
+ 
+function clearDate() {
+    document.getElementById("date").value = "";
+    const checkedGroups = document.querySelectorAll('input[name="groupCheckbox"]:checked');
+    checkedGroups.forEach((checkedGroup) => {
+        setMapMarkers(map, checkedGroup.value);
+    });
 }

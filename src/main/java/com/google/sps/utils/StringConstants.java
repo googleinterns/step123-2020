@@ -16,7 +16,8 @@ public final class StringConstants {
   public static final String CHAT_SOY_FILE = "chat.soy";
   public static final String GROUPS_SOY_FILE = "groups.soy";
   public static final String GROUPS_TEMPLATE_NAMESPACE = "templates.groups.groupsPage";
-  public static final String KEYS_TXT_FILE = "keys.txt";
+  public static final String MAP_SOY_FILE = "mapPages.soy";
+  public static final String MAP_TEMPLATE_NAMESPACE = "templates.mapPages.mapPage";
   public static final String TIMEZONE = "America/Los_Angeles";
   
   /**
@@ -28,6 +29,7 @@ public final class StringConstants {
   public static final String ERROR_MESSAGE_KEY = "errorMessage";
   public static final String ERROR_MESSAGE_TEXT = "Your message contains content that may " + 
     "be deemed offensive by others. Please revise your message and try again.";
+  public static final String KEYS_TXT_FILE = "keys.txt";
   public static final String MESSAGES_KEY = "messages";
   public static final String MESSAGE_KIND = "Message-";
   public static final String MESSAGE_TEXT_PROPERTY = "message-text";
@@ -44,6 +46,7 @@ public final class StringConstants {
   public static final String EVENTS_GET_INVALID_CALENDARID_MESSAGE = "Invalid credentials or calendar ID";
   public static final String EVENTS_POST_BAD_REQUEST_MESSAGE = "POST body must contain title and start and end times!";
   public static final String ENTITY_ERROR_MESSAGE = "Invalid group ID!";
+  public static final String GROUPS_BAD_REQUEST_MESSAGE = "Must contain a group name and image!";
 
   /**
    * Servlets' content type
@@ -76,6 +79,12 @@ public final class StringConstants {
   public static final String USER_KIND = "User";
   public static final String USER_EMAIL_PROPERTY = "email";
   
+  /**
+   * Map constants
+   */
+  public static final String API_KEY_NAME = "key";
+  public static final String GROUP_NAME_KEY = "groupName";
+
   /**
    * Testing constants
    */
