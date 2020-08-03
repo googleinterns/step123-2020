@@ -21,7 +21,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.annotation.WebServlet;
@@ -68,7 +67,7 @@ public class GroupsServlet extends HttpServlet {
         }
         
         ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
-        ImmutableList<Long> userGroups= ImmutableList.copyOf(SoyRendererUtils.getGroupIdList(request));
+        ImmutableList<Long> userGroups = ImmutableList.copyOf(SoyRendererUtils.getGroupIdList(request));
         
         // Each group has its own map which points to its info and all maps are passed into the template as a list
         // This will make it easier when groups are queried from Datastore
@@ -105,18 +104,15 @@ public class GroupsServlet extends HttpServlet {
         ServletUtils.enforceUserLogin(request, response);
                 
         if (Strings.isNullOrEmpty(groupId)) {
-            ServletUtils.printBadRequestError(response, INVALID_GROUPID_BAD_REQUEST_MESSAGE);
-            return;
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        try {
-            // Hardcoded user email for now //
-            addUserToGroup(groupId, "example@test.com");
 
-            response.setContentType(CONTENT_TYPE_PLAIN);
-            response.getWriter().println(groupId);
+        try {
+            addUserToGroup(groupId, request.getUserPrincipal().getName());
+            
+            response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception exceptionError) {
-            ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
-            return;
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -144,26 +140,30 @@ public class GroupsServlet extends HttpServlet {
     */
     private void addUserToGroup(String groupId, String email) throws IOException {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        long groupIdLong = Long.valueOf(groupId);
+        final long groupIdLong = Long.valueOf(groupId);
 
         Query userQuery = new Query(USER_KIND).addFilter(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, 
             KeyFactory.createKey(USER_KIND, email));
         PreparedQuery userPreparedQuery = datastore.prepare(userQuery);
         Entity user = userPreparedQuery.asSingleEntity();
 
+        ImmutableList.Builder<Long> groupsListBuilder = new ImmutableList.Builder<>();
         if (user != null) {
-            List<Long> groups = (List<Long>) user.getProperty(GROUPS_KEY);
+            List<Long> datastoreList = (List<Long>) user.getProperty(GROUPS_KEY);
+            if (datastoreList != null) {
+                // If the user has joined groups, add those as well
+                groupsListBuilder.addAll(datastoreList);
+            }
 
-            groups.add(groupIdLong);
-            user.setProperty(GROUPS_KEY, groups);
+            groupsListBuilder.add(groupIdLong);
+            user.setProperty(GROUPS_KEY, groupsListBuilder.build());
         } else {
             user = new Entity(USER_KIND, email);
 
             user.setProperty(USER_EMAIL_PROPERTY, email);
 
-            List<Long> groups = new ArrayList<Long>();
-            groups.add(groupIdLong);
-            user.setProperty(GROUPS_KEY, groups);
+            groupsListBuilder.add(groupIdLong);
+            user.setProperty(GROUPS_KEY, groupsListBuilder.build());
         }
         datastore.put(user);
     }
