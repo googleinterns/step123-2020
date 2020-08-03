@@ -22,7 +22,6 @@ import java.io.InputStreamReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -67,7 +66,8 @@ public class GroupsServlet extends HttpServlet {
         }
         
         ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
-        ImmutableList<Long> userGroups = ImmutableList.copyOf(SoyRendererUtils.getGroupIdList(request));
+        ImmutableList<Long> userGroups = ImmutableList.copyOf(
+            ServletUtils.getGroupIdList(request.getUserPrincipal().getName()));
         
         // Each group has its own map which points to its info and all maps are passed into the template as a list
         // This will make it easier when groups are queried from Datastore
@@ -185,6 +185,7 @@ public class GroupsServlet extends HttpServlet {
                 "e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80");
             blmEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, "Advocating against police brutality and all racially " + 
                 "motivated discrimination against Black Americans.");
+            blmEntity.setProperty(GROUP_CALENDARID_PROPERTY, GROUP_CALENDARID);
             datastore.put(blmEntity);
         }
 
@@ -199,6 +200,7 @@ public class GroupsServlet extends HttpServlet {
                 "8302b0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2704&q=80");
             sierraEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, "Help protect Earth's natural resources and " + 
                 "ensure a healthy environment for future generations.");
+            sierraEntity.setProperty(GROUP_CALENDARID_PROPERTY, "sampleCalendarURL");
             datastore.put(sierraEntity);
         }
     }

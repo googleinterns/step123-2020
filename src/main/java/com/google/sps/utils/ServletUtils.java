@@ -8,10 +8,15 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
+import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
-import java.lang.ClassLoader;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,8 +24,6 @@ import javax.servlet.http.HttpServletResponse;
  * Class contains methods and constants shared by the Servlets.
  */
 public final class ServletUtils {
-  public static final Gson gson = new Gson();
-
   public static final String DEFAULT_PARAM = "";
   
   /**
@@ -62,5 +65,58 @@ public final class ServletUtils {
       response.sendRedirect("/");
       return;
     }
+  }
+
+  public static List<Long> getGroupIdList(String email) {
+    final String userEmail = email;
+    ImmutableList<Long> userGroups = ImmutableList.of();
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Query userQuery = new Query(USER_KIND).addFilter(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, 
+      KeyFactory.createKey(USER_KIND, userEmail));
+    PreparedQuery userPreparedQuery = datastore.prepare(userQuery);
+    Entity user = userPreparedQuery.asSingleEntity();
+
+    if (user != null) {
+      List<Long> datastoreList = (List<Long>) user.getProperty(GROUPS_KEY);
+      if (datastoreList != null) {
+        // If the user has joined groups, get those instead
+        userGroups = ImmutableList.copyOf(datastoreList);
+      }
+    } else {
+      // if the user does not exist, create one and add to datastore
+      user = new Entity(USER_KIND, userEmail);
+
+      user.setProperty(USER_EMAIL_PROPERTY, userEmail);
+      user.setProperty(GROUPS_KEY, userGroups);
+
+      datastore.put(user);
+    }
+
+    return userGroups;
+  }
+
+  public static ImmutableList<ImmutableMap<String, String>> getGroupsList(String userEmail) {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+    // Stores the IDs for all the groups the user ahs joined
+    List<Long> userGroups = getGroupIdList(userEmail);
+
+    ImmutableList.Builder<ImmutableMap<String, String>> groupsListBuilder = new ImmutableList.Builder<>();
+    for (Long groupId : userGroups) {
+      try {
+        Entity group = datastore.get(KeyFactory.createKey(GROUP_KIND, String.valueOf(groupId)));
+        ImmutableMap<String, String> groupMap = ImmutableMap.of(
+            GROUP_NAME_PROPERTY, (String) group.getProperty(GROUP_NAME_PROPERTY),
+            GROUP_ID_PROPERTY, group.getKey().getName(),
+            GROUP_DESCRIPTION_PROPERTY, (String) group.getProperty(GROUP_DESCRIPTION_PROPERTY),
+            GROUP_CALENDARID_PROPERTY, (String) group.getProperty(GROUP_CALENDARID_PROPERTY),
+            GROUP_IMAGE_PROPERTY, (String) group.getProperty(GROUP_IMAGE_PROPERTY));
+        groupsListBuilder.add(groupMap);
+      } catch (EntityNotFoundException invalidGroup) {
+        continue;
+      }
+    }
+    return groupsListBuilder.build(); 
   }
 }
