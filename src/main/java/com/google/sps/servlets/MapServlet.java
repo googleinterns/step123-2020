@@ -30,7 +30,7 @@ public class MapServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ServletUtils.enforceUserLogin(request, response);
  
-        // Reads API Key and HTTP referer from file
+        // Reads API Key from file
         ClassLoader classLoader = MapServlet.class.getClassLoader();
         File apiKeyFile = new File(classLoader.getResource(KEYS_TXT_FILE).getFile());
         Scanner scanner = new Scanner(apiKeyFile);
