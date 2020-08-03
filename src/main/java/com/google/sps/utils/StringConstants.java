@@ -14,7 +14,6 @@ public final class StringConstants {
   public static final String CHAT_ERROR_NAMESPACE = "templates.chat.error";
   public static final String CHAT_PAGE_NAMESPACE = "templates.chat.chatPage";
   public static final String CHAT_SOY_FILE = "chat.soy";
-  public static final String CHAT_TEMPLATE_NAMESPACE = "templates.chat.";
   public static final String GROUPS_SOY_FILE = "groups.soy";
   public static final String GROUPS_TEMPLATE_NAMESPACE = "templates.groups.groupsPage";
   public static final String MAP_SOY_FILE = "mapPages.soy";
@@ -26,9 +25,10 @@ public final class StringConstants {
    */
   public static final Double COMMENT_SCORE_THRESHOLD = 0.85;
   public static final String ATTRIBUTE_SCORES = "attributeScores";
+  public static final String CHAT_REDIRECT = "/chat?groupId=";
   public static final String ERROR_MESSAGE_KEY = "errorMessage";
   public static final String ERROR_MESSAGE_TEXT = "Your message contains content that may " + 
-      "be deemed offensive by others. Please revise your message and try again.";
+    "be deemed offensive by others. Please revise your message and try again.";
   public static final String KEYS_TXT_FILE = "keys.txt";
   public static final String MESSAGES_KEY = "messages";
   public static final String MESSAGE_KIND = "Message-";
@@ -46,6 +46,7 @@ public final class StringConstants {
   public static final String EVENTS_GET_INVALID_CALENDARID_MESSAGE = "Invalid credentials or calendar ID";
   public static final String EVENTS_POST_BAD_REQUEST_MESSAGE = "POST body must contain title and start and end times!";
   public static final String ENTITY_ERROR_MESSAGE = "Invalid group ID!";
+  public static final String GROUPS_BAD_REQUEST_MESSAGE = "Must contain a group name and image!";
 
   /**
    * Servlets' content type
@@ -66,6 +67,7 @@ public final class StringConstants {
   /**
    * Group constants
    */
+  public static final String CURR_GROUP_KEY = "currGroup";
   public static final String GROUP_KIND = "Group";
   public static final String GROUPS_KEY = "groups";
   public static final String GROUP_CALENDARID_PROPERTY = "calendarId";
