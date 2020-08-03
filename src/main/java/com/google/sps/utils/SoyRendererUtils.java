@@ -37,7 +37,7 @@ public final class SoyRendererUtils {
 
     public static List<Long> getGroupIdList(HttpServletRequest request) {
         // String userEmail = request.getUserPrincipal().getName();
-        // This is just a hardcoded text email
+        // This is just a hardcoded text email //
         String userEmail = "example@test.com";
         // Stores the IDs for all the groups the user ahs joined
         List<Long> userGroups = new ArrayList<Long>();
@@ -56,7 +56,7 @@ public final class SoyRendererUtils {
             user = new Entity(USER_KIND, userEmail);
 
             user.setProperty(USER_EMAIL_PROPERTY, userEmail);
-            // Hardcoded group added to user's list
+            // Hardcoded group added to user's list //
             userGroups.add(123L);
             user.setProperty(GROUPS_KEY, userGroups);
 

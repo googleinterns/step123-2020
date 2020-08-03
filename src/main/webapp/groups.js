@@ -12,10 +12,12 @@ function toggleHidden() {
 }
 
 function joinGroup(groupId) {
-    const bodyData = {"groupId": groupId};
-    console.log("groupId: " + groupId);
-    const response = fetch("/groups" + groupId,  {
+    fetch("/groups",  {
         method: "PUT",
-        body: JSON.stringify(bodyData)
+        body: groupId
     });
+
+    const joinButton = goog.dom.getElement("join-btn-" + groupId);
+    goog.dom.setTextContent(joinButton, "Joined");
+    goog.dom.setProperties(joinButton, {"disabled": "true"});
 }

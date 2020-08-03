@@ -17,9 +17,12 @@ import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
 import com.google.sps.utils.ServletUtils;
 import com.google.sps.utils.SoyRendererUtils;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -96,21 +99,24 @@ public class GroupsServlet extends HttpServlet {
     */
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(request.getInputStream()));
+        final String groupId = bufferedReader.readLine();
+        
         ServletUtils.enforceUserLogin(request, response);
-        String groupId = getParameter(request, GROUP_ID_PROPERTY);
                 
         if (Strings.isNullOrEmpty(groupId)) {
-        ServletUtils.printBadRequestError(response, INVALID_GROUPID_BAD_REQUEST_MESSAGE);
-        return;
+            ServletUtils.printBadRequestError(response, INVALID_GROUPID_BAD_REQUEST_MESSAGE);
+            return;
         }
         try {
-        addUserToGroup(request.getUserPrincipal().getName(), groupId);
+            // Hardcoded user email for now //
+            addUserToGroup(groupId, "example@test.com");
 
-        response.setContentType(CONTENT_TYPE_PLAIN);
-        response.getWriter().println(groupId);
+            response.setContentType(CONTENT_TYPE_PLAIN);
+            response.getWriter().println(groupId);
         } catch (Exception exceptionError) {
-        ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
-        return;
+            ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
+            return;
         }
     }
 
@@ -140,22 +146,24 @@ public class GroupsServlet extends HttpServlet {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         long groupIdLong = Long.valueOf(groupId);
 
-        Query userQuery = new Query(USER_KIND).addFilter(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, email);
+        Query userQuery = new Query(USER_KIND).addFilter(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, 
+            KeyFactory.createKey(USER_KIND, email));
         PreparedQuery userPreparedQuery = datastore.prepare(userQuery);
         Entity user = userPreparedQuery.asSingleEntity();
 
         if (user != null) {
-        HashSet<Long> groups = (HashSet<Long>) user.getProperty(GROUPS_KEY);
-        groups.add(groupIdLong);
-        user.setProperty(GROUPS_KEY, groups);
+            List<Long> groups = (List<Long>) user.getProperty(GROUPS_KEY);
+
+            groups.add(groupIdLong);
+            user.setProperty(GROUPS_KEY, groups);
         } else {
-        user = new Entity(USER_KIND, email);
+            user = new Entity(USER_KIND, email);
 
-        user.setProperty(USER_EMAIL_PROPERTY, email);
+            user.setProperty(USER_EMAIL_PROPERTY, email);
 
-        HashSet<Long> groups = new HashSet<Long>();
-        groups.add(groupIdLong);
-        user.setProperty(GROUPS_KEY, new HashSet<Long>());
+            List<Long> groups = new ArrayList<Long>();
+            groups.add(groupIdLong);
+            user.setProperty(GROUPS_KEY, groups);
         }
         datastore.put(user);
     }

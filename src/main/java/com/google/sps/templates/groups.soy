@@ -129,7 +129,8 @@
                         <span class="mdc-button__ripple"></span>Joined
                     </button>
                 {else}
-                    <button class="mdc-button mdc-card__action mdc-card__action--button" onclick="joinGroup({$groupId})">
+                    <button id="join-btn-{$groupId}" class="mdc-button mdc-card__action mdc-card__action--button" 
+                        onclick="joinGroup({$groupId})">
                         <span class="mdc-button__ripple"></span>Join
                     </button>
                 {/if}
