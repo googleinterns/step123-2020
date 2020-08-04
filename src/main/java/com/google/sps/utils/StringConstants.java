@@ -92,7 +92,7 @@ public final class StringConstants {
    * Testing constants
    */
   public static final String NULL_PARAMETER = "age";
-  public static final String TEST_GROUP_ID = "535";
+  public static final String TEST_GROUP_ID = "123";
   public static final String TEST_GROUP_ID_INVALID = "600";
   public static final String TEST_GROUP_NAME = "test name";
   public static final String TEST_GROUP_IMAGE = "test image";

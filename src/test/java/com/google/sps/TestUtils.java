@@ -19,7 +19,8 @@ import org.mockito.Mockito;
 public final class TestUtils extends Mockito {
   protected static Entity createGroupEntity(DatastoreService datastore) {
     Entity groupEntity = new Entity(GROUP_KIND, TEST_GROUP_ID);
-
+    
+    groupEntity.setProperty(GROUP_ID_PROPERTY, TEST_GROUP_ID);
     groupEntity.setProperty(GROUP_NAME_PROPERTY, TEST_GROUP_NAME);
     groupEntity.setProperty(GROUP_IMAGE_PROPERTY, TEST_GROUP_IMAGE);
     groupEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, TEST_GROUP_DESCRIPTION);
