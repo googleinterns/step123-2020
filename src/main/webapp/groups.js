@@ -21,3 +21,23 @@ function joinGroup(groupId) {
         joinButton.setAttribute('disabled', 'true');
     }});
 }
+
+function makeCalendarId() {
+    const name = document.getElementById('name').value;
+    const image = document.getElementById('image').value;
+    const description = document.getElementById('description-area').value;
+    const newGroupId;
+
+    fetch('/groups?name=' + name + '&image=' + image + '&description=' + description, {
+        method: 'POST'
+    }).then(response => response.text()).then(text => {
+            newGroupId = text;
+        }
+    );
+
+    fetch('/calendar?groupId=' + groupId, {
+        method: 'POST'
+    });
+
+    location.reload();
+}

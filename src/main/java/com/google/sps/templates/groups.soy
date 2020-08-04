@@ -53,12 +53,12 @@
                 <a id="close-btn" onclick="toggleHidden()">
                     <i class="material-icons mdc-list-item__graphic add-icon">close</i>
                 </a>
-                <form class="new-group-form" action="/groups" method="POST">
+                <div class="new-group-form">
                     <h2 class="mdc-typography--headline2 new-group-heading">Create a new group</h2>
                     <div class="input-section">
                         <p class="mdc-typography--headline5 form-label">Name:</p>
                         <label class="mdc-text-field mdc-text-field--filled">
-                            <input class="mdc-text-field__input" type="text" name="name" 
+                            <input id="name" class="mdc-text-field__input" type="text"
                                 aria-labelledby="my-label-id" required>
                                 <span class="mdc-line-ripple"></span>
                         </label>
@@ -66,7 +66,7 @@
                     <div class="input-section">
                         <p class="mdc-typography--headline5 form-label">Image link:</p>
                         <label class="mdc-text-field mdc-text-field--filled">
-                            <input class="mdc-text-field__input" type="text" name="image" 
+                            <input id="image" class="mdc-text-field__input" type="text" 
                                 aria-labelledby="my-label-id" required>
                                 <span class="mdc-line-ripple"></span>
                         </label>
@@ -78,12 +78,12 @@
                     </p>
                     <div class="input-section">
                         <p class="mdc-typography--headline5 form-label">Description:</p>
-                        <textarea id="description-area" name="description" rows="4" cols="42" required></textarea>
+                        <textarea id="description-area" rows="4" cols="42" required></textarea>
                     </div>
-                    <button class="mdc-button mdc-button--raised submit-btn" type="submit">
+                    <button class="mdc-button mdc-button--raised submit-btn" onclick="makeCalendarId()">
                         <span class="mdc-button__label">SUBMIT</span>
                     </button>
-                </form>
+                </div>
             </div>
 
             <main class="main-view">
