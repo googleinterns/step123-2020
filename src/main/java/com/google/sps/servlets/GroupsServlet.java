@@ -156,4 +156,5 @@ public class GroupsServlet extends HttpServlet {
       user.setProperty(GROUPS_KEY, new HashSet<Long>());
       datastore.put(user);
     }
+  }
 }

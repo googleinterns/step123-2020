@@ -13,6 +13,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.sps.utils.ServletUtils;
 import com.google.sps.utils.SoyRendererUtils;
@@ -37,24 +38,32 @@ public class CalendarServlet extends AbstractEventsServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    //ServletUtils.enforceUserLogin(request, response);
+
+    ImmutableList<ImmutableMap<String, String>> groupsList = 
+        ServletUtils.getGroupsList(request.getUserPrincipal().getName());
+
     String groupId = getParameter(request, GROUP_ID_PROPERTY);
 
-    if (Strings.isNullOrEmpty(groupId)){
-      ServletUtils.printBadRequestError(response, CALENDAR_BAD_REQUEST_MESSAGE);
-      return;
+    if (groupsList.isEmpty()) {
+      groupId = "";
+    } else if (Strings.isNullOrEmpty(groupId)) {
+      groupId = groupsList.get(0).get(GROUP_ID_PROPERTY);
     }
 
     String calendarId = "";
-    try {
-      calendarId = ServletUtils.getGroupProperty(groupId, GROUP_CALENDARID_PROPERTY);
-    } catch (Exception entityError) {
-      ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
-      return;
+    if (!Strings.isNullOrEmpty(groupId)) {
+      try {
+        calendarId = ServletUtils.getGroupProperty(groupId, GROUP_CALENDARID_PROPERTY);
+      } catch (Exception entityError) {
+        ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
+        return;
+      }
     }
 
     String htmlString = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE,
-        ImmutableMap.of(GROUP_CALENDARID_PROPERTY, calendarId, GROUP_ID_PROPERTY, groupId,
-            TIMEZONE_PARAM, TIMEZONE));
+        ImmutableMap.of(GROUP_CALENDARID_PROPERTY, calendarId, CURR_GROUP_KEY, groupId,
+            GROUPS_KEY, groupsList, TIMEZONE_PARAM, TIMEZONE));
 
     response.setContentType(CONTENT_TYPE_HTML);
     response.getWriter().println(htmlString);
@@ -67,7 +76,7 @@ public class CalendarServlet extends AbstractEventsServlet {
     String groupId = getParameter(request, GROUP_ID_PROPERTY);
 
     if (Strings.isNullOrEmpty(groupId)){
-      ServletUtils.printBadRequestError(response, CALENDAR_BAD_REQUEST_MESSAGE);
+      ServletUtils.printBadRequestError(response, INVALID_GROUPID_BAD_REQUEST_MESSAGE);
       return;
     }
 

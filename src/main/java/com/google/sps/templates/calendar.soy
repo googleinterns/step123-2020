@@ -2,8 +2,10 @@
 
 {template .calendarPage}
   {@param calendarId: string}
-  {@param groupId: string}
+  {@param currGroup: string}
+  {@param groups: list<map<string, string>>}
   {@param timezone: string}
+  
   <html lang="en">
     <head>
       <meta charset="UTF-8">
@@ -45,7 +47,7 @@
 
             <li role="separator" class="mdc-list-divider"></li>
             <form action="/events" method="POST" id="create-event">
-              <input type="hidden" name="groupId" value="{$groupId}">
+              <input type="hidden" name="groupId" value="{$currGroup}">
               <h6 class="mdc-list-group__subheader">Title</h6>
 
               <a class="mdc-list-item">
@@ -99,15 +101,31 @@
                 <i class="material-icons mdc-button__icon" aria-hidden="true">event</i>
               </button>
             </a>
+            <li role="separator" class="mdc-list-divider"></li>
+            <h2 class="mdc-typography--headline5 groups-headline">Groups</h2>
 
+            <div class="selection-controls-container">
+              {for $groupMap in $groups}
+                <a class="mdc-list-item {if $groupMap['groupId'] == $currGroup}{css('currGroup')}{/if}" 
+                  href="/calendar?groupId={$groupMap['groupId']}" tabindex="0">
+                  <span class="mdc-list-item__text group-label">{$groupMap['name']}</span>
+                </a>
+              {/for}
+            </div>
            </nav>
         </div>
       </aside>
 
       <main class="main-content" id="main-content">
-        <div id="events-calendar">
-          <iframe class="calendar-iframe" src="https://calendar.google.com/calendar/embed?src={$calendarId}&ctz={$timezone}"></iframe>
-        </div>
+        {if strLen($currGroup) == 0}
+          <p class="mdc-typography--body1 no-groups-error">
+            Oops, you haven't joined any groups yet. Click the groups icon at the top to join a cause.
+          </p>
+        {else}
+          <div id="events-calendar">
+            <iframe class="calendar-iframe" src="https://calendar.google.com/calendar/embed?src={$calendarId}&ctz={$timezone}"></iframe>
+          </div>
+        {/if}
       </main> 
 
     </body>
