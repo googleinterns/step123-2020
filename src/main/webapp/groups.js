@@ -29,13 +29,13 @@ function makeCalendarId() {
     const newGroupId;
 
     fetch('/groups?name=' + name + '&image=' + image + '&description=' + description, {
-        method: 'POST'
+        method: 'POST',
     }).then(response => response.text()).then(text => {
             newGroupId = text;
         }
     );
 
-    fetch('/calendar?groupId=' + groupId, {
+    fetch('/calendar?groupId=' + newGroupId, {
         method: 'POST'
     });
 
