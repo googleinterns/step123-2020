@@ -45,10 +45,16 @@ public final class ChatServletTest extends Mockito {
     
     private static final ImmutableMap<String, String> BLM_GROUP = ImmutableMap.of(
         GROUP_NAME_PROPERTY, BLACK_LIVES_MATTER,
-        GROUP_ID_PROPERTY, BLM_GROUP_ID);
+        GROUP_ID_PROPERTY, BLM_GROUP_ID,
+        GROUP_IMAGE_PROPERTY, "https://images.unsplash.com/photo-1591622414912-34f2a8f8172e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80",
+        GROUP_DESCRIPTION_PROPERTY, "BLM Description",
+        GROUP_CALENDARID_PROPERTY, "fk6u4m5isbl8i6cj1io1pkpli4@group.calendar.google.com");
     private static final ImmutableMap<String, String> SIERRA_GROUP = ImmutableMap.of(
         GROUP_NAME_PROPERTY, SIERRA_CLUB,
-        GROUP_ID_PROPERTY, SIERRA_GROUP_ID);
+        GROUP_ID_PROPERTY, SIERRA_GROUP_ID,
+        GROUP_IMAGE_PROPERTY, "imageURL",
+        GROUP_DESCRIPTION_PROPERTY, "Sierra Description",
+        GROUP_CALENDARID_PROPERTY, "calendarID");
     private static final ImmutableList<ImmutableMap<String, String>> SAMPLE_GROUP_LIST = 
         ImmutableList.of(BLM_GROUP, SIERRA_GROUP);
     

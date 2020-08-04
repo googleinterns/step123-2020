@@ -19,7 +19,6 @@ import com.google.sps.utils.ServletUtils;
 import com.google.sps.utils.SoyRendererUtils;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
@@ -57,7 +56,8 @@ public class GroupsServlet extends HttpServlet {
         }
         
         ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
-        ImmutableList<Long> userGroups = ImmutableList.copyOf(SoyRendererUtils.getGroupIdList(request));
+        ImmutableList<Long> userGroups = ImmutableList.copyOf(
+            ServletUtils.getGroupIdList(request.getUserPrincipal().getName()));
         
         // Each group has its own map which points to its info and all maps are passed into the template as a list
         // This will make it easier when groups are queried from Datastore
