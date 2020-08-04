@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
@@ -48,16 +49,20 @@ public class ChatServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // ImmutableList<ImmutableMap<String, String>> groupsList = 
+        //     ServletUtils.getGroupsList(request.getUserPrincipal().getName());
         ImmutableList<ImmutableMap<String, String>> groupsList = 
-            ServletUtils.getGroupsList(request.getUserPrincipal().getName());
+            ServletUtils.getGroupsList("example@test.com");
 
         String groupId = (String) request.getParameter(GROUP_ID_PROPERTY);
         if (groupsList.isEmpty()) {
             // If there are no groups, then the current group is just an empty ID
             groupId = "";
-        } else if (groupId == null || groupId.isEmpty()) {
+        } else if (Strings.isNullOrEmpty(groupId)) {
             // If no group is chosen, the first group will be shown
-            groupId = groupsList.get(0).get(GROUP_ID_PROPERTY);
+            // Default group needs to be updated for the entire class as well
+            defaultGroup = groupsList.get(0).get(GROUP_ID_PROPERTY);
+            groupId = defaultGroup;
         }
 
         // Calls query on all entities of type Message
