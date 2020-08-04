@@ -1,12 +1,28 @@
 body {
-  display: flex;
-  height: 100vh;
+    display: flex;
+    height: 100vh;
+    margin: 0;
+}
+
+.icon-links {
+    text-decoration: none;
+}
+
+.nav-icons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 10px;
+}
+
+i.material-icons.mdc-list-item__graphic.nav-icon {
+    margin: 0;
 }
 
 .calendar-iframe {
-  border: 0;
-  height: 100%;
-  width: 100%;
+    border: 0;
+    height: 100%;
+    width: 100%;
 }
 
 #hours {
@@ -18,9 +34,9 @@ body {
 }
 
 .main-content {
-  overflow: auto;
-  height: 100%;
-  width: 100%;
+    overflow: auto;
+    height: 100%;
+    width: 100%;
 }
 
 #minutes {

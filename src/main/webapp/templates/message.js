@@ -26,7 +26,7 @@ templates.message.messageBubble = function(opt_data, opt_ijData, opt_ijData_depr
   opt_ijData = /** @type {!goog.soy.IjData} */ (opt_ijData_deprecated || opt_ijData);
   /** @type {string} */
   var message = soy.asserts.assertType(typeof opt_data.message === 'string', 'message', opt_data.message, 'string');
-  return soydata.VERY_UNSAFE.ordainSanitizedHtml('<li class="mdc-list-item" tabindex="0"' + (goog.DEBUG && soy.$$debugSoyTemplateInfo ? ' data-debug-soy="templates.message.messageBubble src/main/webapp/templates/message.soy:6"' : '') + '><span class="mdc-list-item__text message">' + soy.$$escapeHtml(message) + '</span></li>');
+  return soydata.VERY_UNSAFE.ordainSanitizedHtml('<head' + (goog.DEBUG && soy.$$debugSoyTemplateInfo ? ' data-debug-soy="templates.message.messageBubble src/main/webapp/templates/message.soy:5"' : '') + '><link rel="stylesheet" href="../chat.css"></head><li class="mdc-list-item mdc-list-item--disabled" tabindex="0"' + (goog.DEBUG && soy.$$debugSoyTemplateInfo ? ' data-debug-soy="templates.message.messageBubble src/main/webapp/templates/message.soy:9"' : '') + '><span class="mdc-list-item__text message">' + soy.$$escapeHtml(message) + '</span></li>');
 };
 /**
  * @typedef {{

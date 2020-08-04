@@ -6,31 +6,99 @@
     <html>
         <head>
             <meta charset="UTF-8">
-            <title>The Solidarity Initiative</title>
+            <title>The Solidarity Initiative - Movements</title>
             <link rel="stylesheet" href="groupsPage.css">
-            <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+            <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" 
+                rel="stylesheet">
             <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
             <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+            <script src="closure/closure-library/closure/goog/base.js"></script>
+            <script src="groups.js"></script>
         </head>
 
-        <body>
-            <div>
-                <h1 class="heading mdc-typography--headline3">Movements</h1>
+        <body onload="init()">
+            <aside class="mdc-drawer" id="nav-drawer" >
+                <div class="mdc-drawer__content">
+                    <nav class="mdc-list">
+                        <div class="mdc-list-item mdc-list-item--activated" aria-current="page">
+                            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">group</i>
+                            <span class="mdc-list-item__text"><h2>Movements</h2></span>
+                        </div>
+
+                        <hr class="mdc-list-divider">
+                        <div class="nav-icons">
+                            <a class="icon-links" href="/map">
+                                <i class="material-icons mdc-list-item__graphic nav-icon">map</i>
+                            </a>
+                            <a class="icon-links" href="/calendar">
+                                <i class="material-icons mdc-list-item__graphic nav-icon">date_range</i>
+                            </a>
+                            <a class="icon-links" href="/chat">
+                                <i class="material-icons mdc-list-item__graphic nav-icon">chat</i>
+                            </a>
+                        </div>
+
+                        <hr class="mdc-list-divider">
+
+                        <a  id="create-group-link" onclick="toggleHidden()">
+                            <i class="material-icons mdc-list-item__graphic add-icon">add</i>
+                            <h2 class="mdc-typography--headline5 create-group-headline">Start a movement</h2>
+                        </a>
+                    </nav>
+                </div>
+            </aside>
+            
+            <div id="new-group-container" class="hidden">
+                <a id="close-btn" onclick="toggleHidden()">
+                    <i class="material-icons mdc-list-item__graphic add-icon">close</i>
+                </a>
+                <form class="new-group-form" action="/groups" method="POST">
+                    <h2 class="mdc-typography--headline2 new-group-heading">Create a new group</h2>
+                    <div class="input-section">
+                        <p class="mdc-typography--headline5 form-label">Name:</p>
+                        <label class="mdc-text-field mdc-text-field--filled">
+                            <input class="mdc-text-field__input" type="text" name="name" 
+                                aria-labelledby="my-label-id" required>
+                                <span class="mdc-line-ripple"></span>
+                        </label>
+                    </div>
+                    <div class="input-section">
+                        <p class="mdc-typography--headline5 form-label">Image link:</p>
+                        <label class="mdc-text-field mdc-text-field--filled">
+                            <input class="mdc-text-field__input" type="text" name="image" 
+                                aria-labelledby="my-label-id" required>
+                                <span class="mdc-line-ripple"></span>
+                        </label>
+                    </div>
+                    <p class="mdc-typography--body2 photo-disclaimer">Please make sure to have permission 
+                        to use the photo.<br>
+                        We recommend <a class="unsplash-link" href="https://unsplash.com/">Unsplash</a> for finding 
+                        free pictures.
+                    </p>
+                    <div class="input-section">
+                        <p class="mdc-typography--headline5 form-label">Description:</p>
+                        <textarea id="description-area" name="description" rows="4" cols="42" required></textarea>
+                    </div>
+                    <button class="mdc-button mdc-button--raised submit-btn" type="submit">
+                        <span class="mdc-button__label">SUBMIT</span>
+                    </button>
+                </form>
             </div>
-                
-            <div class="card-gallery">
-                
-                // For each group, a new card is rendered with that group's info
-                {for $groupMap in $groups}
-                    {call .groupCard}
-                        {param image: $groupMap['groupImage'] /}
-                        {param name: $groupMap['groupName'] /}
-                        {param description: $groupMap['groupDescription'] /}
 
-                    {/call}
-                {/for}
+            <main class="main-view">
+                <div class="card-gallery">
+                    
+                    // For each group, a new card is rendered with that group's info
+                    {for $groupMap in $groups}
+                        {call .groupCard}
+                            {param image: $groupMap['image'] /}
+                            {param name: $groupMap['name'] /}
+                            {param description: $groupMap['description'] /}
 
-           </div>
+                        {/call}
+                    {/for}
+                </div>
+            </main>
         </body>
     </html>
 {/template}
@@ -52,14 +120,8 @@
 
         <div class="mdc-card__actions">
             <div class="mdc-card__action-buttons">
-                <button class="mdc-button mdc-card__action mdc-card__action--button">  <span class="mdc-button__ripple"></span>Details</button>
-                <button class="mdc-button mdc-card__action mdc-card__action--button">  <span class="mdc-button__ripple"></span>Join</button>
-            </div>
-
-            <div class="mdc-card__action-icons">
-                <button class="mdc-icon-button mdc-card__action mdc-card__action--icon--unbounded" aria-pressed="false" aria-label="Add to favorites" title="Add to favorites">
-                    <i class="material-icons mdc-icon-button__icon mdc-icon-button__icon--on">favorite</i>
-                    <i class="material-icons mdc-icon-button__icon">favorite_border</i>
+                <button class="mdc-button mdc-card__action mdc-card__action--button">
+                    <span class="mdc-button__ripple"></span>Join
                 </button>
             </div>
         </div>

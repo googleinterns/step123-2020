@@ -34,6 +34,7 @@ import org.apache.http.util.EntityUtils;
 @WebServlet("/chat")
 public class ChatServlet extends HttpServlet {
     public static final String API_BASE_URL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=";
+    private static String defaultGroup = null;
 
     enum Attribute {
         TOXICITY,
@@ -46,31 +47,43 @@ public class ChatServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String groupID = (String) request.getParameter(GROUP_ID_PROPERTY);
-
-        // This will be a placeholder until we can coordinate how to pass
-        // groupID from page to page
-        if (groupID == null) {
-            groupID = "123";
-        }
-
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-        // This is just a sample group until group creation is coordinated
-        Entity sampleGroup = new Entity(GROUP_KIND, groupID);
-        sampleGroup.setProperty(GROUP_NAME_PROPERTY, "Black Lives Matter");
-        sampleGroup.setProperty(GROUP_ID_PROPERTY, groupID);
-        datastore.put(sampleGroup);
-
-        // Calls query on all entities of type Message
-        Query messageQuery = new Query(MESSAGE_KIND + groupID).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
-        PreparedQuery preparedMessageQuery = datastore.prepare(messageQuery);
 
         Query groupQuery = new Query(GROUP_KIND);
         PreparedQuery preparedGroupQuery = datastore.prepare(groupQuery);
 
-        ImmutableMap<String, ImmutableList<String>> messagesGroupsData = getTemplateData(preparedMessageQuery,
-            preparedGroupQuery);
+        ImmutableList.Builder<ImmutableMap<String, String>> groupsListBuilder = new ImmutableList.Builder<>();
+        for (Entity group : preparedGroupQuery.asIterable()) {
+            if (defaultGroup == null) {
+                defaultGroup = group.getKey().getName();
+            }
+
+            ImmutableMap<String, String> groupMap = ImmutableMap.of(
+                GROUP_NAME_PROPERTY, (String) group.getProperty(GROUP_NAME_PROPERTY),
+                GROUP_ID_PROPERTY, group.getKey().getName());
+            groupsListBuilder.add(groupMap);
+        }
+        ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
+
+        String groupId = (String) request.getParameter(GROUP_ID_PROPERTY);
+        if (groupsList.isEmpty()) {
+            // If there are no groups, then the current group is just an empty ID
+            groupId = "";
+        } else if (groupId == null || groupId.isEmpty()) {
+            groupId = defaultGroup;
+        }
+
+        // Calls query on all entities of type Message
+        Query messageQuery = new Query(MESSAGE_KIND + groupId).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
+        PreparedQuery preparedMessageQuery = datastore.prepare(messageQuery);
+
+        // Creates lists of the data
+        ImmutableList<String> messagesList = Streams.stream(preparedMessageQuery.asIterable())
+            .map(message -> (String) message.getProperty(MESSAGE_TEXT_PROPERTY))
+            .collect(toImmutableList());
+
+        ImmutableMap messagesGroupsData = ImmutableMap.of(MESSAGES_KEY, messagesList, GROUPS_KEY,
+            groupsList, CURR_GROUP_KEY, groupId);
 
         final String chatPageHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, messagesGroupsData);
 
@@ -84,17 +97,15 @@ public class ChatServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String messageText = (String) request.getParameter(MESSAGE_TEXT_PROPERTY);
-        String groupID = (String) request.getParameter(GROUP_ID_PROPERTY);
+        String groupId = (String) request.getParameter(GROUP_ID_PROPERTY);
         final long timestamp = System.currentTimeMillis();
 
-        // This will be a placeholder until we can coordinate how to pass
-        // groupID from page to page
-        if (groupID == null) {
-            groupID = "123";
+        if (groupId.isEmpty()) {
+            groupId = defaultGroup;
         }
 
         if (messageText.isEmpty()) {
-            response.sendRedirect("/chat");
+            response.sendRedirect(CHAT_REDIRECT + groupId);
             return;
         }
 
@@ -111,40 +122,20 @@ public class ChatServlet extends HttpServlet {
         // If the comment is  toxic, then do not post it to Datastore
         if (commentScore >= COMMENT_SCORE_THRESHOLD) {
             ImmutableMap<String, String> errorData = ImmutableMap.of(ERROR_MESSAGE_KEY, 
-                ERROR_MESSAGE_TEXT);
+                ERROR_MESSAGE_TEXT, CURR_GROUP_KEY, groupId);
 
             final String errorPageHtml = getOutputString(CHAT_SOY_FILE, CHAT_ERROR_NAMESPACE, errorData);
 
             response.getWriter().println(errorPageHtml);
         } else {
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-            Entity messageEntity = new Entity(MESSAGE_KIND + groupID);
+            Entity messageEntity = new Entity(MESSAGE_KIND + groupId);
             messageEntity.setProperty(MESSAGE_TEXT_PROPERTY, messageText);
             messageEntity.setProperty(TIMESTAMP_PROPERTY, timestamp);
             datastore.put(messageEntity);
 
-            response.sendRedirect("/chat");
+            response.sendRedirect(CHAT_REDIRECT + groupId);
         }
-    }
-
-    /**
-     * Iterates through the queries to put all the required text into a list.
-     * A map is then created the pass the lists into the template.
-     */
-    private ImmutableMap<String, ImmutableList<String>> getTemplateData(PreparedQuery preparedMessageQuery,
-        PreparedQuery preparedGroupQuery) {
-
-        // Creates lists of the data
-        ImmutableList<String> messagesList = Streams.stream(preparedMessageQuery.asIterable())
-            .map(message -> (String) message.getProperty(MESSAGE_TEXT_PROPERTY))
-            .collect(toImmutableList());
-
-        ImmutableList<String> groupsList = Streams.stream(preparedGroupQuery.asIterable())
-            .map(group -> (String) group.getProperty(GROUP_NAME_PROPERTY))
-            .collect(toImmutableList());
-
-        // Data will be passed in as a list of messages/groups in a map (needed for template)
-        return ImmutableMap.of(MESSAGES_KEY, messagesList, GROUPS_KEY, groupsList);
     }
 
     /**

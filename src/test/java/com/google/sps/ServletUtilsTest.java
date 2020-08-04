@@ -10,6 +10,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.sps.TestUtils;
 import com.google.sps.utils.ServletUtils;
 import java.io.IOException;
@@ -33,7 +35,8 @@ public final class ServletUtilsTest extends Mockito {
   private final String TESTING_PARAMETER_VALUE = "english";
 
   private final LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig())
+        .setEnvIsAdmin(true).setEnvIsLoggedIn(true);
   
   private DatastoreService datastore;
   private Entity groupEntityExpected;
@@ -127,5 +130,31 @@ public final class ServletUtilsTest extends Mockito {
     ServletUtils.printBadRequestError(response, errorMessage);
     
     TestUtils.verifyBadRequest(response, errorMessage, this.stringWriter);
+  }
+
+  @Test
+  public void getGroupsListTest() {
+    Entity groupEntity = new Entity(GROUP_KIND, "123");
+    groupEntity.setProperty(GROUP_NAME_PROPERTY, "testName");
+    groupEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, "description");
+    groupEntity.setProperty(GROUP_CALENDARID_PROPERTY, "calendarID");
+    groupEntity.setProperty(GROUP_ID_PROPERTY, 123L);
+    groupEntity.setProperty(GROUP_IMAGE_PROPERTY, "image");
+
+    datastore.put(groupEntity);
+
+    ImmutableMap<String, String> expectedMap = ImmutableMap.of(
+            GROUP_NAME_PROPERTY, "testName",
+            GROUP_ID_PROPERTY, "123",
+            GROUP_DESCRIPTION_PROPERTY, "description",
+            GROUP_CALENDARID_PROPERTY, "calendarID",
+            GROUP_IMAGE_PROPERTY, "image");
+
+    ImmutableList.Builder<ImmutableMap<String, String>> expected = new ImmutableList.Builder<>();
+    expected.add(expectedMap);
+
+    ImmutableList<ImmutableMap<String, String>> actual = ServletUtils.getGroupsList("email@email.com");
+
+    Assert.assertEquals(expected.build(), actual); 
   }
 }

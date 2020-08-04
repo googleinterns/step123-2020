@@ -2,8 +2,11 @@
 
 {template .messageBubble}
     {@param message: string}
+    <head>
+        <link rel="stylesheet" href="../chat.css">
+    </head>
 
-    <li class="mdc-list-item" tabindex="0">
+    <li class="mdc-list-item mdc-list-item--disabled" tabindex="0">
         <span class="mdc-list-item__text message">{$message}</span>
     </li>
 {/template}
