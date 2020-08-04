@@ -6,6 +6,7 @@ import static com.google.sps.utils.StringConstants.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity; 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.sps.utils.ServletUtils;
@@ -28,7 +29,7 @@ public class MapServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ServletUtils.enforceUserLogin(request, response);
+        // ServletUtils.enforceUserLogin(request, response);
  
         // Reads API Key from file
         ClassLoader classLoader = MapServlet.class.getClassLoader();
@@ -37,8 +38,9 @@ public class MapServlet extends HttpServlet {
         final String apiKey = scanner.nextLine();
         scanner.close();
 
-        String userEmail = request.getUserPrincipal().getName();
-        ImmutableList<ImmutableMap<String, String>> groupsList = getGroupsList(userEmail); 
+        // Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
+        Entity userEntity = ServletUtils.getUserEntity("example@test.com");
+        ImmutableList<ImmutableMap<String, String>> groupsList = getGroupsList(userEntity);
 
         final String mapPageHtml = getOutputString(MAP_SOY_FILE, MAP_TEMPLATE_NAMESPACE, 
             ImmutableMap.of(GROUPS_KEY, groupsList, API_KEY_NAME, apiKey));

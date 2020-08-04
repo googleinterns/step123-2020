@@ -49,10 +49,10 @@ public class ChatServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // ImmutableList<ImmutableMap<String, String>> groupsList = 
-        //     ServletUtils.getGroupsList(request.getUserPrincipal().getName());
-        ImmutableList<ImmutableMap<String, String>> groupsList = 
-            ServletUtils.getGroupsList("example@test.com");
+        // ServletUtils.enforceUserLogin(request, response);
+        // Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
+        Entity userEntity = ServletUtils.getUserEntity("example@test.com");
+        ImmutableList<ImmutableMap<String, String>> groupsList = ServletUtils.getGroupsList(userEntity);
 
         String groupId = (String) request.getParameter(GROUP_ID_PROPERTY);
         if (groupsList.isEmpty()) {

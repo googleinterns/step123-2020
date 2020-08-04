@@ -26,7 +26,7 @@ function makeCalendarId() {
     const name = document.getElementById('name').value;
     const image = document.getElementById('image').value;
     const description = document.getElementById('description-area').value;
-    const newGroupId;
+    let newGroupId;
 
     fetch('/groups?name=' + name + '&image=' + image + '&description=' + description, {
         method: 'POST',

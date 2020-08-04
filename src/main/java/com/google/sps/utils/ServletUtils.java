@@ -70,40 +70,41 @@ public final class ServletUtils {
     
     }
 
-    public static List<Long> getGroupIdList(String email) {
-        final String userEmail = email;
-        ImmutableList<Long> userGroups = ImmutableList.of();
-
+    public static Entity getUserEntity(String userEmail) {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Query userQuery = new Query(USER_KIND).addFilter(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, 
             KeyFactory.createKey(USER_KIND, userEmail));
         PreparedQuery userPreparedQuery = datastore.prepare(userQuery);
         Entity user = userPreparedQuery.asSingleEntity();
 
-        if (user != null) {
-            List<Long> datastoreList = (List<Long>) user.getProperty(GROUPS_KEY);
-            if (datastoreList != null) {
-                // If the user has joined groups, get those instead
-                userGroups = ImmutableList.copyOf(datastoreList);
-            }
-        } else {
+        if (user == null) {
             // if the user does not exist, create one and add to datastore
             user = new Entity(USER_KIND, userEmail);
-
             user.setProperty(USER_EMAIL_PROPERTY, userEmail);
-            user.setProperty(GROUPS_KEY, userGroups);
+            user.setProperty(GROUPS_KEY, ImmutableList.of());
 
             datastore.put(user);
+        }
+        return user;
+    }
+
+    public static ImmutableList<Long> getGroupIdList(Entity user) {
+        ImmutableList<Long> userGroups = ImmutableList.of();
+
+        List<Long> datastoreList = (List<Long>) user.getProperty(GROUPS_KEY);
+        if (datastoreList != null) {
+            // If the user has joined groups, get those instead
+            userGroups = ImmutableList.copyOf(datastoreList);
         }
 
         return userGroups;
     }
 
-    public static ImmutableList<ImmutableMap<String, String>> getGroupsList(String userEmail) {
+    public static ImmutableList<ImmutableMap<String, String>> getGroupsList(Entity user) {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-        // Stores the IDs for all the groups the user ahs joined
-        List<Long> userGroups = getGroupIdList(userEmail);
+        // Stores the IDs for all the groups the user has joined
+        List<Long> userGroups = getGroupIdList(user);
 
         ImmutableList.Builder<ImmutableMap<String, String>> groupsListBuilder = new ImmutableList.Builder<>();
         for (Long groupId : userGroups) {
@@ -113,7 +114,8 @@ public final class ServletUtils {
                     GROUP_NAME_PROPERTY, (String) group.getProperty(GROUP_NAME_PROPERTY),
                     GROUP_ID_PROPERTY, group.getKey().getName(),
                     GROUP_DESCRIPTION_PROPERTY, (String) group.getProperty(GROUP_DESCRIPTION_PROPERTY),
-                    GROUP_CALENDARID_PROPERTY, (String) group.getProperty(GROUP_CALENDARID_PROPERTY),
+                    // GROUP_CALENDARID_PROPERTY, (String) group.getProperty(GROUP_CALENDARID_PROPERTY),
+                    GROUP_CALENDARID_PROPERTY, "calendarID",
                     GROUP_IMAGE_PROPERTY, (String) group.getProperty(GROUP_IMAGE_PROPERTY));
                 groupsListBuilder.add(groupMap);
             } catch (EntityNotFoundException invalidGroup) {

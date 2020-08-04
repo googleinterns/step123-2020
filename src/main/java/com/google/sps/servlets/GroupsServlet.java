@@ -40,10 +40,11 @@ public class GroupsServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // ServletUtils.enforceUserLogin(request, response);
+        
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
         Query groupsQuery = new Query(GROUP_KIND);
-        PreparedQuery preparedGroupsQuery = datastore.prepare(groupsQuery); 
+        PreparedQuery preparedGroupsQuery = datastore.prepare(groupsQuery);
 
         ImmutableList.Builder<ImmutableMap<String, String>> groupsListBuilder = new ImmutableList.Builder<>();
         for (Entity group : preparedGroupsQuery.asIterable()) {
@@ -55,9 +56,10 @@ public class GroupsServlet extends HttpServlet {
             groupsListBuilder.add(groupMap);
         }
         
+        // Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
+        Entity userEntity = ServletUtils.getUserEntity("example@test.com");
         ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
-        ImmutableList<Long> userGroups = ImmutableList.copyOf(
-            ServletUtils.getGroupIdList(request.getUserPrincipal().getName()));
+        ImmutableList<Long> userGroups = ImmutableList.copyOf(ServletUtils.getGroupIdList(userEntity));
         
         // Each group has its own map which points to its info and all maps are passed into the template as a list
         // This will make it easier when groups are queried from Datastore
@@ -105,7 +107,9 @@ public class GroupsServlet extends HttpServlet {
         }
 
         try {
-            addUserToGroup(groupId, request.getUserPrincipal().getName());
+            // Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
+            Entity userEntity = ServletUtils.getUserEntity("example@test.com");
+            addUserToGroup(groupId, userEntity);
             
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception exceptionError) {
@@ -116,7 +120,7 @@ public class GroupsServlet extends HttpServlet {
     /*
      * Returns the Group ID as a string after creating a group with the user-input parameters.
      */
-    private String createGroup(String name, String description, String image){
+    private String createGroup(String name, String description, String image) {
         long groupId = random.nextLong();
         String groupIdString = String.valueOf(groupId);
 
@@ -135,33 +139,19 @@ public class GroupsServlet extends HttpServlet {
     /**
      * Adds user with email to group with groupId. If the user is not in datastore, a new user is created.
      */
-    private void addUserToGroup(String groupId, String email) throws IOException {
+    private void addUserToGroup(String groupId, Entity user) throws IOException {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         final long groupIdLong = Long.valueOf(groupId);
 
-        Query userQuery = new Query(USER_KIND).addFilter(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, 
-            KeyFactory.createKey(USER_KIND, email));
-        PreparedQuery userPreparedQuery = datastore.prepare(userQuery);
-        Entity user = userPreparedQuery.asSingleEntity();
-
         ImmutableList.Builder<Long> groupsListBuilder = new ImmutableList.Builder<>();
-        if (user != null) {
-            List<Long> datastoreList = (List<Long>) user.getProperty(GROUPS_KEY);
-            if (datastoreList != null) {
-                // If the user has joined groups, add those as well
-                groupsListBuilder.addAll(datastoreList);
-            }
-
-            groupsListBuilder.add(groupIdLong);
-            user.setProperty(GROUPS_KEY, groupsListBuilder.build());
-        } else {
-            user = new Entity(USER_KIND, email);
-
-            user.setProperty(USER_EMAIL_PROPERTY, email);
-
-            groupsListBuilder.add(groupIdLong);
-            user.setProperty(GROUPS_KEY, groupsListBuilder.build());
+        List<Long> datastoreList = (List<Long>) user.getProperty(GROUPS_KEY);
+        if (datastoreList != null) {
+            // If the user has joined groups, add those as well
+            groupsListBuilder.addAll(datastoreList);
         }
+
+        groupsListBuilder.add(groupIdLong);
+        user.setProperty(GROUPS_KEY, groupsListBuilder.build());
         datastore.put(user);
     }
 }

@@ -153,7 +153,11 @@ public final class ServletUtilsTest extends Mockito {
     ImmutableList.Builder<ImmutableMap<String, String>> expected = new ImmutableList.Builder<>();
     expected.add(expectedMap);
 
-    ImmutableList<ImmutableMap<String, String>> actual = ServletUtils.getGroupsList("email@email.com");
+    Entity userEntity = new Entity(USER_KIND, "email@email.com");
+    userEntity.setProperty(GROUPS_KEY, ImmutableList.of(123L));
+    datastore.put(userEntity);
+
+    ImmutableList<ImmutableMap<String, String>> actual = ServletUtils.getGroupsList(userEntity);
 
     Assert.assertEquals(expected.build(), actual); 
   }

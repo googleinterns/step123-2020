@@ -36,7 +36,11 @@ import org.mockito.MockitoAnnotations;
 public final class ChatServletTest extends Mockito {
     private static final String BLACK_LIVES_MATTER = "Black Lives Matter";
     private static final String BLM_GROUP_ID = "123";
+    private static final String CALENDAR_ID = "calendarID";
+    private static final String DESCRIPTION = "groupDescription";
     private static final String EMPTY_GROUP_ID = "";
+    private static final String EXAMPLE_EMAIL = "example@test.com";
+    private static final String IMAGE_URL = "imageURL";
     private static final String MESSAGE_TEXT_NON_TOXIC = "hello";
     private static final String MESSAGE_TEXT_TOXIC = "what kind of idiot name is foo?";
     private static final String NULL_GROUP_ID = null;
@@ -46,15 +50,15 @@ public final class ChatServletTest extends Mockito {
     private static final ImmutableMap<String, String> BLM_GROUP = ImmutableMap.of(
         GROUP_NAME_PROPERTY, BLACK_LIVES_MATTER,
         GROUP_ID_PROPERTY, BLM_GROUP_ID,
-        GROUP_IMAGE_PROPERTY, "https://images.unsplash.com/photo-1591622414912-34f2a8f8172e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80",
-        GROUP_DESCRIPTION_PROPERTY, "BLM Description",
-        GROUP_CALENDARID_PROPERTY, "fk6u4m5isbl8i6cj1io1pkpli4@group.calendar.google.com");
+        GROUP_IMAGE_PROPERTY, IMAGE_URL,
+        GROUP_DESCRIPTION_PROPERTY, DESCRIPTION,
+        GROUP_CALENDARID_PROPERTY, CALENDAR_ID);
     private static final ImmutableMap<String, String> SIERRA_GROUP = ImmutableMap.of(
         GROUP_NAME_PROPERTY, SIERRA_CLUB,
         GROUP_ID_PROPERTY, SIERRA_GROUP_ID,
-        GROUP_IMAGE_PROPERTY, "imageURL",
-        GROUP_DESCRIPTION_PROPERTY, "Sierra Description",
-        GROUP_CALENDARID_PROPERTY, "calendarID");
+        GROUP_IMAGE_PROPERTY, IMAGE_URL,
+        GROUP_DESCRIPTION_PROPERTY, DESCRIPTION,
+        GROUP_CALENDARID_PROPERTY, CALENDAR_ID);
     private static final ImmutableList<ImmutableMap<String, String>> SAMPLE_GROUP_LIST = 
         ImmutableList.of(BLM_GROUP, SIERRA_GROUP);
     
@@ -82,11 +86,22 @@ public final class ChatServletTest extends Mockito {
 
         Entity blmEntity = new Entity(GROUP_KIND, BLM_GROUP_ID);
         blmEntity.setProperty(GROUP_NAME_PROPERTY, BLACK_LIVES_MATTER);
+        blmEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, DESCRIPTION);
+        blmEntity.setProperty(GROUP_IMAGE_PROPERTY, IMAGE_URL);
+        blmEntity.setProperty(GROUP_CALENDARID_PROPERTY, CALENDAR_ID);
         datastore.put(blmEntity);
         
         Entity sierraEntity = new Entity(GROUP_KIND, SIERRA_GROUP_ID);
         sierraEntity.setProperty(GROUP_NAME_PROPERTY, SIERRA_CLUB);
+        sierraEntity.setProperty(GROUP_DESCRIPTION_PROPERTY, DESCRIPTION);
+        sierraEntity.setProperty(GROUP_IMAGE_PROPERTY, IMAGE_URL);
+        sierraEntity.setProperty(GROUP_CALENDARID_PROPERTY, CALENDAR_ID);
         datastore.put(sierraEntity);
+
+        Entity userEntity = new Entity(USER_KIND, EXAMPLE_EMAIL);
+        userEntity.setProperty(USER_EMAIL_PROPERTY, EXAMPLE_EMAIL);
+        userEntity.setProperty(GROUPS_KEY, ImmutableList.of(123L, 456L));
+        datastore.put(userEntity);
 
         MockitoAnnotations.initMocks(this);
 
@@ -271,6 +286,29 @@ public final class ChatServletTest extends Mockito {
 
         templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of(firstMessage),
             GROUPS_KEY, SAMPLE_GROUP_LIST, CURR_GROUP_KEY, BLM_GROUP_ID);
+        String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, templateData);
+        String actualHtml = stringWriter.getBuffer().toString().trim();
+
+        Assert.assertEquals(expectedHtml, actualHtml);
+    }
+
+    @Test
+    public void servletGetNoGroupsJoined() throws IOException {
+        // Should render an error message telling the user that they 
+        // haven't joined any groups
+
+        Entity newUser = new Entity(USER_KIND, EXAMPLE_EMAIL);
+        newUser.setProperty(USER_EMAIL_PROPERTY, EXAMPLE_EMAIL);
+        newUser.setProperty(GROUPS_KEY, ImmutableList.of());
+        datastore.put(newUser);
+
+        when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(null);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        servlet.doGet(request, response);
+
+        templateData = ImmutableMap.of(MESSAGES_KEY, ImmutableList.of(),
+            GROUPS_KEY, ImmutableList.of(), CURR_GROUP_KEY, EMPTY_GROUP_ID);
         String expectedHtml = getOutputString(CHAT_SOY_FILE, CHAT_PAGE_NAMESPACE, templateData);
         String actualHtml = stringWriter.getBuffer().toString().trim();
 
