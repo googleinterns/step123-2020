@@ -1,7 +1,8 @@
 {namespace templates.groups}
 
 {template .groupsPage}
-    {@param groups : list<map<string, string>>}
+    {@param groups: list<map<string, string>>}
+    {@param userGroups: list<int>}
 
     <html>
         <head>
@@ -52,21 +53,21 @@
                 <a id="close-btn" onclick="toggleHidden()">
                     <i class="material-icons mdc-list-item__graphic add-icon">close</i>
                 </a>
-                <form class="new-group-form" action="/groups" method="POST">
+                <div class="new-group-form">
                     <h2 class="mdc-typography--headline2 new-group-heading">Create a new group</h2>
                     <div class="input-section">
                         <p class="mdc-typography--headline5 form-label">Name:</p>
                         <label class="mdc-text-field mdc-text-field--filled">
-                            <input class="mdc-text-field__input" type="text" name="name" 
-                                aria-labelledby="my-label-id" required>
+                            <input id="name" class="mdc-text-field__input" type="text"
+                                aria-labelledby="my-label-id" autocomplete="off" required>
                                 <span class="mdc-line-ripple"></span>
                         </label>
                     </div>
                     <div class="input-section">
                         <p class="mdc-typography--headline5 form-label">Image link:</p>
                         <label class="mdc-text-field mdc-text-field--filled">
-                            <input class="mdc-text-field__input" type="text" name="image" 
-                                aria-labelledby="my-label-id" required>
+                            <input id="image" class="mdc-text-field__input" type="text" 
+                                aria-labelledby="my-label-id" autocomplete="off" required>
                                 <span class="mdc-line-ripple"></span>
                         </label>
                     </div>
@@ -77,12 +78,12 @@
                     </p>
                     <div class="input-section">
                         <p class="mdc-typography--headline5 form-label">Description:</p>
-                        <textarea id="description-area" name="description" rows="4" cols="42" required></textarea>
+                        <textarea id="description-area" rows="4" cols="42" required></textarea>
                     </div>
-                    <button class="mdc-button mdc-button--raised submit-btn" type="submit">
+                    <button class="mdc-button mdc-button--raised submit-btn" onclick="makeCalendarId()">
                         <span class="mdc-button__label">SUBMIT</span>
                     </button>
-                </form>
+                </div>
             </div>
 
             <main class="main-view">
@@ -94,6 +95,8 @@
                             {param image: $groupMap['image'] /}
                             {param name: $groupMap['name'] /}
                             {param description: $groupMap['description'] /}
+                            {param groupId: $groupMap['groupId'] /}
+                            {param userGroups: $userGroups /}
 
                         {/call}
                     {/for}
@@ -107,6 +110,8 @@
     {@param image: string}
     {@param name: string}
     {@param description: string}
+    {@param groupId: string}
+    {@param userGroups: list<int>}
 
     <div class="mdc-card">
         <div class="mdc-card__media mdc-card__media--16-9" style="background-image: url({$image});"></div>
@@ -120,9 +125,16 @@
 
         <div class="mdc-card__actions">
             <div class="mdc-card__action-buttons">
-                <button class="mdc-button mdc-card__action mdc-card__action--button">
-                    <span class="mdc-button__ripple"></span>Join
-                </button>
+                {if listContains($userGroups, $groupId)}
+                    <button class="mdc-button mdc-card__action mdc-card__action--button" disabled>
+                        <span class="mdc-button__ripple"></span>Joined
+                    </button>
+                {else}
+                    <button id="join-btn-{$groupId}" class="mdc-button mdc-card__action mdc-card__action--button" 
+                        onclick="joinGroup({$groupId})">
+                        <span class="mdc-button__ripple"></span>Join
+                    </button>
+                {/if}
             </div>
         </div>
     </div>
