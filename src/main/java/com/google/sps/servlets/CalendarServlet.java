@@ -41,7 +41,7 @@ public class CalendarServlet extends AbstractEventsServlet {
     //ServletUtils.enforceUserLogin(request, response);
 
     ImmutableList<ImmutableMap<String, String>> groupsList = 
-        ServletUtils.getGroupsList(request.getUserPrincipal().getName());
+        ServletUtils.getGroupsList(ServletUtils.getUserEntity(request.getUserPrincipal().getName()));
 
     String groupId = getParameter(request, GROUP_ID_PROPERTY);
 
@@ -61,6 +61,11 @@ public class CalendarServlet extends AbstractEventsServlet {
       }
     }
 
+    if(Strings.isNullOrEmpty(calendarId)) {
+      ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
+      return;
+    }
+    
     String htmlString = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE,
         ImmutableMap.of(GROUP_CALENDARID_PROPERTY, calendarId, CURR_GROUP_KEY, groupId,
             GROUPS_KEY, groupsList, TIMEZONE_PARAM, TIMEZONE));

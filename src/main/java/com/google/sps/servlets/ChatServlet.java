@@ -10,12 +10,14 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Streams;
 import com.google.gson.Gson;
 import com.google.sps.data.PerspectiveRequest;
+import com.google.sps.utils.ServletUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -47,33 +49,23 @@ public class ChatServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-        Query groupQuery = new Query(GROUP_KIND);
-        PreparedQuery preparedGroupQuery = datastore.prepare(groupQuery);
-
-        ImmutableList.Builder<ImmutableMap<String, String>> groupsListBuilder = new ImmutableList.Builder<>();
-        for (Entity group : preparedGroupQuery.asIterable()) {
-            if (defaultGroup == null) {
-                defaultGroup = group.getKey().getName();
-            }
-
-            ImmutableMap<String, String> groupMap = ImmutableMap.of(
-                GROUP_NAME_PROPERTY, (String) group.getProperty(GROUP_NAME_PROPERTY),
-                GROUP_ID_PROPERTY, group.getKey().getName());
-            groupsListBuilder.add(groupMap);
-        }
-        ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
+        ServletUtils.enforceUserLogin(request, response);
+        Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
+        ImmutableList<ImmutableMap<String, String>> groupsList = ServletUtils.getGroupsList(userEntity);
 
         String groupId = (String) request.getParameter(GROUP_ID_PROPERTY);
         if (groupsList.isEmpty()) {
             // If there are no groups, then the current group is just an empty ID
             groupId = "";
-        } else if (groupId == null || groupId.isEmpty()) {
+        } else if (Strings.isNullOrEmpty(groupId)) {
+            // If no group is chosen, the first group will be shown
+            // Default group needs to be updated for the entire class as well
+            defaultGroup = groupsList.get(0).get(GROUP_ID_PROPERTY);
             groupId = defaultGroup;
         }
 
         // Calls query on all entities of type Message
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Query messageQuery = new Query(MESSAGE_KIND + groupId).addSort(TIMESTAMP_PROPERTY, SortDirection.ASCENDING);
         PreparedQuery preparedMessageQuery = datastore.prepare(messageQuery);
 
