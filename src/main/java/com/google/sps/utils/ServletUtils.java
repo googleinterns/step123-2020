@@ -114,7 +114,7 @@ public final class ServletUtils {
                     GROUP_NAME_PROPERTY, (String) group.getProperty(GROUP_NAME_PROPERTY),
                     GROUP_ID_PROPERTY, group.getKey().getName(),
                     GROUP_DESCRIPTION_PROPERTY, (String) group.getProperty(GROUP_DESCRIPTION_PROPERTY),
-                    //GROUP_CALENDARID_PROPERTY, (String) group.getProperty(GROUP_CALENDARID_PROPERTY),
+                    // GROUP_CALENDARID_PROPERTY, (String) group.getProperty(GROUP_CALENDARID_PROPERTY),
                     GROUP_CALENDARID_PROPERTY, "calendarID",
                     GROUP_IMAGE_PROPERTY, (String) group.getProperty(GROUP_IMAGE_PROPERTY));
                 groupsListBuilder.add(groupMap);
