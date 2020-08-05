@@ -19,6 +19,7 @@ import com.google.sps.utils.SoyRendererUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashSet;
 import javax.management.remote.JMXPrincipal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -142,6 +143,12 @@ public final class CalendarServletTest extends Mockito {
   private void setUpCalendarGetWithGroupId() throws IOException {
     JMXPrincipal user = new JMXPrincipal(TEST_GET_USER_EMAIL);
     when(request.getUserPrincipal()).thenReturn(user);
+    
+    HashSet<Long> userGroups = new HashSet<>();
+    userGroups.add(123L);
+    Entity userEntity = new Entity(USER_KIND, TEST_GET_USER_EMAIL);
+    userEntity.setProperty(GROUPS_KEY, userGroups);
+    datastore.put(userEntity);
     
     when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(TEST_GROUP_ID);
     
