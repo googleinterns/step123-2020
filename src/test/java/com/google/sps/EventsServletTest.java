@@ -190,6 +190,21 @@ public final class EventsServletTest extends Mockito {
     TestUtils.verifyBadRequest(response, EVENTS_POST_BAD_REQUEST_MESSAGE, this.stringWriter);
   }
 
+  @Test
+  public void getEventEndTime() {
+    String expectedDateTestOne = "2020-12-12T08:30" + TIMEZONE_OFFSET;
+    Assert.assertEquals(expectedDateTestOne, servlet.getEventEndTime("2020-12-12T07:30", "1", "0"));
+
+    String expectedDateTestTwo = "2020-11-11T13:01" + TIMEZONE_OFFSET;
+    Assert.assertEquals(expectedDateTestTwo, servlet.getEventEndTime("2020-11-11T12:00", "1", "1"));
+
+    String expectedDateTestThree = "2020-09-09T20:59" + TIMEZONE_OFFSET;
+    Assert.assertEquals(expectedDateTestThree, servlet.getEventEndTime("2020-09-09T00:00", "20", "59"));
+
+    String expectedDateTestFour = "2020-08-08T00:00" + TIMEZONE_OFFSET;
+    Assert.assertEquals(expectedDateTestFour, servlet.getEventEndTime("2020-08-07T23:59", "0", "1"));
+  }
+
   private Event createTestEvent() {
     return new Event().setSummary(TEST_EVENT_TITLE).setLocation(TEST_EVENT_LOCATION)
         .setDescription(TEST_EVENT_DESCRIPTION)
