@@ -49,8 +49,9 @@ public class ChatServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ServletUtils.enforceUserLogin(request, response);
-        Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
+        // ServletUtils.enforceUserLogin(request, response);
+        // Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
+        Entity userEntity = ServletUtils.getUserEntity("example@test.com");
         ImmutableList<ImmutableMap<String, String>> groupsList = ServletUtils.getGroupsList(userEntity);
 
         String groupId = (String) request.getParameter(GROUP_ID_PROPERTY);
@@ -96,7 +97,7 @@ public class ChatServlet extends HttpServlet {
             groupId = defaultGroup;
         }
 
-        if (messageText.isEmpty()) {
+        if (messageText.isEmpty() || messageText.trim().isEmpty()) {
             response.sendRedirect(CHAT_REDIRECT + groupId);
             return;
         }
