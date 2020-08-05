@@ -40,4 +40,5 @@ function makeCalendarId() {
     });
 
     location.reload();
+    return false;
 }
