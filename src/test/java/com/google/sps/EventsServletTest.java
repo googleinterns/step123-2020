@@ -39,9 +39,9 @@ import org.mockito.Spy;
 
 @RunWith(JUnit4.class)
 public final class EventsServletTest extends Mockito {
-  // 3600000ms = 1 hour
+  // Number of milliseconds in an hour
   private final long TIME_OFFSET = 3600000L;
-  // Must have minutes in Rfc3339
+  // Formatter to convert minutes to Rfc3339
   private final String CREATE_TEST_EVENT_FORMATTER = ":00";
   private final String TEST_EVENT_DESCRIPTION = "test event description";
   private final String TEST_EVENT_HOURS = "1";
