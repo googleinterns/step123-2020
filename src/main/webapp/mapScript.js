@@ -13,6 +13,7 @@ const DEFAULT_LNG = -122.085;
 const DEFAULT_ZOOM = 10;
  
 let map; 
+const geocoder = new google.maps.Geocoder();
  
 /**
  * Initialize the map to show Mountain View and events in that area
@@ -25,10 +26,6 @@ function initMap() {
         zoom: DEFAULT_ZOOM,
         center: mapViewDefault,
     });
- 
-    const geocoder = new google.maps.Geocoder();
-    // TODO: repace the hardcoded event ID with actually value
-    getMarkerInfo('123', geocoder);
  
     autoCompleteAndZoom(); 
  
@@ -135,7 +132,7 @@ function removeGroupMarkers(groupId) {
 /**
  * Fetch all the events to add to the map 
  */
-function getMarkerInfo(groupId, geocoder) {
+function getMarkerInfo(groupId) {
     // Fetch the json with the eventMarker objects 
     // For each object call addMarker()
     
@@ -221,7 +218,6 @@ function filterDate() {
     checkedGroups.forEach((checkedGroup) => {
         filterGroupDate(checkedGroup.value, dateInput);
     });
- 
 }
  
 function filterGroupDate(groupId, dateInput) {

@@ -1,9 +1,17 @@
 package com.google.sps.servlets;
  
+import static com.google.sps.utils.StringConstants.*;
+
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.client.util.DateTime;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import java.util.Date;
 import java.util.ArrayList;
 import com.google.common.base.Strings;
@@ -27,7 +35,12 @@ public class SortedMarkersServlet extends HttpServlet {
     String groupId = getParameter(request, "groupid", "");
     
     if(!Strings.isNullOrEmpty(groupId)){ 
-        SortedMarkers sorted = new SortedMarkers(getEvents(groupId));
+        Collection<EventMarker> groupMarkers = getEvents(groupId);
+        if (groupMarkers == null) {
+            return; 
+        }
+
+        SortedMarkers sorted = new SortedMarkers(groupMarkers);
         Collection<EventMarker> output = sorted.getSortedMarkers(); 
         
         // Convert the sortedMarkers to JSON
@@ -59,22 +72,27 @@ public class SortedMarkersServlet extends HttpServlet {
     try {
         ArrayList<EventMarker> mapEvents = new ArrayList<EventMarker>();
         EventsServlet eventsServlet = new EventsServlet();
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Entity group = datastore.get(KeyFactory.createKey(GROUP_KIND, String.valueOf(groupId)));
         
-        // TODO: Convert the hardcoded calendarID and groupName when getEventsList() param is changed to groupID
-        Events calEvents = eventsServlet.getEventsList("fk6u4m5isbl8i6cj1io1pkpli4@group.calendar.google.com");
+        // TODO: Relplace getEventsList() param to groupId once Dylan's PR is merged
+        Events calEvents = eventsServlet.getEventsList((String) group.getProperty(GROUP_CALENDARID_PROPERTY));
         for (Event calEvent : calEvents.getItems()) {
             EventMarker mapEvent = new EventMarker(
                 calEvent.getSummary(),
                 calEvent.getDescription(),
                 calEvent.getLocation(),
                 calEvent.getStart().getDateTime(),
-                "Black Lives Matter");
+                (String) group.getProperty(GROUP_NAME_PROPERTY));
             mapEvents.add(mapEvent);
         }
         SortedMarkers sortedEvents = new SortedMarkers(mapEvents); 
         return sortedEvents.getSortedMarkers();
     } catch (IOException e) {
         e.printStackTrace(); 
+        return null; 
+    } catch (EntityNotFoundException invalidGroup) {
+        invalidGroup.printStackTrace(); 
         return null; 
     }
   }
