@@ -38,8 +38,6 @@ public class CalendarServlet extends AbstractEventsServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    //ServletUtils.enforceUserLogin(request, response);
-
     ImmutableList<ImmutableMap<String, String>> groupsList = 
         ServletUtils.getGroupsList(ServletUtils.getUserEntity(request.getUserPrincipal().getName()));
 
