@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.Principal;
 import java.util.Scanner;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -77,6 +78,9 @@ public final class ChatServletTest extends Mockito {
     @Mock
     HttpServletResponse response;
 
+    @Mock
+    Principal principal;
+
     @Before
     public void setUp() {
         servlet = new ChatServlet();
@@ -104,6 +108,9 @@ public final class ChatServletTest extends Mockito {
         datastore.put(userEntity);
 
         MockitoAnnotations.initMocks(this);
+
+        when(request.getUserPrincipal()).thenReturn(principal);
+        when(principal.getName()).thenReturn(EXAMPLE_EMAIL);
 
         stringWriter = new StringWriter();
         printWriter = new PrintWriter(stringWriter);

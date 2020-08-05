@@ -40,7 +40,7 @@ public class GroupsServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // ServletUtils.enforceUserLogin(request, response);
+        ServletUtils.enforceUserLogin(request, response);
         
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Query groupsQuery = new Query(GROUP_KIND);
@@ -56,8 +56,7 @@ public class GroupsServlet extends HttpServlet {
             groupsListBuilder.add(groupMap);
         }
         
-        // Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
-        Entity userEntity = ServletUtils.getUserEntity("example@test.com");
+        Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
         ImmutableList<ImmutableMap<String, String>> groupsList = groupsListBuilder.build();
         ImmutableList<Long> userGroups = ImmutableList.copyOf(ServletUtils.getGroupIdList(userEntity));
         
@@ -107,8 +106,7 @@ public class GroupsServlet extends HttpServlet {
         }
 
         try {
-            // Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
-            Entity userEntity = ServletUtils.getUserEntity("example@test.com");
+            Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
             addUserToGroup(groupId, userEntity);
             
             response.setStatus(HttpServletResponse.SC_OK);

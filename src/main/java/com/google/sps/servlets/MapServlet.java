@@ -29,7 +29,7 @@ public class MapServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // ServletUtils.enforceUserLogin(request, response);
+        ServletUtils.enforceUserLogin(request, response);
  
         // Reads API Key from file
         ClassLoader classLoader = MapServlet.class.getClassLoader();
@@ -38,8 +38,7 @@ public class MapServlet extends HttpServlet {
         final String apiKey = scanner.nextLine();
         scanner.close();
 
-        // Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
-        Entity userEntity = ServletUtils.getUserEntity("example@test.com");
+        Entity userEntity = ServletUtils.getUserEntity(request.getUserPrincipal().getName());
         ImmutableList<ImmutableMap<String, String>> groupsList = getGroupsList(userEntity);
 
         final String mapPageHtml = getOutputString(MAP_SOY_FILE, MAP_TEMPLATE_NAMESPACE, 
