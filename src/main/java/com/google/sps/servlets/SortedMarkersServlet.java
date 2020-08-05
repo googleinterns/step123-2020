@@ -75,7 +75,7 @@ public class SortedMarkersServlet extends HttpServlet {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Entity group = datastore.get(KeyFactory.createKey(GROUP_KIND, String.valueOf(groupId)));
         
-        // TODO: Relplace getEventsList() param to groupId once Dylan's PR is merged
+        // TODO: Replace getEventsList() param to groupId once Event param code is merged
         Events calEvents = eventsServlet.getEventsList((String) group.getProperty(GROUP_CALENDARID_PROPERTY));
         for (Event calEvent : calEvents.getItems()) {
             EventMarker mapEvent = new EventMarker(
