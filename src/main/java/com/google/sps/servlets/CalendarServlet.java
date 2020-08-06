@@ -46,6 +46,7 @@ public class CalendarServlet extends AbstractEventsServlet {
     if (groupsList.isEmpty()) {
       groupId = "";
     } else if (Strings.isNullOrEmpty(groupId)) {
+      // In the case that no groupId is provided, use the first group as a default.
       groupId = groupsList.get(0).get(GROUP_ID_PROPERTY);
     }
 
