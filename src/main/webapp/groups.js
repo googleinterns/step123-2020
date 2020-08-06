@@ -26,18 +26,16 @@ function makeCalendarId() {
     const name = document.getElementById('name').value;
     const image = document.getElementById('image').value;
     const description = document.getElementById('description-area').value;
-    let newGroupId;
 
     fetch('/groups?name=' + name + '&image=' + image + '&description=' + description, {
         method: 'POST',
-    }).then(response => response.text()).then(text => {
-            newGroupId = text;
-        }
+    }).then(response => response.text())
+      .then(text => {
+        fetch('/calendar?groupId=' + text, {
+          method: 'POST',
+        });
+      }
     );
-
-    fetch('/calendar?groupId=' + newGroupId, {
-        method: 'POST'
-    });
 
     location.reload();
     return false;

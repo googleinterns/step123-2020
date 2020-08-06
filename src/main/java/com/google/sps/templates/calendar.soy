@@ -1,6 +1,11 @@
 {namespace templates.calendar}
 
 {template .calendarPage}
+  {@param calendarId: string}
+  {@param currGroup: string}
+  {@param groups: list<map<string, string>>}
+  {@param timezone: string}
+  
   <html lang="en">
     <head>
       <meta charset="UTF-8">
@@ -29,32 +34,98 @@
 
             <hr class="mdc-list-divider">
             <div class="nav-icons">
-                <a class="icon-links" href="/map">
-                    <i class="material-icons mdc-list-item__graphic nav-icon">map</i>
-                </a>
-                <a class="icon-links" href="/chat">
-                    <i class="material-icons mdc-list-item__graphic nav-icon">chat</i>
-                </a>
-                <a class="icon-links" href="/groups">
-                    <i class="material-icons mdc-list-item__graphic nav-icon">group</i>
-                </a>
+              <a class="icon-links" href="/map">
+                <i class="material-icons mdc-list-item__graphic nav-icon">map</i>
+              </a>
+              <a class="icon-links" href="/chat">
+                <i class="material-icons mdc-list-item__graphic nav-icon">message</i>
+              </a>
+              <a class="icon-links" href="/groups">
+                <i class="material-icons mdc-list-item__graphic nav-icon">group</i>
+              </a>
             </div>
 
             <li role="separator" class="mdc-list-divider"></li>
-            <a class="mdc-list-item" href="#">
-              <label class="mdc-text-field mdc-text-field--filled">
-                <span class="mdc-text-field__ripple"></span>
-                <input class="mdc-text-field__input" id="address" type="text" aria-labelledby="my-label-id">
-                <span class="mdc-line-ripple"></span>
-              </label>  
-            </a>
+            <form action="/events" method="POST" id="create-event">
+              <input type="hidden" name="groupId" value="{$currGroup}">
+              <h6 class="mdc-list-group__subheader">Title</h6>
 
-          </nav>
+              <a class="mdc-list-item">
+                <label class="mdc-text-field mdc-text-field--filled">
+                  <span class="mdc-text-field__ripple"></span>
+                  <input class="mdc-text-field__input" id="title" type="text" name="title" aria-labelledby="my-label-id" minlength="2" required>
+                  <span class="mdc-line-ripple"></span>
+                </label>  
+              </a>
+
+              <h6 class="mdc-list-group__subheader">Description</h6>
+
+              <a class="mdc-list-item">
+                <label class="mdc-text-field mdc-text-field--filled">
+                  <span class="mdc-text-field__ripple"></span>
+                  <input class="mdc-text-field__input" id="description" type="text" name="description" aria-labelledby="my-label-id" minlength="2">
+                  <span class="mdc-line-ripple"></span>
+                </label>  
+              </a>
+
+              <h6 class="mdc-list-group__subheader">Location</h6>
+
+              <a class="mdc-list-item">
+                <label class="mdc-text-field mdc-text-field--filled">
+                  <span class="mdc-text-field__ripple"></span>
+                  <input class="mdc-text-field__input" id="address" type="text" name="location" aria-labelledby="my-label-id" minlength="2">
+                  <span class="mdc-line-ripple"></span>
+                </label>  
+              </a>
+ 
+              <li role="separator" class="mdc-list-divider"></li>
+              <h6 class="mdc-list-group__subheader">Start Time</h6>
+                        
+              <a class="mdc-list-item">
+                <input type="datetime-local" id="date" name="start" required>
+              </a>
+ 
+              <h6 class="mdc-list-group__subheader">Duration</h6>
+                         
+              <a class="mdc-list-item">
+                <input class="time" type="number" id="hours" name="hours" min="0" max="23" value="23" required>
+                <input class="time" type="number" id="minutes" name="minutes" min="0" max="59" value="59" required>
+              </a>
+  
+              <li role="separator" class="mdc-list-divider"></li>
+            </form>
+            <a class="mdc-list-item">
+              <button class="mdc-button" type="submit" form="create-event">
+                <div class="mdc-button__ripple"></div>
+                <span class="mdc-button__label">Create Event</span>
+                <i class="material-icons mdc-button__icon" aria-hidden="true">event</i>
+              </button>
+            </a>
+            <li role="separator" class="mdc-list-divider"></li>
+            <h2 class="mdc-typography--headline5 groups-headline">Groups</h2>
+
+            <div class="selection-controls-container">
+              {for $groupMap in $groups}
+                <a class="mdc-list-item {if $groupMap['groupId'] == $currGroup}{css('currGroup')}{/if}" 
+                  href="/calendar?groupId={$groupMap['groupId']}" tabindex="0">
+                  <span class="mdc-list-item__text group-label">{$groupMap['name']}</span>
+                </a>
+              {/for}
+            </div>
+           </nav>
         </div>
       </aside>
 
       <main class="main-content" id="main-content">
-        <div id="events-calendar"></div>
+        {if strLen($currGroup) == 0}
+          <p class="mdc-typography--body1 no-groups-error">
+            Oops, you haven't joined any groups yet. Click the groups icon at the top to join a cause.
+          </p>
+        {else}
+          <div id="events-calendar">
+            <iframe class="calendar-iframe" src="https://calendar.google.com/calendar/embed?src={$calendarId}&ctz={$timezone}"></iframe>
+          </div>
+        {/if}
       </main> 
 
     </body>

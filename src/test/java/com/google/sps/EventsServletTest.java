@@ -39,15 +39,19 @@ import org.mockito.Spy;
 
 @RunWith(JUnit4.class)
 public final class EventsServletTest extends Mockito {
-  //3600000ms = 1 hour
+  // Number of milliseconds in an hour
   private final long TIME_OFFSET = 3600000L;
+  // Formatter to convert minutes to Rfc3339
+  private final String CREATE_TEST_EVENT_FORMATTER = ":00";
   private final String TEST_EVENT_DESCRIPTION = "test event description";
+  private final String TEST_EVENT_HOURS = "1";
   private final String TEST_EVENT_HTML = "test event HTML";
   private final String TEST_EVENT_LOCATION = "test event location";
+  private final String TEST_EVENT_MINUTES = "1";
   private final String TEST_EVENT_TITLE = "test event title";
 
   private final DateTimeFormatter formatter = DateTimeFormatter
-      .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+      .ofPattern("yyyy-MM-dd'T'HH:mm")
       .withZone(ZoneId.of(TIMEZONE));
   private final EventsServlet servlet = new EventsServlet();  
   private final LocalServiceTestHelper helper =
@@ -55,7 +59,6 @@ public final class EventsServletTest extends Mockito {
   private final StringWriter stringWriter = new StringWriter();
   
   private String initialEventTime;
-  private String endEventTime;
 
   private DatastoreService datastore;
   private Entity groupEntity;
@@ -81,10 +84,8 @@ public final class EventsServletTest extends Mockito {
     groupEntity = TestUtils.createGroupEntity(datastore);
     
     long initialEventTimeLong = System.currentTimeMillis();
-    long endEventTimeLong = initialEventTimeLong + TIME_OFFSET;
-    // Turn the times into a Rfc3339 string
+    // Turn the time into a Rfc3339 string
     initialEventTime = formatter.format(new Date(initialEventTimeLong).toInstant());
-    endEventTime = formatter.format(new Date(endEventTimeLong).toInstant());
 
     MockitoAnnotations.initMocks(this);
     
@@ -147,14 +148,16 @@ public final class EventsServletTest extends Mockito {
     when(request.getParameter(EVENT_DESCRIPTION_PROPERTY)).thenReturn(TEST_EVENT_DESCRIPTION);
     when(request.getParameter(EVENT_LOCATION_PROPERTY)).thenReturn(TEST_EVENT_LOCATION);
     when(request.getParameter(EVENT_START_PROPERTY)).thenReturn(initialEventTime);
-    when(request.getParameter(EVENT_END_PROPERTY)).thenReturn(endEventTime);
+    when(request.getParameter(EVENT_HOURS_PROPERTY)).thenReturn(TEST_EVENT_HOURS);
+    when(request.getParameter(EVENT_MINUTES_PROPERTY)).thenReturn(TEST_EVENT_MINUTES);
     
     // Create a stub event with the previous parameters
     Event expectedEvent = createTestEvent();
 
     // Return event inside the doPost method
     Mockito.doReturn(expectedEvent).when(servletSpy).addEvent(TEST_GROUP_CALENDARID, TEST_EVENT_TITLE, 
-        TEST_EVENT_LOCATION, TEST_EVENT_DESCRIPTION, initialEventTime, endEventTime);
+        TEST_EVENT_LOCATION, TEST_EVENT_DESCRIPTION, initialEventTime + TIMEZONE_OFFSET,
+        servlet.getEventEndTime(initialEventTime, TEST_EVENT_HOURS, TEST_EVENT_MINUTES));
 
     servletSpy.doPost(request, response);
 
@@ -169,7 +172,8 @@ public final class EventsServletTest extends Mockito {
     when(request.getParameter(GROUP_ID_PROPERTY)).thenReturn(TEST_GROUP_ID_INVALID);
     when(request.getParameter(EVENT_TITLE_PROPERTY)).thenReturn(TEST_EVENT_TITLE);
     when(request.getParameter(EVENT_START_PROPERTY)).thenReturn(initialEventTime);
-    when(request.getParameter(EVENT_END_PROPERTY)).thenReturn(endEventTime);
+    when(request.getParameter(EVENT_HOURS_PROPERTY)).thenReturn(TEST_EVENT_HOURS);
+    when(request.getParameter(EVENT_MINUTES_PROPERTY)).thenReturn(TEST_EVENT_MINUTES);
     
     servlet.doPost(request, response);
     
@@ -185,23 +189,26 @@ public final class EventsServletTest extends Mockito {
     
     TestUtils.verifyBadRequest(response, EVENTS_POST_BAD_REQUEST_MESSAGE, this.stringWriter);
   }
-  
-  @Test
-  public void createEvent() {
-    Event event = servlet.createEvent(TEST_EVENT_TITLE, TEST_EVENT_LOCATION, 
-        TEST_EVENT_DESCRIPTION, initialEventTime, endEventTime);
 
-    Assert.assertEquals(TEST_EVENT_TITLE, event.getSummary());
-    Assert.assertEquals(TEST_EVENT_LOCATION, event.getLocation());
-    Assert.assertEquals(TEST_EVENT_DESCRIPTION, event.getDescription());
-    Assert.assertEquals(initialEventTime, event.getStart().getDateTime().toStringRfc3339());
-    Assert.assertEquals(endEventTime, event.getEnd().getDateTime().toStringRfc3339());
+  @Test
+  public void getEventEndTime() {
+    String expectedDateTestOne = "2020-12-12T08:30" + TIMEZONE_OFFSET;
+    Assert.assertEquals(expectedDateTestOne, servlet.getEventEndTime("2020-12-12T07:30", "1", "0"));
+
+    String expectedDateTestTwo = "2020-11-11T13:01" + TIMEZONE_OFFSET;
+    Assert.assertEquals(expectedDateTestTwo, servlet.getEventEndTime("2020-11-11T12:00", "1", "1"));
+
+    String expectedDateTestThree = "2020-09-09T20:59" + TIMEZONE_OFFSET;
+    Assert.assertEquals(expectedDateTestThree, servlet.getEventEndTime("2020-09-09T00:00", "20", "59"));
+
+    String expectedDateTestFour = "2020-08-08T00:00" + TIMEZONE_OFFSET;
+    Assert.assertEquals(expectedDateTestFour, servlet.getEventEndTime("2020-08-07T23:59", "0", "1"));
   }
 
   private Event createTestEvent() {
     return new Event().setSummary(TEST_EVENT_TITLE).setLocation(TEST_EVENT_LOCATION)
         .setDescription(TEST_EVENT_DESCRIPTION)
-        .setStart(new EventDateTime().setDateTime(new DateTime(initialEventTime)).setTimeZone(TIMEZONE))
-        .setEnd(new EventDateTime().setDateTime(new DateTime(endEventTime)).setTimeZone(TIMEZONE));
+        .setStart(new EventDateTime().setDateTime(
+        new DateTime(initialEventTime + CREATE_TEST_EVENT_FORMATTER)).setTimeZone(TIMEZONE));
   }
 }

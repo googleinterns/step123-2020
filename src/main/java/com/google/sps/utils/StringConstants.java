@@ -19,7 +19,10 @@ public final class StringConstants {
   public static final String MAP_SOY_FILE = "mapPages.soy";
   public static final String MAP_TEMPLATE_NAMESPACE = "templates.mapPages.mapPage";
   public static final String TIMEZONE = "America/Los_Angeles";
-  
+  public static final String TIMEZONE_OFFSET = ":00.000-07:00";
+  public static final int TIMEZONE_OFFSET_INT = -420;
+  public static final String TIMEZONE_PARAM = "timezone";
+
   /**
    * Chat constants
    */
@@ -59,8 +62,9 @@ public final class StringConstants {
    * Events constant properties
    */
   public static final String EVENT_DESCRIPTION_PROPERTY = "description";
-  public static final String EVENT_END_PROPERTY = "end";
+  public static final String EVENT_HOURS_PROPERTY = "hours";
   public static final String EVENT_LOCATION_PROPERTY = "location";
+  public static final String EVENT_MINUTES_PROPERTY = "minutes";
   public static final String EVENT_START_PROPERTY = "start";
   public static final String EVENT_TITLE_PROPERTY = "title";
   
@@ -89,7 +93,7 @@ public final class StringConstants {
    * Testing constants
    */
   public static final String NULL_PARAMETER = "age";
-  public static final String TEST_GROUP_ID = "535";
+  public static final String TEST_GROUP_ID = "123";
   public static final String TEST_GROUP_ID_INVALID = "600";
   public static final String TEST_GROUP_NAME = "test name";
   public static final String TEST_GROUP_IMAGE = "test image";
