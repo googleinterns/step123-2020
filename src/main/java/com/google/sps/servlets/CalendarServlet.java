@@ -58,11 +58,6 @@ public class CalendarServlet extends AbstractEventsServlet {
         return;
       }
     }
-
-    if(Strings.isNullOrEmpty(calendarId)) {
-      ServletUtils.printBadRequestError(response, ENTITY_ERROR_MESSAGE);
-      return;
-    }
     
     String htmlString = SoyRendererUtils.getOutputString(CALENDAR_SOY_FILE, CALENDAR_TEMPLATE_NAMESPACE,
         ImmutableMap.of(GROUP_CALENDARID_PROPERTY, calendarId, CURR_GROUP_KEY, groupId,

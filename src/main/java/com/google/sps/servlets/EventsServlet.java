@@ -133,7 +133,7 @@ public class EventsServlet extends AbstractEventsServlet {
 
   @VisibleForTesting
   public String getEventEndTime(String startTime, String hours, String minutes) {
-    if(Strings.isNullOrEmpty(startTime) || Strings.isNullOrEmpty(hours) || Strings.isNullOrEmpty(minutes)) {
+    if (Strings.isNullOrEmpty(startTime) || Strings.isNullOrEmpty(hours) || Strings.isNullOrEmpty(minutes)) {
       return null;
     }
     
