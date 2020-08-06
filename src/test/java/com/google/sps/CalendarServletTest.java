@@ -46,7 +46,7 @@ public final class CalendarServletTest extends Mockito {
   private DatastoreService datastore;
   private Entity groupEntity;
   private PrintWriter printWriter;
-  private StringWriter stringWriter;
+  private StringWriter stringWriter = new StringWriter();
 
   @Mock
   HttpServletRequest request;
@@ -56,17 +56,16 @@ public final class CalendarServletTest extends Mockito {
 
   @Before
   public void setUp() throws IOException {
+    MockitoAnnotations.initMocks(this);
+    
     servlet = new CalendarServlet();
 
     helper.setUp();
     datastore = DatastoreServiceFactory.getDatastoreService();
     
-    stringWriter = new StringWriter();
     printWriter = new PrintWriter(stringWriter);
 
     groupEntity = TestUtils.createGroupEntity(datastore);
-
-    MockitoAnnotations.initMocks(this);
 
     when(response.getWriter()).thenReturn(printWriter);
   }
